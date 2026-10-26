@@ -1,4 +1,4 @@
-# Questbound security — 8 October 2026
+# Turquill security — 8 October 2026
 
 These controls are implemented in the current source. Restart running services with `Apply-Security-Update.cmd` after rebuilding. This is not an independent penetration test or a promise that the game has no vulnerabilities.
 
@@ -16,7 +16,7 @@ Accounts are not required during the beta. `accountsRequired` in `accountRules.j
 
 - Email verification is required before any account session is issued, including older accounts (guest identities have no email and are not account sessions). Codes expire after ten minutes, have five attempts, and are usable once. A new email may be requested after one minute, up to five per address per UTC day. Pending registrations do not replace existing accounts.
 
-- The dedicated Questbound mailbox has **not been connected**. The user chose to keep personal Gmail separate. `Connect-Game-Email.cmd` asks for a dedicated Gmail address and a hidden Google app password, then stores the password encrypted to the Windows account. Never put either an app password or API key in chat, source code, browser storage, or a command argument. Two-step verification is required to create a Google app password. No automatic emails have been sent or delivery-tested yet.
+- The dedicated Turquill mailbox has **not been connected**. The user chose to keep personal Gmail separate. `Connect-Game-Email.cmd` asks for a dedicated Gmail address and a hidden Google app password, then stores the password encrypted to the Windows account. Never put either an app password or API key in chat, source code, browser storage, or a command argument. Two-step verification is required to create a Google app password. No automatic emails have been sent or delivery-tested yet.
 
 - Gmail SMTP uses certificate-verified TLS, a fixed endpoint, bounded replies and timeouts. Feedback is retained locally and optionally forwarded to the configured game mailbox; failed forwarding does not discard the local note. Review the local feedback file because delivery is not guaranteed.
 

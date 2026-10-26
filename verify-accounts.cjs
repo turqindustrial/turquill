@@ -124,7 +124,7 @@ const fails=async(promise,status,words)=>{await assert.rejects(promise,e=>{asser
   assert.equal((app.match(/<AccountSettings /g)??[]).length,1);assert.equal((app.match(/<CloudSaveSettings /g)??[]).length,1);
   for(const file of fs.readdirSync('.').filter(f=>/\.js$/.test(f)&&!['App.js','MenuScreens.js','AccountSettings.js','CloudSaveSettings.js'].includes(f)))assert.ok(!/<(AccountSettings|CloudSaveSettings)\b/.test(fs.readFileSync(file,'utf8')),file+' renders no account panel');
   assert.ok(app.includes('unprotected={saved&&!account&&accountsOffered()}')&&/const protect=unprotected&&/.test(home),'the title asks for an account only while offered');
-  assert.ok(app.includes("if(a?.hold&&accountsOffered())setScreenState('Settings')")&&app.includes("accountsRequired?'Opening your account…':'Opening Questbound…'"),'nothing opens on an account');
+  assert.ok(app.includes("if(a?.hold&&accountsOffered())setScreenState('Settings')")&&app.includes("accountsRequired?'Opening your account…':'Opening Turquill…'"),'nothing opens on an account');
   assert.ok(dev.includes("{accountsOffered()&&<GameButton label=\"Check account and local save owner\"")&&dev.includes("{accountsOffered()&&<><GameButton label=\"Read host security alerts\""),'developer checks ask for no account in the beta');
   assert.ok(app.includes("Settings' && <SaveTransfer/>"),'Move your hero (local save codes) stays');}
  assert.ok(fs.readFileSync('.gitignore','utf8').split(/\r?\n/).some(line=>line.trim()==='.questbound-*'),'account files are never committed');

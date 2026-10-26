@@ -31,7 +31,7 @@ export async function renderTaleCard(summary,{portrait=null,scene=null,palette=c
  g.textAlign='center';g.textBaseline='alphabetic';
  try{g.letterSpacing='6px';}catch{}
  g.save();g.shadowColor='rgba(0,0,0,.85)';g.shadowBlur=18;g.shadowOffsetY=2;
- g.fillStyle=P.gold;g.font='900 44px "Cinzel Decorative", Georgia, serif';g.fillText('QUESTBOUND',cx,104);g.restore();
+ g.fillStyle=P.gold;g.font='900 44px "Cinzel Decorative", Georgia, serif';g.fillText('TURQUILL',cx,104);g.restore();
  try{g.letterSpacing='0px';}catch{}
  // The portrait in a medallion.
  const r=118,cy=470;g.save();g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.closePath();g.clip();
@@ -76,7 +76,7 @@ export async function renderTaleCard(summary,{portrait=null,scene=null,palette=c
  // The reckoning.
  const stats=[[summary.stats.places,'PLACES'],[summary.stats.people,'PEOPLE MET'],[summary.stats.won+'/'+summary.stats.fights,'FIGHTS WON'],[summary.stats.gold,'GOLD']];
  const sy=H-150;stats.forEach(([value,label],i)=>{const x=W/8+i*(W/4);g.fillStyle=P.parchment;g.font='700 40px Cinzel, Georgia, serif';g.fillText(String(value),x,sy);g.fillStyle=P.goldMid;g.font='600 15px Inter, system-ui, sans-serif';try{g.letterSpacing='3px';}catch{}g.fillText(label,x,sy+30);try{g.letterSpacing='0px';}catch{}});
- g.fillStyle=P.muted;g.font='400 20px Inter, system-ui, sans-serif';g.fillText('A tale from Questbound · a tabletop adventure with an AI Dungeon Master',cx,H-64);
+ g.fillStyle=P.muted;g.font='400 20px Inter, system-ui, sans-serif';g.fillText('A tale from Turquill · a tabletop adventure with an AI Dungeon Master',cx,H-64);
  return canvas;
 }
 function roundRect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
@@ -84,9 +84,9 @@ export const canvasBlob=canvas=>new Promise(resolve=>canvas.toBlob(blob=>resolve
 export function canShareFiles(nav=globalThis.navigator){try{return typeof nav?.share==='function'&&typeof nav.canShare==='function'&&nav.canShare({files:[new File([''],'t.png',{type:'image/png'})]});}catch{return false;}}
 // Shares the picture with the words where the browser can (phones), else saves the picture and copies the words.
 export async function shareTale(blob,summary,{nav=globalThis.navigator,doc=globalThis.document}={}){
- const text=taleText(summary),file=blob?new File([blob],'questbound-tale.png',{type:'image/png'}):null;
- if(file&&canShareFiles(nav)){try{await nav.share({files:[file],title:summary.name+' · Questbound',text});return 'shared';}catch(e){if(e?.name==='AbortError')return 'cancelled';}}
- if(file&&doc){const a=doc.createElement('a');a.href=URL.createObjectURL(blob);a.download='questbound-tale.png';doc.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);}
+ const text=taleText(summary),file=blob?new File([blob],'turquill-tale.png',{type:'image/png'}):null;
+ if(file&&canShareFiles(nav)){try{await nav.share({files:[file],title:summary.name+' · Turquill',text});return 'shared';}catch(e){if(e?.name==='AbortError')return 'cancelled';}}
+ if(file&&doc){const a=doc.createElement('a');a.href=URL.createObjectURL(blob);a.download='turquill-tale.png';doc.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);}
  try{await nav?.clipboard?.writeText(text);}catch{}
  return 'saved';
 }

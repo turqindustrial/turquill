@@ -1,6 +1,6 @@
 # Saves and their formats
 
-Questbound keeps every save any tester-reachable build ever wrote playable. The first playtest build (commit
+Turquill keeps every save any tester-reachable build ever wrote playable. The first playtest build (commit
 235726f, 30 September 2026) already went out on a share link, so that is the whole history: nothing is dropped.
 
 ## Where saves live

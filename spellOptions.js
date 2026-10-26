@@ -13,7 +13,7 @@ export const subclassSpells = {
   'Oath of Devotion':{3:['protection-from-evil-and-good','shield-of-faith'],5:['aid','zone-of-truth'],9:['beacon-of-hope','dispel-magic'],13:['freedom-of-movement','guardian-of-faith'],17:['commune','flame-strike']},
   'Draconic Sorcery':{3:['alter-self','chromatic-orb','command','dragons-breath'],5:['fear','fly'],7:['arcane-eye','charm-monster'],9:['legend-lore','summon-dragon']},
   'Fiend Patron':{3:['burning-hands','command','scorching-ray','suggestion'],5:['fireball','stinking-cloud'],7:['fire-shield','wall-of-fire'],9:['geas','insect-plague']},
-  // Questbound's own subclasses (subclassOptions.js): always prepared from the levels shown. A Wardblade Fighter and a
+  // Turquill's own subclasses (subclassOptions.js): always prepared from the levels shown. A Wardblade Fighter and a
   // Trickwright Rogue learn cantrips only (Intelligence, spellRules.js castingAbility).
   'Hearth Domain':{3:['burning-hands','heroism','heat-metal','flaming-sphere'],5:['daylight','protection-from-energy'],7:['fire-shield','stone-shape'],9:['flame-strike','creation']},
   'Vigil Domain':{3:['shield-of-faith','command','spiritual-weapon','warding-bond'],5:['spirit-guardians','magic-circle'],7:['guardian-of-faith','freedom-of-movement'],9:['hallow','hold-monster']},

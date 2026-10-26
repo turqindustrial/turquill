@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
 const {rulesSource}=require('./rules-files.cjs');
-// Subclasses: every class offers its SRD subclass and three of Questbound's own (the Artificer five specialities), each
-// with features in the catalog (source 'Questbound', the same names and levels as subclassRules.js), names that are no
+// Subclasses: every class offers its SRD subclass and three of Turquill's own (the Artificer five specialities), each
+// with features in the catalog (source 'Turquill', the same names and levels as subclassRules.js), names that are no
 // book's, spells that exist and can be cast, and a level-3 signature the engine plays: passive numbers (hit points,
 // armour class, initiative, martial weapons, a second attack, a harder grapple, skills), a once-a-turn extra on a hit,
 // a Reaction that blunts a blow, a class action with limited uses (chips, descriptions, typed words, stories, saves),
@@ -22,7 +22,7 @@ const valid=(hero,game,health,what='')=>assert.ok(r.validAdventure(r.adventureSn
 const lines=s=>(s.events??[]).join(' | ');
 const plain=o=>JSON.parse(JSON.stringify(o));
 
-// ---- 1. Roster: the SRD's subclass first, then three of Questbound's own; five Artificer specialities ----
+// ---- 1. Roster: the SRD's subclass first, then three of Turquill's own; five Artificer specialities ----
 const srd={Barbarian:'Path of the Berserker',Bard:'College of Lore',Cleric:'Life Domain',Druid:'Circle of the Land',Fighter:'Champion',Monk:'Warrior of the Open Hand',Paladin:'Oath of Devotion',Ranger:'Hunter',Rogue:'Thief',Sorcerer:'Draconic Sorcery',Warlock:'Fiend Patron',Wizard:'Evoker'};
 const legacyNames=new Set(Object.values(plain(r.legacySubclassOptions)).flat());
 const ours=[];
@@ -50,7 +50,7 @@ for(const name of questbound){
  for(const level of r.subclassLevels[cls])assert.ok(rows.some(f=>f.level===level),name+' has a feature at level '+level);
  for(const f of rows){
   assert.equal(f.class,cls);assert.ok(r.subclassLevels[cls].includes(f.level),name+' '+f.name+' at a subclass level');
-  assert.equal(f.source,'Questbound');assert.ok(['engine','reference'].includes(f.automation));
+  assert.equal(f.source,'Turquill');assert.ok(['engine','reference'].includes(f.automation));
   assert.ok(f.description.length>=40&&f.description.length<=700&&/[.!?]$/.test(f.description),f.name+': '+f.description);
   assert.ok(!featureNames.has(f.name),'feature names are unique: '+f.name);featureNames.add(f.name);
  }
@@ -70,7 +70,7 @@ const deny=['Hidden Step','Fey Step','Elder Champion','Battle Master','Eldritch 
  // The Artificer's specialities as another publisher named them (renamed 2026-10-22; this list would have caught them).
  'Alchemist','Armorer','Artillerist','Battle Smith'];
 const banned=deny.map(d=>new RegExp('\\b'+d.replace(/\*$/,'').replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/'/g,"['’]")+(d.endsWith('*')?'\\w*':'\\b'),'i'));
-for(const name of [...ours.map(([,n])=>n),...catalog.filter(f=>f.source==='Questbound').map(f=>f.name)])for(const re of banned)assert.ok(!re.test(name),name+' matches a book name ('+re+')');
+for(const name of [...ours.map(([,n])=>n),...catalog.filter(f=>f.source==='Turquill').map(f=>f.name)])for(const re of banned)assert.ok(!re.test(name),name+' matches a book name ('+re+')');
 
 // ---- 4. Spells the subclasses grant ----
 const ids=new Set(r.spellLibrary.map(s=>s.id));

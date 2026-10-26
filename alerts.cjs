@@ -52,7 +52,7 @@ function createAlerts({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now,p
   try{fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(stateFile,JSON.stringify(state));}catch{}
   try{record(event,{route:kind});}catch{}
   // Discord only when the host connected it; otherwise the security log is the record.
-  if(fs.existsSync(discordFile))try{Promise.resolve(send('Questbound: '+text)).catch(()=>{});}catch{}
+  if(fs.existsSync(discordFile))try{Promise.resolve(send('Turquill: '+text)).catch(()=>{});}catch{}
   return true;
  }
  return {raise,discordConnected:()=>fs.existsSync(discordFile)};

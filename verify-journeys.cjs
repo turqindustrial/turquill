@@ -219,7 +219,7 @@ const day=86400000,same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b
    fs.rmSync(flag);assert.equal(libraryPaused(),false);
    assert.equal(topUpLibrary(e,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:keys.fetchImpl,live:false}),true,'resumed: writing again at once');await e.settled();assert.equal(e.list().length,3);
   }finally{if(was===undefined)delete process.env.QUESTBOUND_DATA;else process.env.QUESTBOUND_DATA=was;}
-  const ps=fs.readFileSync('launch.ps1','utf8');assert.ok(/\[switch\]\$PauseLibrary,\[switch\]\$ResumeLibrary/.test(ps)&&ps.includes("Join-Path $root '.questbound-library-paused'")&&/if \(\$PauseLibrary\) \{ Set-Content \$libraryPauseFile/.test(ps)&&/if \(\$ResumeLibrary\) \{ Remove-Item \$libraryPauseFile/.test(ps),'Questbound.cmd -PauseLibrary / -ResumeLibrary');
+  const ps=fs.readFileSync('launch.ps1','utf8');assert.ok(/\[switch\]\$PauseLibrary,\[switch\]\$ResumeLibrary/.test(ps)&&ps.includes("Join-Path $root '.questbound-library-paused'")&&/if \(\$PauseLibrary\) \{ Set-Content \$libraryPauseFile/.test(ps)&&/if \(\$ResumeLibrary\) \{ Remove-Item \$libraryPauseFile/.test(ps),'Turquill.cmd -PauseLibrary / -ResumeLibrary');
   assert.ok(![...ps].some(ch=>ch.charCodeAt(0)>127),'launch.ps1 stays pure ASCII');}
  // A failed write is noted in the diagnostics with its kind only (live runs), so the next failure can be told apart
  // (the first live journey was cut off by Node's own fetch after 308 s on 2026-10-13 and left no trace).

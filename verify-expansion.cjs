@@ -6,7 +6,7 @@ const r=vm.runInNewContext(source+'\n({spellDefense,subclassOptions,validPlanned
 const scores={Strength:16,Dexterity:16,Constitution:14,Intelligence:18,Wisdom:16,Charisma:18};
 const hero=(name,level=1,spells=[])=>{const h={name:'QA',class:name,race:'Human',species:'Human',level,scores,spells};h.equipment=r.equipmentFor(h);return h;};
 for(const name of r.classes){
- // The subclass the SRD 5.2 licenses first, then three of Questbound's own; the Artificer (a Questbound option beyond the
+ // The subclass the SRD 5.2 licenses first, then three of Turquill's own; the Artificer (a Turquill option beyond the
  // SRD) has five specialities of its own. Every one of them makes a valid hero and adventure at every level from 3.
  assert.equal(Object.keys(r.subclassOptions[name]).length,name==='Artificer'?5:4,name+' offers four paths (the Artificer five)');
  for(const [sub,description] of Object.entries(r.subclassOptions[name])){assert.ok(description.length>35);assert.equal(r.validPlannedSubclass({class:name,plannedSubclass:sub}),true);
@@ -27,7 +27,7 @@ assert.equal(r.attacksPerAction(hero('Fighter',20)),4);
 assert.equal(r.attacksPerAction(hero('Fighter',4)),1);
 assert.equal(r.attacksPerAction({...hero('Artificer',5),plannedSubclass:'Alchemist'}),1);
 // Legacy subclasses give no new features (a Bladesinger makes one attack); the Battle Smith and the Armorer, Artificer
-// specialities in Questbound's own words, attack twice from level 5 (subclassRules.js), as Steel Verses Bards do from 6.
+// specialities in Turquill's own words, attack twice from level 5 (subclassRules.js), as Steel Verses Bards do from 6.
 assert.equal(r.attacksPerAction({...hero('Artificer',5),plannedSubclass:'Battle Smith'}),2);assert.equal(r.attacksPerAction({...hero('Artificer',4),plannedSubclass:'Battle Smith'}),1);assert.equal(r.attacksPerAction({...hero('Artificer',5),plannedSubclass:'Armorer'}),2);assert.equal(r.attacksPerAction({...hero('Wizard',6),plannedSubclass:'Bladesinger'}),1);
 const dragon={...hero('Sorcerer',3),plannedSubclass:'Draconic Sorcery'};
 assert.equal(r.combatBasics(dragon).hp-r.combatBasics({...dragon,plannedSubclass:''}).hp,3);

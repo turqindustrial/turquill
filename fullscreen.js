@@ -40,7 +40,7 @@ export function initializeFullscreen(){
  const head=d.head,add=(tag,attrs)=>{const el=d.createElement(tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));head.appendChild(el);};
  if(!d.querySelector('link[rel="manifest"]'))add('link',{rel:'manifest',href:'/manifest.json'});
  // public/index.html carries these already; a page without them (an older template) gets them here.
- for(const [name,content] of [['apple-mobile-web-app-capable','yes'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Questbound']])
+ for(const [name,content] of [['apple-mobile-web-app-capable','yes'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Turquill']])
   if(!d.querySelector('meta[name="'+name+'"]'))add('meta',{name,content});
  if(!d.querySelector('link[rel="apple-touch-icon"]'))add('link',{rel:'apple-touch-icon',href:'/icons/apple-touch-icon.png?v=4'});
  ['fullscreenchange','webkitfullscreenchange'].forEach(e=>d.addEventListener(e,notify));

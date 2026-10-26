@@ -9,10 +9,10 @@ function useDisplay(){const [state,setState]=useState(displayState);useEffect(()
 export function HomeScreenHelp({visible,onClose}){
  return <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}><View dataSet={{qb:'scrim'}} style={s.scrim}><View dataSet={{qb:'sheet'}} style={s.sheet} accessibilityViewIsModal><ScrollView style={{flexShrink:1}} contentContainerStyle={s.sheetBody}>
   <Text style={s.overline}>Full screen on iPhone</Text>
-  <Text style={s.heading}>Add Questbound to your Home Screen</Text>
+  <Text style={s.heading}>Add Turquill to your Home Screen</Text>
   <Text style={s.step}>1.  Tap the Share button (the square with an arrow; in newer Safari it is under the ••• button).</Text>
   <Text style={s.step}>2.  Choose <Text style={s.em}>Add to Home Screen</Text>, then <Text style={s.em}>Add</Text>.</Text>
-  <Text style={s.step}>3.  Open Questbound from its Q icon. It fills the screen with no browser bars.</Text>
+  <Text style={s.step}>3.  Open Turquill from its icon. It fills the screen with no browser bars.</Text>
   <Text style={s.note}>iPhone browsers don’t let web pages go full screen by themselves. The Home Screen version is the same game; pair it once with your code.</Text>
   <Text style={s.note}>It keeps its own saves, apart from Safari’s. To bring your hero along, copy a save code in Safari (Settings, Move your hero) and load it in the Home Screen game.</Text>
   <GameButton variant="primary" label="Got it" onPress={onClose}/>
@@ -34,8 +34,8 @@ export function DisplaySettings(){
    <Text style={s.caption}>Hide the browser for a full-screen game. Press F on a keyboard to switch, or Esc to leave.</Text>
    <GameButton variant={d.fullscreen?'secondary':'primary'} icon={d.fullscreen?'shrink':'expand'} label={d.fullscreen?'Exit full screen':'Enter full screen'} onPress={toggleFullscreen} style={{marginTop:0}}/>
    <Toggle value={d.autoFullscreen} onChange={value=>setDisplayPrefs({autoFullscreen:value})} label="Full screen on first tap" description="Go full screen the first time you tap each visit."/>
-  </>:d.installed?<Text style={s.caption}>Questbound is running from your Home Screen, already full screen.</Text>:d.ios?<>
-   <Text style={s.caption}>On iPhone, add Questbound to your Home Screen to play full screen.</Text>
+  </>:d.installed?<Text style={s.caption}>Turquill is running from your Home Screen, already full screen.</Text>:d.ios?<>
+   <Text style={s.caption}>On iPhone, add Turquill to your Home Screen to play full screen.</Text>
    <GameButton variant="primary" icon="info" label="Show me how" onPress={()=>setHelp(true)} style={{marginTop:0}}/>
   </>:<Text style={s.caption}>This browser doesn’t support full screen for web pages.</Text>}
   <Text style={s.label}>Atmosphere</Text>

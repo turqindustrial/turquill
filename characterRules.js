@@ -4,7 +4,7 @@ export const abilities = ['Strength', 'Dexterity', 'Constitution', 'Intelligence
 export const standardArray = [15, 14, 13, 12, 10, 8];
 // What a hero may be: the classes and species of the System Reference Document 5.2 and the Half-Elf of the SRD 5.1
 // (both licensed by Wizards of the Coast under CC BY 4.0), plus two options the host chose to keep that are written
-// in Questbound's own words and take no text from any other book: the Artificer class and the Goblin species. Names
+// in Turquill's own words and take no text from any other book: the Artificer class and the Goblin species. Names
 // and game mechanics are not copyrightable; only another book's wording would be, and none is used.
 // `legacyClasses` and `legacySpecies` hold options once offered and since withdrawn, so saved heroes still pass the checks.
 export const classes = ['Artificer', 'Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard'];
@@ -36,8 +36,8 @@ export function heroSpecies(hero) {
   if (name !== 'Elf') return speciesName(name);
   return hero?.lineage === 'Wood Elf' ? 'Wood Elf' : 'High Elf';
 }
-// What each species is, as the game plays it (SRD 5.2, the Half-Elf of SRD 5.1; the Goblin is Questbound's own), in
-// Questbound's own words: size, speed and darkvision in feet, and its traits. A trait marked true is applied by the
+// What each species is, as the game plays it (SRD 5.2, the Half-Elf of SRD 5.1; the Goblin is Turquill's own), in
+// Turquill's own words: size, speed and darkvision in feet, and its traits. A trait marked true is applied by the
 // rules themselves (hit points, spells, a skill); the Dungeon Master weighs the others from context.player.
 const elfTraits = [
   ['Fey Ancestry','Advantage on saving throws to avoid or end being charmed.'],

@@ -139,7 +139,7 @@ export default function CharacterBuilder({form, setForm, onSave, saving, blocked
       {!!form.plannedSubclass && !Object.hasOwn(subclassOptions[form.class]??{},currentSubclass(form.plannedSubclass)) && <Text style={s.note}>Saved path: {form.plannedSubclass}. You may keep it or choose one of the paths below.</Text>}
       {choices('Subclass decision', ['Decide later'], form.plannedSubclass ? '' : 'Decide later', () => change({plannedSubclass:''}))}
       {optionCards('Subclass', Object.keys(subclassOptions[form.class]??{}), currentSubclass(form.plannedSubclass)??'', value=>change({plannedSubclass:value}), Object.fromEntries(Object.entries(subclassOptions[form.class]??{}).map(([name,description])=>[name,{description,features:subclassFirstFeatures(name)}])))}
-      <Text style={s.detail}>{form.class==='Artificer'?'Five specialities, each described in Questbound’s own words.':'The first path is the System Reference Document’s own; the other three are Questbound’s.'} Powers unlock at level 3.</Text>
+      <Text style={s.detail}>{form.class==='Artificer'?'Five specialities, each described in Turquill’s own words.':'The first path is the System Reference Document’s own; the other three are Turquill’s.'} Powers unlock at level 3.</Text>
     </>}
     {page === 4 && <>
       <Text style={s.detail}>16 backgrounds · Select one to see its ability choices and starting feat.</Text>

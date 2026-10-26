@@ -12,7 +12,7 @@ let s=r.taleSummary(g,kara);
 assert.equal(s.name,kara.name);assert.equal(s.heroLine,'Level 1 · '+(kara.species??kara.race)+' · Fighter');assert.equal(s.title,g.story.title);
 same(s.lines,[],'the opening line of the log is the tale itself, not an event');same(s.deeds,[]);
 same(s.stats,{places:2,people:2,fights:0,won:0,gold:s.stats.gold},'the Skirmish opens with two places seen');assert.ok(Number.isInteger(s.stats.gold));
-let text=r.taleText(s);assert.ok(text.startsWith(kara.name+', level 1')&&text.includes('“'+g.story.title+'”')&&text.includes('Played in Questbound'));
+let text=r.taleText(s);assert.ok(text.startsWith(kara.name+', level 1')&&text.includes('“'+g.story.title+'”')&&text.includes('Played in Turquill'));
 assert.ok(!text.includes('The story so far')&&!text.includes('Deeds:'),'nothing to tell yet is left out');
 // A tale under way: the last six lines, the deeds, the figures, a chapter.
 let log=g.storyLog;for(const [kind,t] of [['fight','Fought the raider at Caravan Camp.'],['victory','Slew the raider.'],['place','Found Gallows Ford.'],['person','Met Harlan Voss, a ferryman.'],['loot','Gained 30 gold.'],['travel','Reached Gallows Ford for the first time.'],['rest','Took a long rest at Gallows Ford.'],['deed','You won Harlan Voss over.']])log=r.appendStoryLog(log,kind,t);
@@ -37,6 +37,6 @@ assert.equal(r.taleSummary(null,null).name,'A hero');
 // The screens: the sheet paints the card with the portrait and scene already painted, and opens from the Log and the Deeds.
 const sheet=fs.readFileSync('ShareTale.js','utf8'),card=fs.readFileSync('taleCard.js','utf8'),play=fs.readFileSync('Adventure.js','utf8');
 assert.ok(sheet.includes('renderTaleCard(summary,{portrait,scene})')&&sheet.includes('cachedArt(heroArtSubject(hero))')&&sheet.includes('shareTale(blob,card.summary)'));
-assert.ok(card.includes("canvas.width=width")&&card.includes("nav.share({files:[file]")&&card.includes("a.download='questbound-tale.png'")&&card.includes('getPropertyValue'),'colours are resolved from the theme variables');
+assert.ok(card.includes("canvas.width=width")&&card.includes("nav.share({files:[file]")&&card.includes("a.download='turquill-tale.png'")&&card.includes('getPropertyValue'),'colours are resolved from the theme variables');
 assert.equal((play.match(/setSharing\(true\)/g)||[]).length,2,'the Log header and the Deeds panel both open the sheet');assert.ok(play.includes('<ShareTale visible={sharing}'));
 console.log('Tale card: the hero, the tale, the last six lines, the deeds and the figures from the save alone; words that read well; wrapped lines; shared from the Log and the Deeds.');

@@ -35,7 +35,7 @@ const endpoints=dmEndpoints();
 let lastReady=null;
 export function useDmTurn({hero,game,health,act,onConversationChange,table,compact}){
   // When the Dungeon Master cannot be reached: the host is told what to start, a guest only that it is not answering.
-  const offline=()=>dmEndpoints()[0]==='/api'?'The host\'s Dungeon Master is not answering right now. Your words are kept here; try again in a moment.':'The Dungeon Master service is not running on this PC. Start it with Questbound.cmd, then try again; your words are kept here.';
+  const offline=()=>dmEndpoints()[0]==='/api'?'The host\'s Dungeon Master is not answering right now. Your words are kept here; try again in a moment.':'The Dungeon Master service is not running on this PC. Start it with Turquill.cmd, then try again; your words are kept here.';
   // Out of character: the next message goes to the Dungeon Master as a player, not into the story.
   const [direct,setDirect]=useState(false);
   const transition=useSceneTransition();

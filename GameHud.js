@@ -36,7 +36,7 @@ export default function GameHud({hero,game=null,health,maxHp,wide,onNavigate,lev
   document.addEventListener('keydown',onKey);return()=>document.removeEventListener('keydown',onKey);
  },[]);
  return <View dataSet={{qb:'hud'}} style={[s.bar,!wide&&s.barCompact,short&&{paddingVertical:4}]}>
-  {wordmark&&<View style={s.brand}><Text dataSet={{qb:'title'}} style={s.wordmark}>Questbound</Text><View style={s.divider}/></View>}
+  {wordmark&&<View style={s.brand}><Text dataSet={{qb:'title'}} style={s.wordmark}>Turquill</Text><View style={s.divider}/></View>}
   <Pressable accessibilityRole="button" accessibilityLabel={'Open '+hero.name+"'s character sheet"} onPress={()=>go('Character Sheet')} style={s.identity}>
    <View dataSet={{qb:low?'low-ring':undefined,hit}}><HeroPortrait hero={hero} game={game} size={wide&&!short?44:34} level={hero.level}/></View>
    <View style={[s.hero,!wide&&{flex:1}]}>

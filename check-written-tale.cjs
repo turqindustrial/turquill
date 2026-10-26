@@ -754,7 +754,7 @@ function checkTale(file,options={}){
   const everything=allText(tale);
   for(const [word,re] of overused){const n=(everything.match(re)??[]).length;if(n>1)fail(7,'tale','"'+word+'" appears '+n+' times: at most once in a tale');}
   for(const word of avoidWords){const n=(everything.match(new RegExp('\\b'+word+'\\b','gi'))??[]).length;if(n)fail(3,'tale','"'+word+'" appears '+n+' times: it is on the avoid list');}
-  const named=everything.match(publisherWords);if(named)fail(3,'tale','"'+named[0]+'" belongs to another publisher\'s world: Questbound uses its own names');
+  const named=everything.match(publisherWords);if(named)fail(3,'tale','"'+named[0]+'" belongs to another publisher\'s world: Turquill uses its own names');
   const proseDigits=allProse(tale).filter(([,v])=>/\d/.test(v));
   for(const [where,v] of proseDigits.slice(0,5))warn(7,where,'has a number written in digits ("'+v.match(/\S*\d\S*/)[0]+'"): spell it out or leave it out');
  }

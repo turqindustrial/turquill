@@ -109,7 +109,7 @@ const fresh=name=>{const d=path.join(tmp,name);fs.mkdirSync(d);return d;};
   fs.writeFileSync(path.join(dir,'.questbound-discord.dpapi'),'(encrypted)');
   for(let i=0;i<70;i++)line({guest:'g'+(i%9),images:1});// $4.80 of $5
   spend.check('g1');spend.check('g1');clock+=7200000;spend.check('g1');
-  assert.deepEqual(audited.map(a=>a.route),['guests-50','guests-90'],'nine tenths, once that day');assert.equal(posted.length,1);assert.match(posted[0],/^Questbound: guests have used 96% of today's \$5\.00 allowance/);
+  assert.deepEqual(audited.map(a=>a.route),['guests-50','guests-90'],'nine tenths, once that day');assert.equal(posted.length,1);assert.match(posted[0],/^Turquill: guests have used 96% of today's \$5\.00 allowance/);
   assert.ok(audited.every(a=>a.event==='spending-alert'&&Object.keys(a).every(k=>['event','route'].includes(k))),'only the kind is recorded');
   assert.equal(alerts.raise('address-flood','one connection was refused 100 times'),true);assert.equal(alerts.raise('address-flood','again'),false,'once an hour');
   clock+=3600001;assert.equal(alerts.raise('address-flood','again'),true,'and again after the hour');

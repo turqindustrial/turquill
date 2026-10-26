@@ -205,7 +205,7 @@ it with `{"foe": ...}`.
 - **Avoid list** (overused or clashing): no name contains the whole word Pell, Noll, Rusk, Tallow, Edda, Mara, Sorn,
   Voss, Vell, Venn, Vale, Tern or Ysolde; no place or land name contains "glass"; the words "reeve" and "crossroads"
   appear nowhere in the tale.
-- **Deny list:** Questbound is its own world. No name, place, god, organisation, creature or spell of another
+- **Deny list:** Turquill is its own world. No name, place, god, organisation, creature or spell of another
   publisher, game, book or film appears anywhere in the tale; the checker carries the list. No proper name (people,
   places, lands, region, title, creatures, items) uses a subclass or feature name of another book (the checker's list,
   kept in step with `verify-subclasses.cjs`); such ordinary words stay free in prose and in chapter and ending titles.
@@ -651,7 +651,7 @@ A written tale is illustrated entirely from the host's libraries, for free:
 7. **Choices:** every option costs something, changes the game (an attitude, a person, a fight, the clock, the ending)
    and has a `say` line.
 8. **Endings:** 2–4 that differ in kind, never worse versions of each other. The late ending is a full ending.
-9. **Words:** Questbound's own world; SRD 5.2 rules only; 16+. Horror by restraint; deaths told plainly. No rule words
+9. **Words:** Turquill's own world; SRD 5.2 rules only; 16+. Horror by restraint; deaths told plainly. No rule words
    or numbers in prose. No paperwork plots. Playable peoples are never villains by kind. Most people come from the
    thirteen common peoples (free faces).
 

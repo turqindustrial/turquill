@@ -46,7 +46,7 @@ export default function HomeScreen({hero,game,health,saved,unprotected=false,dis
  </Pressable>;
  const brand=<View style={[s.brand,!wide&&{alignItems:'center'},wide&&!landscape&&{width:Math.min(width*.6,880)},landscape&&{marginBottom:0}]}>
   <Text style={[s.overline,!wide&&{textAlign:'center'}]}>A tabletop adventure</Text>
-  <Text accessibilityRole="header" dataSet={{qb:'title',glow:'on'}} style={[s.logo,{fontSize:logo,lineHeight:Math.round(logo*1.2),letterSpacing:Math.max(2,Math.round(logo/14))},!wide&&{textAlign:'center'}]}>Questbound</Text>
+  <Text accessibilityRole="header" dataSet={{qb:'title',glow:'on'}} style={[s.logo,{fontSize:logo,lineHeight:Math.round(logo*1.2),letterSpacing:Math.max(2,Math.round(logo/14))},!wide&&{textAlign:'center'}]}>Turquill</Text>
   {!tiny&&!landscape&&<><Ornament style={[s.rule,!wide&&{alignSelf:'center'}]}/>
   <Text style={[s.tagline,!wide&&{textAlign:'center'},short&&{fontSize:17}]}>Stories worth rolling for.</Text></>}
  </View>;

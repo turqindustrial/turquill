@@ -17,13 +17,13 @@ function createMailer({dir=process.env.QUESTBOUND_DATA||__dirname,transport=null
   await new Promise((resolve,reject)=>{
    const socket=tls.connect({host:'smtp.gmail.com',port:465,servername:'smtp.gmail.com',minVersion:'TLSv1.2',rejectUnauthorized:true});
    let buffer='',step=0,done=false;
-   const commands=[['EHLO questbound.local',250],['AUTH PLAIN '+Buffer.from('\0'+sender+'\0'+secret).toString('base64'),235],['MAIL FROM:<'+sender+'>',250],['RCPT TO:<'+to+'>',250],['DATA',354],['From: Questbound <'+sender+'>\r\nTo: <'+to+'>\r\nSubject: '+subject+'\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+Buffer.from(text).toString('base64').match(/.{1,76}/g).join('\r\n')+'\r\n.',250]];
+   const commands=[['EHLO questbound.local',250],['AUTH PLAIN '+Buffer.from('\0'+sender+'\0'+secret).toString('base64'),235],['MAIL FROM:<'+sender+'>',250],['RCPT TO:<'+to+'>',250],['DATA',354],['From: Turquill <'+sender+'>\r\nTo: <'+to+'>\r\nSubject: '+subject+'\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+Buffer.from(text).toString('base64').match(/.{1,76}/g).join('\r\n')+'\r\n.',250]];
    const finish=e=>{if(done)return;done=true;clearTimeout(deadline);socket.destroy();e?reject(fail()):resolve();};
    const deadline=setTimeout(()=>finish(Error('deadline')),30000);
    socket.setTimeout(15000,()=>finish(Error('timeout')));socket.on('error',finish);socket.on('end',()=>{if(!done)finish(Error('closed'));});
    socket.on('data',chunk=>{buffer+=chunk.toString();if(buffer.length>16384)return finish(Error('response too large'));let i;while((i=buffer.indexOf('\r\n'))>=0){const line=buffer.slice(0,i);buffer=buffer.slice(i+2);if(!/^\d{3} /.test(line))continue;const expected=step===0?220:commands[step-1][1];if(Number(line.slice(0,3))!==expected)return finish(Error('mail refused'));if(step===commands.length){socket.write('QUIT\r\n');return finish();}socket.write(commands[step++][0]+'\r\n');}});
   });
  }
- return {configured,verification:(email,code)=>send(email,'Verify your Questbound email','Your Questbound verification code is: '+code+'\n\nEnter this code in the game. It expires in 10 minutes and can be used once. If you did not request it, ignore this email. Do not share the code.'),feedback:async text=>{const c=config();if(c.feedback===true)return send(c.sender,'Questbound player feedback',String(text).slice(0,6000));}};
+ return {configured,verification:(email,code)=>send(email,'Verify your Turquill email','Your Turquill verification code is: '+code+'\n\nEnter this code in the game. It expires in 10 minutes and can be used once. If you did not request it, ignore this email. Do not share the code.'),feedback:async text=>{const c=config();if(c.feedback===true)return send(c.sender,'Turquill player feedback',String(text).slice(0,6000));}};
 }
 module.exports={createMailer};

@@ -19,7 +19,7 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
  const readBody=async(req,limit)=>{let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>limit)throw Object.assign(Error('too large'),{status:413});}return raw;};
  // The host's own play counts (play-metrics.cjs), marked as this PC's so play-report.cjs can leave them out.
  async function metrics(req,res){
-  if(!ownPage(req)||!/^(application\/json|text\/plain)/.test(String(req.headers['content-type']??'')))return send(res,403,{error:'Use the Questbound game.'});
+  if(!ownPage(req)||!/^(application\/json|text\/plain)/.test(String(req.headers['content-type']??'')))return send(res,403,{error:'Use the Turquill game.'});
   while(metricsTimes.length&&metricsTimes[0]<now()-3600000)metricsTimes.shift();
   if(metricsTimes.length>=120)return send(res,429,{error:'Too many records.'});
   let parsed;try{parsed=JSON.parse(await readBody(req,METRICS_BODY_LIMIT));}catch(e){return send(res,e.status??400,{error:'Not a record.'});}
@@ -36,7 +36,7 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
  // The host's own notes from this PC's browser: the same files as the testers' (feedback-notes.cjs), labelled this-pc.
  // Only the game page on this server may send them (its Origin), and only as JSON, so no other site can post here.
  async function feedback(req,res){
-  if(![`http://localhost:${port}`,`http://127.0.0.1:${port}`].includes(req.headers.origin)||!String(req.headers['content-type']??'').startsWith('application/json'))return send(res,403,{error:'Use the Questbound game to send feedback.'});
+  if(![`http://localhost:${port}`,`http://127.0.0.1:${port}`].includes(req.headers.origin)||!String(req.headers['content-type']??'').startsWith('application/json'))return send(res,403,{error:'Use the Turquill game to send feedback.'});
   while(feedbackTimes.length&&feedbackTimes[0]<now()-3600000)feedbackTimes.shift();
   if(feedbackTimes.length>=30)return send(res,429,{error:'That is plenty of notes for one hour. Try again a little later.'});
   let raw='';try{for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>FEEDBACK_BODY_LIMIT)return send(res,413,{error:'That note is too long.'});}}catch{return send(res,400,{error:'That note could not be read.'});}
@@ -54,7 +54,7 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
  const policyFor=filePolicies({connect:desktopConnect});
  const server=http.createServer(async(req,res)=>{
   setBaseHeaders(res);
-  if(!['localhost:'+port,'127.0.0.1:'+port].includes(req.headers.host))return res.writeHead(403).end('Open Questbound at http://localhost:'+port+'/');
+  if(!['localhost:'+port,'127.0.0.1:'+port].includes(req.headers.host))return res.writeHead(403).end('Open Turquill at http://localhost:'+port+'/');
   if(req.url.startsWith('/api/sync/')){
    if(req.method!=='POST'||req.headers.origin!=='http://'+req.headers.host||!req.headers['content-type']?.startsWith('application/json'))return res.writeHead(403).end();
    const route=req.url.slice('/api/sync/'.length);if(!require('./account-server.cjs').routes.has(route))return res.writeHead(404).end();
@@ -88,6 +88,6 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
 if(require.main===module){
  const port=Number(process.env.QUESTBOUND_DESKTOP_PORT??8081),server=createDesktopServer({port});
  server.on('error',e=>{console.error(e.code==='EADDRINUSE'?'Something is already using port '+port+'.':e.message);process.exitCode=1;});
- server.listen(port,'127.0.0.1',()=>console.log('Questbound desktop ready at http://localhost:'+port+'/'));
+ server.listen(port,'127.0.0.1',()=>console.log('Turquill desktop ready at http://localhost:'+port+'/'));
 }
 module.exports={createDesktopServer,desktopConnect,cacheFor,syncTimeout};

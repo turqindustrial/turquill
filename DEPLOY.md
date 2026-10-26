@@ -1,6 +1,6 @@
-# Hosting Questbound off your PC
+# Hosting Turquill off your PC
 
-The launcher (`Questbound.cmd`) runs the game on one Windows PC for friends on your Wi-Fi or through a tunnel. To run it on a machine that is always on, `serve.cjs` starts everything in one process: the Dungeon Master and the table service listen on loopback only, and the gateway listens on the port the host gives it. Players open the gateway's https address and enter the invite code, exactly as on the tester link.
+The launcher (`Turquill.cmd`) runs the game on one Windows PC for friends on your Wi-Fi or through a tunnel. To run it on a machine that is always on, `serve.cjs` starts everything in one process: the Dungeon Master and the table service listen on loopback only, and the gateway listens on the port the host gives it. Players open the gateway's https address and enter the invite code, exactly as on the tester link.
 
 ## What you need
 
@@ -78,7 +78,7 @@ From the PC's own usage log (`node dm-report.cjs --days 7`, October 2026): a gam
 
 ## October 2026 verified-account release
 
-Remote play requires HTTPS. Plain LAN links are disabled. Use `Questbound-Share.cmd` locally. The account service must be restarted together with the desktop and public gateways after the new export is built. Older account sessions are deliberately rejected until the email is verified.
+Remote play requires HTTPS. Plain LAN links are disabled. Use `Turquill-Share.cmd` locally. The account service must be restarted together with the desktop and public gateways after the new export is built. Older account sessions are deliberately rejected until the email is verified.
 
 For a separate host, `compose.production.yml` provides non-root, read-only, capability and resource restrictions. It binds the gateway to loopback for a trusted TLS proxy. Supply `QUESTBOUND_MAIL_SENDER` (the dedicated Gmail address) and `QUESTBOUND_MAIL_PASSWORD` (its app password) through protected deployment secrets/environment, alongside the existing provider secret. Do not put secret values in the compose file. `/data` must be writable by UID 1000 and persistent. Configure proxy hostname and client-IP trust for your actual host. Docker deployment has not been exercised in this environment.
 

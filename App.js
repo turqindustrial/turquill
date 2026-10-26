@@ -78,7 +78,7 @@ export default function App(){
  const [ready,setReady]=useState(false),[profile,setProfile]=useState(currentProfile);
  useEffect(()=>{const off=subscribeProfile(setProfile);bootstrapAccount(undefined,{required:accountsRequired}).finally(()=>{setProfile(currentProfile());setReady(true);});return off;},[]);
  useEffect(()=>{const changed=e=>{if(e.key==='questbound.account.v2')globalThis.location?.reload();};globalThis.addEventListener?.('storage',changed);return()=>globalThis.removeEventListener?.('storage',changed);},[]);
- if(!ready)return <View style={{flex:1,backgroundColor:colors.ink,padding:30}}><Text style={{color:colors.text}}>{accountsRequired?'Opening your account…':'Opening Questbound…'}</Text></View>;
+ if(!ready)return <View style={{flex:1,backgroundColor:colors.ink,padding:30}}><Text style={{color:colors.text}}>{accountsRequired?'Opening your account…':'Opening Turquill…'}</Text></View>;
  return <SceneTransitionProvider key={profile}><QuestboundApp/></SceneTransitionProvider>;
 }
 function QuestboundApp() {
@@ -376,7 +376,7 @@ function QuestboundApp() {
   const escapeRef=useRef(null);escapeRef.current=inGame&&screen!=='Adventure'&&screen!=='Level Up'?backToGame:null;
   useEffect(()=>{if(typeof document==='undefined')return;const onKey=e=>{if(e.key!=='Escape'||!escapeRef.current||shortcutsBlocked())return;e.preventDefault();escapeRef.current();};document.addEventListener('keydown',onKey);return()=>document.removeEventListener('keydown',onKey);},[]);
   // The browser tab names the hero and where they are, and marks a fight.
-  const tabTitle=inGame&&hero?(fighting?'⚔ ':'')+hero.name+(locationArtSubject(game)?.name?' · '+locationArtSubject(game).name:'')+' — Questbound':'Questbound';
+  const tabTitle=inGame&&hero?(fighting?'⚔ ':'')+hero.name+(locationArtSubject(game)?.name?' · '+locationArtSubject(game).name:'')+' — Turquill':'Turquill';
   useEffect(()=>{if(typeof document!=='undefined')document.title=tabTitle;},[tabTitle]);
   // Entering the game rises out of black and names the place (a new tale names the story first).
   const areaName=inGame?locationArtSubject(game)?.name??null:null,seenArea=useRef(null),[unveil,setUnveil]=useState(0);
@@ -387,7 +387,7 @@ function QuestboundApp() {
     const stamp=Date.now();setUnveil(stamp);setTimeout(()=>setUnveil(value=>value===stamp?0:value),1600);
     // A tale nobody has played a turn of yet (its first turn is the opening itself: storyRules.js freshStoryGame).
     const hostile=game.story?.introId==='hostile',fresh=!(game.playback??[]).some(t=>t.events?.some(e=>e.kind==='player'));
-    cue('area',fresh?(hostile?{over:'Steel is drawn',title:areaName}:{over:'A new tale begins',title:game.story?.title??areaName,sub:game.story?areaName:null}):{over:game.story?.title??'Questbound',title:areaName});
+    cue('area',fresh?(hostile?{over:'Steel is drawn',title:areaName}:{over:'A new tale begins',title:game.story?.title??areaName,sub:game.story?areaName:null}):{over:game.story?.title??'Turquill',title:areaName});
   },[areaName,launched]);
   const hpRatio=inGame&&heroStats?.available?(health?.current??heroStats.hp)/Math.max(1,heroStats.hp):1;
   useEffect(()=>{setDanger(launched&&inGame&&!dead&&hpRatio<=.3?1-hpRatio:0);},[launched,inGame,hpRatio,dead]);
@@ -511,7 +511,7 @@ function QuestboundApp() {
   </View>:<View dataSet={{safe:'pad'}} style={s.shell}>
     {/* Menus: a fixed top bar; only the framed content below scrolls, and short content is centred in the window. */}
     <View style={[s.topBar,compact&&{paddingHorizontal:12},home&&{minHeight:48}]}>
-      {home?<View/>:inGame&&!['Level Up','Adventure'].includes(screen)?<Pressable accessibilityRole="button" accessibilityLabel="Back to the adventure" onPress={backToGame} dataSet={{qb:'chip'}} style={s.backChip}><Icon name="back" size={15} color={colors.gold}/><Text style={s.backChipText}>Adventure</Text></Pressable>:<Pressable accessibilityRole="button" accessibilityLabel="Main menu" onPress={()=>setScreen('Home')} style={s.brand}><EmblemMark size={42}/>{windowWidth>=380&&<Text dataSet={{qb:'title'}} style={[s.logoSmall,compact&&{fontSize:17,letterSpacing:2}]}>Questbound</Text>}</Pressable>}
+      {home?<View/>:inGame&&!['Level Up','Adventure'].includes(screen)?<Pressable accessibilityRole="button" accessibilityLabel="Back to the adventure" onPress={backToGame} dataSet={{qb:'chip'}} style={s.backChip}><Icon name="back" size={15} color={colors.gold}/><Text style={s.backChipText}>Adventure</Text></Pressable>:<Pressable accessibilityRole="button" accessibilityLabel="Main menu" onPress={()=>setScreen('Home')} style={s.brand}><EmblemMark size={42}/>{windowWidth>=380&&<Text dataSet={{qb:'title'}} style={[s.logoSmall,compact&&{fontSize:17,letterSpacing:2}]}>Turquill</Text>}</Pressable>}
       <View style={s.controls}><FullscreenToggle compact/><AudioToggle compact/></View>
     </View>
   {home?<ScrollView ref={scrollRef} style={s.page} contentContainerStyle={{flexGrow:1}} keyboardShouldPersistTaps="handled">

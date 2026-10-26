@@ -637,7 +637,7 @@ function topUpLibrary(library,{apiKey,storyModel,effort,fetchImpl,live=true,spen
 // painted (the journey's opening place, under the journey's art id) or, once world-art.cjs can answer a place from
 // ready-made paintings, whatever its `readyMade(subject)` says. A device never asks for a cover that would be painted.
 function journeyCovers(){
- if(require('./world-art.cjs').revision!==12)delete require.cache[require.resolve('./world-art.cjs')];
+ if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];
  const fs=require('node:fs'),path=require('node:path'),art=require('./world-art.cjs'),dir=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-art');
  return subject=>{try{if(typeof art.artStore?.readyMade==='function'&&art.artStore.readyMade(subject))return true;return fs.existsSync(path.join(dir,art.artKey(art.validateSubject(subject))+'.jpg'));}catch{return false;}};
 }
@@ -651,7 +651,7 @@ function startLibrary({apiKey,model,storyModel=model,storyReasoning='medium',lib
 // held-back messages and any pause. Tests pass a stand-in `moderation`; runs against a fake provider skip it.
 // The host's library of ready-made people (people-library.cjs) stays loaded too (its list is read again within 30 s
 // of changing); world-art.cjs loads it afresh when it loads, so a change there raises both revisions together.
-function loadPeople(){if(require('./people-library.cjs').revision!==3)delete require.cache[require.resolve('./people-library.cjs')];return require('./people-library.cjs');}
+function loadPeople(){if(require('./people-library.cjs').revision!==4)delete require.cache[require.resolve('./people-library.cjs')];return require('./people-library.cjs');}
 // The people to offer the Dungeon Master where the hero is (context.world.peopleToMeet): a few suited to the kind of
 // place and its land, never one already met in this game (context.world.poolTaken), the same few at a place until one
 // of them is met (poolTaken holds their numbers: 42 for np042). Returns the offered library entries by id; none when the library is empty or cannot be read.
@@ -669,7 +669,7 @@ async function peopleToMeetFor(context,lib,alsoTaken=new Set()){
 // a face. Tests pass a stand-in `portraits` ({takenIn}); none when nothing can be read.
 async function portraitsTaken(context,{live=false,portraits=null}={}){
  try{
-  const store=portraits??(live?(()=>{if(require('./world-art.cjs').revision!==12)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore?.people;})():null);
+  const store=portraits??(live?(()=>{if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore?.people;})():null);
   const ids=[context?.story?.id,context?.story?.artId].filter(id=>typeof id==='string'&&id.length&&id.length<=120);
   return store?.takenIn&&ids.length?await store.takenIn(ids):new Set();
  }catch{return new Set();}
@@ -804,7 +804,7 @@ async function generate(body,{apiKey,model,storyModel=model,reasoning='none',sto
    try{topUpLibrary(shelf,{apiKey,storyModel,effort:live?storyEffort(storyReasoning):storyReasoning,fetchImpl,live,spend});}catch{}
    return {journeys:shelf.list({cover}),written:shelved};
   }
-  if(body.context.mode==='art'){if(require('./world-art.cjs').revision!==12)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore.request(body.context.subject,{apiKey,model,retry:body.context.retry===true,safety,mayPaint,host:!guest,onUnmatched:note=>recordCreatureMiss(note,live,guest),onPainted:(u,imageModel)=>recordUsage('art',model,u,live,guest,{images:1,imageModel,job:hostJobOf(body.context.subject,guest)})});}
+  if(body.context.mode==='art'){if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore.request(body.context.subject,{apiKey,model,retry:body.context.retry===true,safety,mayPaint,host:!guest,onUnmatched:note=>recordCreatureMiss(note,live,guest),onPainted:(u,imageModel)=>recordUsage('art',model,u,live,guest,{images:1,imageModel,job:hostJobOf(body.context.subject,guest)})});}
   // Only the host checks the AI connection: its answer describes the key's shape.
   if(body.context.mode==='diagnostics'){if(guest)throw Object.assign(Error('Only the host can check the AI connection, on the PC itself.'),{httpStatus:403});return diagnose({apiKey,model,fetchImpl});}
   // The host's library of ready-made people is written in batches (make-people-library.cjs, people-writer.cjs): only the
@@ -1341,12 +1341,12 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
     const origin=req.headers.origin;
     const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store',...(allowedOrigins.has(origin)?{'Access-Control-Allow-Origin':origin,'Vary':'Origin'}:{})});res.end(JSON.stringify(data));};
     // Only this PC's own loopback names are answered (a site pointed at this PC by DNS rebinding is turned away).
-    if(!loopbackHost(req))return send(403,{error:'Use the Questbound game on this PC.'});
+    if(!loopbackHost(req))return send(403,{error:'Use the Turquill game on this PC.'});
     if(origin&&!allowedOrigins.has(origin))return send(403,{error:'Origin not allowed.'});
     if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':origin??'http://localhost:8081','Access-Control-Allow-Methods':'POST, GET, OPTIONS','Access-Control-Allow-Headers':'Content-Type'});return res.end();}
     if(req.url==='/health'&&req.method==='GET')return send(200,{ready:!!apiKey&&!!model,actionProtocol:3});
     if(req.url!=='/dm'||req.method!=='POST')return send(404,{error:'Not found.'});
-    if(!allowedOrigins.has(origin)||!req.headers['content-type']?.startsWith('application/json'))return send(403,{error:'Use the Questbound app to contact the DM.'});
+    if(!allowedOrigins.has(origin)||!req.headers['content-type']?.startsWith('application/json'))return send(403,{error:'Use the Turquill app to contact the DM.'});
     if(!apiKey||!model)return send(503,{error:'Live AI is not configured yet. Set the server API key and model, then restart the DM server. Your adventure is unchanged.'});
     let raw='',slot=false;try{for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>64000)return send(413,{error:'This scene is too large.'});}
       let body;try{body=JSON.parse(raw);}catch{return send(400,{error:'Invalid request.'});}if(!validRequest(body))return send(400,{error:'Invalid scene or action.'});
@@ -1363,5 +1363,5 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
     }catch(e){send(e.httpStatus??502,{error:e.name==='TimeoutError'?'The AI timed out. Your adventure is unchanged.':e.message});}finally{if(slot)release();}
   });
 }
-if(require.main===module){const port=Number(process.env.QUESTBOUND_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Questbound DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
+if(require.main===module){const port=Number(process.env.QUESTBOUND_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
 module.exports={loadWritten,taleLand,taleMatch,sharedTale,keptTale,standingPrompt,heroPrompt,replySchemaFor,asFields,flatReply,cacheKeyFor,promptLayout,sceneParts,sceneMessages,turnRequest,requestParts,requestScene,phaseFields,hostJobOf,recordCreatureMiss,castFor,peopleToMeetFor,portraitsTaken,pooledIntroduce,introduceSchema,loadPeople,recordWriteFailure,cleanRemember,memoryInstructions,typedByPlayer,startLibrary,topUpLibrary,libraryPaused,journeyCheck,unusable,transient,tellingCut,castableSpell,castWords,distinctDialogue,echoes,turnEffort,storyEffort,questInstructions,liveModels,chosenModel,createServer,generate,validRequest,validRuling,checkedHp,partialNarration,streamedText,sceneFor,repairedDiscovery,repairedCreature,repairedIntroduce,repairedJson,replyShape,contractInstructions};

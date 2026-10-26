@@ -12,7 +12,7 @@ const viewport=html.match(/<meta name="viewport" content="([^"]+)"/)?.[1]??'';
 for(const part of ['width=device-width','initial-scale=1','viewport-fit=cover'])assert.ok(viewport.includes(part),'the viewport says '+part);
 assert.ok(!/user-scalable\s*=\s*no|maximum-scale/.test(viewport+layout),'players may still zoom');
 assert.ok(layout.includes("'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content'"),'the game keeps viewport-fit=cover when it sets the keyboard behaviour');
-for(const [name,content] of [['theme-color','#08060a'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Questbound']])
+for(const [name,content] of [['theme-color','#08060a'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Turquill']])
  assert.ok(html.includes(`<meta name="${name}" content="${content}" />`),'index.html carries '+name);
 assert.ok(/html, body \{ height: 100%; margin: 0; background: var\(--b0, #08060a\); \}/.test(html),'the page under the game is the game\'s own ink, never white');
 // ---- Safe areas ----

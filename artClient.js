@@ -33,7 +33,7 @@ async function run(entry,subject,retry){
    const result=await response.json();if(!response.ok)throw Error(result.error??'The image service is unavailable.');
    if(result.status==='ready'&&typeof result.dataUrl==='string'&&result.dataUrl.startsWith('data:image/jpeg;base64,')){entry.status='ready';entry.dataUrl=result.dataUrl;publish(entry);return;}
    if(result.status==='failed')throw Error(result.error??'The illustration could not be generated.');
-   if(result.status!=='pending')throw Error('The image service needs the updated Questbound server.');
+   if(result.status!=='pending')throw Error('The image service needs the updated Turquill server.');
    first=false;await delay(2500);
   }
   throw Error('The illustration is still taking a while. Retry to check its progress.');

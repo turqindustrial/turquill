@@ -18,7 +18,7 @@
 // The running Dungeon Master keeps this module loaded (world-art.cjs loads it afresh when it loads): a change here needs
 // world-art's revision and dm-server.cjs's literals raised together.
 const fs=require('node:fs/promises'),fsSync=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const revision=3;
+const revision=4;
 // Copies of the game's own lists (verify-people-library.cjs checks that they agree): characterRules species and
 // classes, mapRules placeKinds and terrains.
 const speciesList=['Dragonborn','Dwarf','High Elf','Wood Elf','Drow','Gnome','Goblin','Goliath','Half-Elf','Halfling','Human','Orc','Tiefling'];
@@ -61,7 +61,7 @@ function portraitText(p){
  return (who+' '+look).slice(0,1800);
 }
 // A portrait subject for the library painter (make-people-library.cjs --portraits).
-const portraitSubject=p=>({campaignId:peopleCampaign,kind:'portrait',id:p.id,name:p.name,description:portraitText(p),setting:'Questbound, an original fantasy world. A plain, softly lit background.'});
+const portraitSubject=p=>({campaignId:peopleCampaign,kind:'portrait',id:p.id,name:p.name,description:portraitText(p),setting:'Turquill, an original fantasy world. A plain, softly lit background.'});
 // A repeatable preference of one game's place for one person (rendezvous hashing: a person added later never
 // reshuffles the others), so the same few people are offered at a place until one of them is met.
 const preference=(seed,personId)=>parseInt(crypto.createHash('sha256').update(String(seed)+'\n'+personId).digest('hex').slice(0,12),16);

@@ -1,6 +1,6 @@
 // The catalogue of the host's creature library (2026-10-17, the host's words: "we should do the same thing for all
 // creatures as well", as for places and people: ready-made pictures, so creatures stop costing paintings). Every kind
-// of creature a tale in this game meets, in Questbound's own words (the SRD's licensed creatures and plain fantasy;
+// of creature a tale in this game meets, in Turquill's own words (the SRD's licensed creatures and plain fantasy;
 // never another publisher's creatures or names): beasts, monstrosities, the dead, fiends and fey in plain terms,
 // giants and trolls, raiders as bands, dragons, drakes and wyverns, oozes, elementals, constructs, plants and fungus,
 // tentacled horrors, swarms, deep and sea things, and armed outlaws, cultists and soldiers seen as a band.

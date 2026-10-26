@@ -1,6 +1,6 @@
 import {modifier,proficiencyBonus,currentSubclass} from './characterRules';
 // What the game itself plays of a hero's subclass (subclassOptions.js names them; classFeatureCatalog.json holds every
-// feature's full text for the sheet and the Dungeon Master). Each subclass of Questbound's own, and each Artificer
+// feature's full text for the sheet and the Dungeon Master). Each subclass of Turquill's own, and each Artificer
 // speciality, lists its features with a one-line rule for the Dungeon Master (`features`, the same names and levels as
 // the catalog), and the effects the engine applies (`effects`), each from the level it starts:
 //  passive  - steady numbers: hit points per level, an armour class base or bonus, an initiative ability or advantage,
@@ -76,7 +76,7 @@ export const subclassEngine={
  Bonewright:{class:'Wizard',effects:[{level:3,kind:'spell',name:'Marrow-Cold',damage:{types:['Necrotic'],ability:'Intelligence'}}]},
  Fateweaver:{class:'Wizard',effects:[{level:3,kind:'passive',name:'Foreseen Step',initiative:'Intelligence',acBonus:{n:1,when:'any'}},{level:3,kind:'action',id:'thread',name:'Thread Pull',bonus:true,uses:{3:2,5:3,14:4},recharge:'short',effect:{mark:'sapped',line:'you tug at the thread of the moment.'},say:/\bthread pull\b|\b(tug|pull) (at )?(its|the|their|a) thread\b/i,chip:['⟆','Thread Pull','I tug at the thread of the moment.','eye'],description:'Thread Pull: tug at the thread of the moment. The next attack the foe makes before your next turn has disadvantage. A bonus action; twice per short or long rest (three times from level 5, four from level 14).'}]},
 };
-// ---- features (generated from the catalog's Questbound entries: level, name, one-line rule, engine-played) ----
+// ---- features (generated from the catalog's Turquill entries: level, name, one-line rule, engine-played) ----
 export const subclassFeatures={
  "Path of the Bulwark":[
   [3,"Iron Brace","Reaction when hit: reduce the damage by 1d8 + Constitution modifier. Proficiency Bonus uses per Long Rest.",1],

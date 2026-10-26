@@ -75,14 +75,14 @@ function createSyncServer({dir=path.join(__dirname,'.questbound-table'),cloudDir
   // A guest's cookie lasts 90 days and is renewed when used (accounts.cjs renews the token once a day); an account's lasts a week.
   const setSession=(token,days=7)=>res.setHeader('Set-Cookie','questbound_account='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age='+(token?days*86400:0)+(req.headers['x-questbound-secure']==='1'?'; Secure':''));
   const loginResult=result=>{if(result.token){setSession(result.token);const {token,...publicResult}=result;return publicResult;}return result;};
-  if(!loopbackHost(req))return send(403,{error:'Use the Questbound game on this PC.'});
+  if(!loopbackHost(req))return send(403,{error:'Use the Turquill game on this PC.'});
   if(origin&&!allowedOrigins.has(origin))return send(403,{error:'Origin not allowed.'});
   if(req.method==='OPTIONS'){res.writeHead(204,{'Access-Control-Allow-Origin':allowedOrigins.has(origin)?origin:'http://localhost:8081','Access-Control-Allow-Credentials':'true','Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'Content-Type','Access-Control-Max-Age':'600'});return res.end();}
   let route='',caller='';
   try{
    if(req.url==='/health'&&req.method==='GET')return send(200,{ready:true,table:true,verifiedAccounts:true,accountsRequired,mailConfigured:mail.configured()});
    if(req.method!=='POST'||!req.headers['content-type']?.startsWith('application/json'))return send(404,{error:'Not found.'});
-   if(!allowedOrigins.has(origin))return send(403,{error:'Use the Questbound game to reach the table.'});
+   if(!allowedOrigins.has(origin))return send(403,{error:'Use the Turquill game to reach the table.'});
    route=req.url.slice(1);if(!routes.has(route))return send(404,{error:'Not found.'});
    caller=String(req.headers['x-questbound-client']??'this-pc').slice(0,80);
    if(perCaller.has(route)){const seconds=routeLimits.get(route)(caller);if(seconds)return tooMany(res,send,route,seconds);}

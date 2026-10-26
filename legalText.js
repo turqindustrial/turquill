@@ -1,5 +1,5 @@
 // Single source for the in-game and generated legal pages. Reviewed against the implemented data flows.
-export const legalUpdated='23 October 2026';
+export const legalUpdated='25 October 2026';
 export const privacyPolicy={
  "id": "privacy",
  "title": "Privacy policy",
@@ -7,7 +7,7 @@ export const privacyPolicy={
   {
    "heading": "Who this is about",
    "paragraphs": [
-    "Questbound is an early-access browser game operated by the person or business hosting the copy you use. The host supplies your game link and handles your data and support requests. The software is developed under the name turqindustrial. The host may also be the developer. Contact the host through the in-game Feedback form."
+    "Turquill is an early-access browser game operated by the person or business hosting the copy you use. The host supplies your game link and handles your data and support requests. The software is developed under the name turqindustrial. The host may also be the developer. Contact the host through the in-game Feedback form."
    ]
   },
   {
@@ -24,8 +24,8 @@ export const privacyPolicy={
     "- Tales written for you: when the story writer writes a new tale for you (the next tale where you are, a tale in a land you reach, your own idea or another opening), it writes it without your hero, so that anyone could play it, and the host keeps the finished tale in the game's library of tales, where it may be offered to other players. Only the tale itself is kept and shared: never your hero, your words, the text of your idea, your progress or anything that names you or your browser.",
     "- Shared tables, only when you use Play Together: membership, host and player roles, the names you give at the table, characters, story, game state and recent turn identifiers. Other members can see the shared story and party details. The server validates and commits shared actions and rolls dice. Up to 20 encrypted earlier versions of each shared table are kept on the host's machine for recovery; they are not an independent off-site backup.",
     "- Feedback: your note, rating, optional name, your hero's name, species, class, subclass, level, hit points, spells and class resources, where you are in the game (the story's title and chapter, the place, the stage and any fight, your experience points), your last two turns (what you wrote, the Dungeon Master's words and the dice and rulings), the latest six lines of the story log, any errors the game showed you, the game's version, and a short description of your device and how the game ran on it (such as \"Android phone\", the screen size, how long the game took to load, and your sound and display settings). Turning off \"Include what happened\" before you send leaves out your hit points, spells, resources and experience, the state of the game, your turns, the story lines and the errors; your name, your hero's name, species, class and level, the story's title, where you are, your device and the game's version are still sent. A note is kept with a pseudonymous label for your browser (see Service records), so the host can match it to the game's own record of what went wrong. Feedback is kept by the host and, when the host has connected the game's own mailbox, forwarded there with these details.",
-    "- Play counts, unless you turn them off under Settings → Help improve Questbound: when you stop playing (the game is hidden or closed), a few numbers about that session: how long you played, how many turns you took, how many failed and how (refused by the rules, the Dungeon Master unreachable, another error, the shared table, a save, or a fault the Dungeon Master admitted), where you stopped (one word from a fixed list, such as the title, the hero builder, a fight or your hero's death), the tale opening you chose and whether Easy start was on (for one of the host's written tales: which tale, the chapter you reached, whether you finished it and which of its endings you found, how many story moments were told and the longest quiet stretch, all as numbers), how many tales you waited for and for how long, whether the device is a phone, tablet or desktop, and the game's version. They carry a random counting identifier your browser makes for this alone, so the host can count how many devices come back; the host keeps only a cut of its hash, and it is not your guest identity, is sent with nothing else and cannot be matched to your feedback, your turns or a shared table. Never what you type, names, your hero or your story. Turning the counts off forgets the identifier.",
-    "- Session ratings, when you answer \"How was that session?\": your answer (Great, Good, Okay or Rough), when it was asked (after a chapter, the tale, a long rest or your hero's death, or when you left play for the title), that session's minutes played, turns and failed turns, whether the device is a phone, tablet or desktop and the game's version, and any chips you choose and line you add. A rating carries no name, hero, story or turns and no label for your browser. Settings → Help improve Questbound stops the question.",
+    "- Play counts, unless you turn them off under Settings → Help improve Turquill: when you stop playing (the game is hidden or closed), a few numbers about that session: how long you played, how many turns you took, how many failed and how (refused by the rules, the Dungeon Master unreachable, another error, the shared table, a save, or a fault the Dungeon Master admitted), where you stopped (one word from a fixed list, such as the title, the hero builder, a fight or your hero's death), the tale opening you chose and whether Easy start was on (for one of the host's written tales: which tale, the chapter you reached, whether you finished it and which of its endings you found, how many story moments were told and the longest quiet stretch, all as numbers), how many tales you waited for and for how long, whether the device is a phone, tablet or desktop, and the game's version. They carry a random counting identifier your browser makes for this alone, so the host can count how many devices come back; the host keeps only a cut of its hash, and it is not your guest identity, is sent with nothing else and cannot be matched to your feedback, your turns or a shared table. Never what you type, names, your hero or your story. Turning the counts off forgets the identifier.",
+    "- Session ratings, when you answer \"How was that session?\": your answer (Great, Good, Okay or Rough), when it was asked (after a chapter, the tale, a long rest or your hero's death, or when you left play for the title), that session's minutes played, turns and failed turns, whether the device is a phone, tablet or desktop and the game's version, and any chips you choose and line you add. A rating carries no name, hero, story or turns and no label for your browser. Settings → Help improve Turquill stops the question.",
     "- Service records: mechanical security events and timestamps, pseudonymous guest and shared-table identifiers, response status, request counts and AI usage totals (never the words themselves in usage logs). The services count requests and wrong pairing codes. Daily usage counters survive restarts; shorter request windows are held in memory. Security logs rotate when they reach 1 MB.",
     "- The content check: when OpenAI's moderation service (see below) holds back something you typed, the security log notes when, the categories (for example hate or harassment) and a pseudonymous label for your browser, never the words. Several held back within an hour pause your use of the Dungeon Master for twenty minutes.",
     "- Reports, only when one player reports another at a shared table: the reason chosen, any words the reporter adds, both players' table names and seats, a pseudonymous label for each browser, the table's title and the last few lines (at most five) the reported player typed at that table. Reports are kept with the feedback notes and, when the game's mailbox is connected, mailed to the host.",
@@ -65,7 +65,7 @@ export const privacyPolicy={
    "heading": "Your choices and rights",
    "paragraphs": [
     "- Clear your browser's site data to remove everything the game keeps on your device.",
-    "- Turn off the play counts, the session question or both under Settings → Help improve Questbound (per browser).",
+    "- Turn off the play counts, the session question or both under Settings → Help improve Turquill (per browser).",
     "- Leave a shared table under Play Together; its host, or the host of the game, can remove the table itself.",
     "- Ask the host to delete your feedback, a shared table or anything else about you, to tell you what they hold, or to correct it: use the Feedback form in the game or contact the host directly. Where the law gives you rights of access, rectification, erasure, restriction, portability (Settings → Move your hero gives you your save as a code) and objection, the host will honour them, and you may complain to your data-protection authority."
    ]
@@ -73,7 +73,7 @@ export const privacyPolicy={
   {
    "heading": "Children",
    "paragraphs": [
-    "Questbound tells stories with violence and, at the player's choice, graphic violence. It is for players aged 16 and over. The host does not knowingly keep data for anyone younger; if you believe a child has used the game, tell the host and the data will be deleted."
+    "Turquill tells stories with violence and, at the player's choice, graphic violence. It is for players aged 16 and over. The host does not knowingly keep data for anyone younger; if you believe a child has used the game, tell the host and the data will be deleted."
    ]
   },
   {
@@ -97,7 +97,7 @@ export const termsOfUse={
   {
    "heading": "What this is",
    "paragraphs": [
-    "Questbound is an early-access game in testing, shared privately by its host with invited players. By playing you accept these terms and the privacy policy. If you do not accept them, do not play. Before your first game in each browser the game asks you to agree (the permissions agreement, a short summary of what it will do), and asks again when these texts change."
+    "Turquill is an early-access game in testing, shared privately by its host with invited players. By playing you accept these terms and the privacy policy. If you do not accept them, do not play. Before your first game in each browser the game asks you to agree (the permissions agreement, a short summary of what it will do), and asks again when these texts change."
    ]
   },
   {
@@ -128,13 +128,13 @@ export const termsOfUse={
    "heading": "Your content and the game's",
    "paragraphs": [
     "You retain rights you have in material you submit. You grant the host a limited, non-exclusive permission to process, store and display it to operate the game, generate responses, keep permitted backups and show shared content to your campaign members. Submit only material you have the right to use. AI-generated material may be similar to others' material and may not qualify for exclusive ownership; its use is also subject to applicable law and provider terms.",
-    "Questbound code, original text, artwork, icons, sound and design remain subject to their applicable copyrights and licences. System Reference Document and open-source material retain their own licence terms, which these terms do not restrict. See Licences and credits."
+    "Turquill code, original text, artwork, icons, sound and design remain subject to their applicable copyrights and licences. System Reference Document and open-source material retain their own licence terms, which these terms do not restrict. See Licences and credits."
    ]
   },
   {
    "heading": "No warranty",
    "paragraphs": [
-    "To the fullest extent permitted by applicable law, Questbound is provided 'as is' and 'as available', without warranties of uninterrupted operation, accuracy, fitness for a particular purpose, merchantability or non-infringement. AI narration, images and rules may be incorrect, non-unique, offensive or unavailable. No representation is made that the game implements every tabletop rule or prevents every security incident.",
+    "To the fullest extent permitted by applicable law, Turquill is provided 'as is' and 'as available', without warranties of uninterrupted operation, accuracy, fitness for a particular purpose, merchantability or non-infringement. AI narration, images and rules may be incorrect, non-unique, offensive or unavailable. No representation is made that the game implements every tabletop rule or prevents every security incident.",
     "To the fullest extent permitted by applicable law, the host and developer exclude liability for indirect, incidental, special or consequential losses, including lost profits, lost opportunities or loss of data arising from use of the game. Keep independent copies of important saves. This exclusion applies only where and to the extent it is legally enforceable.",
     "Nothing in these terms excludes or limits liability for fraud, intentional misconduct, death or personal injury caused by negligence where such liability cannot be excluded, or any other liability or consumer remedy that cannot lawfully be excluded or limited. These terms do not prevent you from exercising mandatory rights, reporting unlawful conduct or seeking lawful remedies."
    ]
@@ -218,13 +218,13 @@ export const licences={
    "paragraphs": [
     "This work includes material from the System Reference Document 5.2 (\"SRD 5.2\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.",
     "This work includes material taken from the System Reference Document 5.1 (\"SRD 5.1\") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
-    "Questbound is an independent production, compatible with fifth edition. It is not affiliated with, endorsed by or sponsored by Wizards of the Coast. The rules text in the game comes from the two System Reference Documents. A few options beyond them (the Artificer class and its five specialities, three further subclasses for every other class, marked Questbound, and the Goblin species) are described in Questbound's own words, with no text taken from any other book. The heroes, places and stories in the game are Questbound's own or written for you as you play."
+    "Turquill is an independent production, compatible with fifth edition. It is not affiliated with, endorsed by or sponsored by Wizards of the Coast. The rules text in the game comes from the two System Reference Documents. A few options beyond them (the Artificer class and its five specialities, three further subclasses for every other class, marked Turquill, and the Goblin species) are described in Turquill's own words, with no text taken from any other book. The heroes, places and stories in the game are Turquill's own or written for you as you play."
    ]
   },
   {
    "heading": "Software",
    "paragraphs": [
-    "Questbound, copyright 2026 turqindustrial, all rights reserved. Built with React, React Native, React Native Web and Expo (MIT licences) and other open-source libraries under permissive licences."
+    "Turquill, copyright 2026 turqindustrial, all rights reserved. Built with React, React Native, React Native Web and Expo (MIT licences) and other open-source libraries under permissive licences."
    ]
   },
   {
@@ -236,7 +236,7 @@ export const licences={
   {
    "heading": "Pictures and sound",
    "paragraphs": [
-    "The title paintings, the game's libraries of ready-made pictures (places, people, creatures and heroes' faces) and any picture painted during play are generated with OpenAI's image models at the host's request. The icons, interface and music are Questbound's own."
+    "The title paintings, the game's libraries of ready-made pictures (places, people, creatures and heroes' faces) and any picture painted during play are generated with OpenAI's image models at the host's request. The icons, interface and music are Turquill's own."
    ]
   }
  ]

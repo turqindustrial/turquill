@@ -1,10 +1,10 @@
-# Questbound
+# Turquill
 
 **A fantasy tabletop adventure with an AI Dungeon Master, for phone and computer.**
 Build a hero, roll the dice and play through stories written for you on the spot. Fights, conversations, travel and
 level-ups follow fifth-edition rules; the Dungeon Master narrates and voices the people you meet.
 
-Questbound is in **early access (playtest 1)**. Thank you for helping test it.
+Turquill is in **early access (playtest 1)**. Thank you for helping test it. (It was called Questbound until October 2026: the launcher files, the folder and the saves keep that name, so nothing you have already played is lost. Questbound.cmd and Questbound-Share.cmd still work and do the same as Turquill.cmd and Turquill-Share.cmd.)
 
 ---
 
@@ -67,20 +67,20 @@ You need:
 
 - Windows 10 or 11, kept awake while people play.
 - [Node.js LTS](https://nodejs.org).
-- An **OpenAI API key** whose project can use the text models you choose and image generation. The launcher suggests **gpt-6-luna** for play (the cheapest fast model; a turn costs a fraction of a cent) and lets you name a separate, stronger **story writer** model for new adventures and heroes, which thinks before it writes; `Questbound.cmd -Models` changes either later. **Your key pays for everyone's play**: each turn is one or two short requests, and each new character, place or creature (including each player's own hero) gets one illustration. Illustrations are kept on your PC and reused, so the four ready-made heroes are painted only once.
+- An **OpenAI API key** whose project can use the text models you choose and image generation. The launcher suggests **gpt-6-luna** for play (the cheapest fast model; a turn costs a fraction of a cent) and lets you name a separate, stronger **story writer** model for new adventures and heroes, which thinks before it writes; `Turquill.cmd -Models` changes either later. **Your key pays for everyone's play**: each turn is one or two short requests, and each new character, place or creature (including each player's own hero) gets one illustration. Illustrations are kept on your PC and reused, so the four ready-made heroes are painted only once.
 - Cloudflare's free tunnel tool, installed once: `winget install --id Cloudflare.cloudflared -e`
 
 Then:
 
 1. Download this repository (**Code → Download ZIP**, then unzip) or clone it.
-2. Double-click **Questbound-Share.cmd**. The first run installs the game's components and builds it (a few minutes).
+2. Double-click **Turquill-Share.cmd**. The first run installs the game's components and builds it (a few minutes).
 3. Enter your OpenAI API key when asked. Typing is hidden; you may let Windows remember it, encrypted to your account.
 4. The window shows the **playtest link** and **invite code** and copies both to your clipboard. Send them to your testers.
 
-Notes your testers send from inside the game collect in **playtest-feedback.md** in the Questbound folder (newest at the bottom).
+Notes your testers send from inside the game collect in **playtest-feedback.md** in the game's folder (newest at the bottom).
 
-`Questbound.cmd -Stop` stops everything. `Questbound.cmd -ForgetKey` deletes the remembered key. `node dm-report.cjs` shows what the Dungeon Master cost today (requests, tokens and an estimate for the suggested models) and any replies it had to refuse; `node balance-check.cjs` simulates fights for every ready-made hero against every creature and flags any that look deadly or trivial.
-To play on your own devices only (home Wi-Fi, no internet link), double-click **Questbound.cmd** instead; see [MOBILE-ACCESS.md](MOBILE-ACCESS.md). To run the game on a machine that is always on instead of your PC, see [DEPLOY.md](DEPLOY.md); [ROADMAP.md](ROADMAP.md) says what it would take to make it a business.
+`Turquill.cmd -Stop` stops everything. `Turquill.cmd -ForgetKey` deletes the remembered key. `node dm-report.cjs` shows what the Dungeon Master cost today (requests, tokens and an estimate for the suggested models) and any replies it had to refuse; `node balance-check.cjs` simulates fights for every ready-made hero against every creature and flags any that look deadly or trivial.
+To play on your own devices only (home Wi-Fi, no internet link), double-click **Turquill.cmd** instead; see [MOBILE-ACCESS.md](MOBILE-ACCESS.md). To run the game on a machine that is always on instead of your PC, see [DEPLOY.md](DEPLOY.md); [ROADMAP.md](ROADMAP.md) says what it would take to make it a business.
 
 **Deeds, sharing and the narrator**
 
@@ -96,8 +96,8 @@ To play on your own devices only (home Wi-Fi, no internet link), double-click **
 - Before the first game in a browser the player agrees to a short permissions agreement (what the game stores, sends and plays; age 16+); it is asked again when the legal texts change.
 - When several people act at once, turns wait their turn for the Dungeon Master instead of failing. Scene art is painted two at a time in the background and never holds up play.
 - Updating the game while sharing runs doesn't send testers back to the invite page: paired browsers are remembered (by a hash, never the cookie itself) for the same link.
-- The link is a random `https://….trycloudflare.com` address. If sharing stops (for example after a reboot), double-click **Questbound-Share.cmd** again for a new link and code and re-send them. While sharing is running, the launcher just shows the current ones.
-- **A permanent link** (optional, needs your own free Cloudflare account and a domain on it): in the Cloudflare dashboard open Zero Trust → Networks → Tunnels, create a tunnel, add a public hostname for it (for example `play.example.com`) pointing to `http://127.0.0.1:8087`, and copy the tunnel's token. Then run `Questbound.cmd -SetupTunnel` once and paste the hostname and token (the token is stored encrypted to your Windows account). From then on **Questbound-Share.cmd** always uses that address, and the invite code survives restarts. `Questbound.cmd -ForgetTunnel` goes back to temporary links.
+- The link is a random `https://….trycloudflare.com` address. If sharing stops (for example after a reboot), double-click **Turquill-Share.cmd** again for a new link and code and re-send them. While sharing is running, the launcher just shows the current ones.
+- **A permanent link** (optional, needs your own free Cloudflare account and a domain on it): in the Cloudflare dashboard open Zero Trust → Networks → Tunnels, create a tunnel, add a public hostname for it (for example `play.example.com`) pointing to `http://127.0.0.1:8087`, and copy the tunnel's token. Then run `Turquill.cmd -SetupTunnel` once and paste the hostname and token (the token is stored encrypted to your Windows account). From then on **Turquill-Share.cmd** always uses that address, and the invite code survives restarts. `Turquill.cmd -ForgetTunnel` goes back to temporary links.
 - Phones on your home Wi-Fi stay paired for a week, even if the PC or the game restarts.
 
 ---
@@ -126,10 +126,10 @@ This work includes material from the System Reference Document 5.2 (“SRD 5.2�
 
 This work includes material taken from the System Reference Document 5.1 (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
-Questbound is an independent production, compatible with fifth edition, and is not affiliated with, endorsed by or sponsored by Wizards of the Coast. Its rules text comes from the two System Reference Documents; a few options beyond them (the Artificer class, its four specialities and the Goblin species) are described in Questbound's own words, with no text from any other book. Fonts: Cinzel, Cinzel Decorative, EB Garamond and Inter (SIL Open Font License), served from the host's own files in `public/fonts/` (fetched once by `fetch-fonts.cjs`; the licence texts are beside them).
+Turquill is an independent production, compatible with fifth edition, and is not affiliated with, endorsed by or sponsored by Wizards of the Coast. Its rules text comes from the two System Reference Documents; a few options beyond them (the Artificer class, its four specialities and the Goblin species) are described in Turquill's own words, with no text from any other book. Fonts: Cinzel, Cinzel Decorative, EB Garamond and Inter (SIL Open Font License), served from the host's own files in `public/fonts/` (fetched once by `fetch-fonts.cjs`; the licence texts are beside them).
 
 The [privacy policy](PRIVACY.md) and [terms of use](TERMS.md) are shown in the game under Settings → About and linked from the title screen and the pairing page. They are written in `legalText.js`; `node verify-legal.cjs --write` regenerates the documents and the web pages from it.
 
 [SECURITY.md](SECURITY.md) says what protects players and the host (locked-down pages, services that answer only to the PC, a daily allowance for guests' use of the AI), the few things only the host can do (an OpenAI spending limit, two-step sign-in, keeping codes private) and how to report a problem.
 
-Questbound's own code, text and artwork are © 2026 turqindustrial, all rights reserved; see [LICENSE](LICENSE). You're welcome to play and test it, but please don't copy or redistribute it.
+Turquill's own code, text and artwork are © 2026 turqindustrial, all rights reserved; see [LICENSE](LICENSE). You're welcome to play and test it, but please don't copy or redistribute it.

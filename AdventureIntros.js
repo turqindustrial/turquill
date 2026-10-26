@@ -25,7 +25,7 @@ function IdeaBox({idea,onIdea,busy,optional=false}){
  return <View style={s.ideaWrap}>
   <Text style={s.label}>{optional?'Anything you would like to happen? (optional)':'Your idea'}</Text>
   <TextInput value={idea} onChangeText={onIdea} editable={!busy} multiline maxLength={ideaLimit} accessibilityLabel={optional?'A wish for the next tale':'Your idea for the tale'} placeholder={optional?'A rival returns, a storm cuts the roads, my sister comes looking for me…':'A haunted lighthouse on a frozen coast. A heist in a city built on the back of a sleeping giant. A plague of silence…'} placeholderTextColor={tint('#938890')} style={s.idea}/>
-  <Text style={s.ideaNote}>{idea.length}/{ideaLimit}. Tales stay in Questbound’s own world: name a book or film and you get its mood, with people and places of the tale’s own.</Text>
+  <Text style={s.ideaNote}>{idea.length}/{ideaLimit}. Tales stay in Turquill’s own world: name a book or film and you get its mood, with people and places of the tale’s own.</Text>
  </View>;
 }
 // Every tale begins with the hero's orders in hand (the 2026-10-23 campaign: the Dungeon Master writes every tale with an

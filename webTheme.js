@@ -508,5 +508,5 @@ export function initializeWebTheme(){
  if(!document.getElementById('qb-fonts')){const fontsLink=document.createElement('link');fontsLink.id='qb-fonts';fontsLink.rel='stylesheet';fontsLink.href='/fonts/fonts-v2.css';document.head.appendChild(fontsLink);}
  const style=document.createElement('style');style.id='questbound-theme';style.textContent=css+lightCss;document.head.appendChild(style);
  document.querySelector('meta[name="theme-color"]')?.setAttribute('content','#0a070b');
- document.title='Questbound';
+ document.title='Turquill';
 }

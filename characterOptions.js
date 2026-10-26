@@ -1,6 +1,6 @@
 // Selection summaries are original, brief guidance; full features are a later milestone.
 // The lineages a species chooses between (characterRules.js speciesLineages) and the spells each grants
-// (spellOptions.js lineageSpells), in Questbound's own words. Spells of level 1 or more can each be cast once a long
+// (spellOptions.js lineageSpells), in Turquill's own words. Spells of level 1 or more can each be cast once a long
 // rest without a slot, and with slots by a hero who has them.
 export const lineageDetails = {
   'High Elf': {description: 'Elves of old courts and libraries, with magic close at hand. You know Prestidigitation; at level 3 Detect Magic and at level 5 Misty Step. These come with your lineage, whatever your class.'},
@@ -22,8 +22,8 @@ export const speciesDetails = {
   Drow: {description: 'An elf of the Drow, a lineage at home in the deep places under the earth, with eyes that pierce the dark. Your upbringing, loyalties, and personality are yours to define.', baseSpecies: 'Elf', lineage: 'Drow'},
   'Dark Elf': {description: 'A Drow: an elf of a lineage at home in the deep places under the earth. Your upbringing, loyalties, and personality are yours to define.', baseSpecies: 'Elf', lineage: 'Drow'},
   Gnome: {description: 'A small adventurer with a spark of magic. Picture a curious explorer, thoughtful scholar, or a hero who surprises everyone.'},
-  // Beyond the System Reference Document, in Questbound's own words (no text from any other book).
-  Goblin: {description: 'A small goblinoid with a talent for slipping out of danger. A goblin can pursue any calling, including a healer or inventor.', note: 'A Questbound option beyond the System Reference Document. Ability bonuses come only from your background.'},
+  // Beyond the System Reference Document, in Turquill's own words (no text from any other book).
+  Goblin: {description: 'A small goblinoid with a talent for slipping out of danger. A goblin can pursue any calling, including a healer or inventor.', note: 'A Turquill option beyond the System Reference Document. Ability bonuses come only from your background.'},
   Goliath: {description: 'A towering adventurer with giant ancestry. Decide how that larger-than-life heritage fits a very personal story.'},
   'Half-Elf': {description: 'A person with human and elven ancestry. Explore the connections, communities, and traditions that shaped your own identity.', note: 'From the System Reference Document 5.1. Ability bonuses come only from your background.', source: 'SRD 5.1'},
   Halfling: {description: 'A small hero with room for great courage. You might leave a familiar home behind or already know every road on the map.'},
@@ -32,7 +32,7 @@ export const speciesDetails = {
   Tiefling: {description: 'A person with a supernatural fiendish legacy. Choose how your appearance expresses that heritage and how you make it your own.'},
 };
 export const classDetails = {
-  // Beyond the System Reference Document, in Questbound's own words (no text from any other book).
+  // Beyond the System Reference Document, in Turquill's own words (no text from any other book).
   Artificer: {description: 'Blend magical study with invention. Imagine solving problems with enchanted tools, crafted objects, and practical ingenuity.', ability: 'Intelligence'},
   Barbarian: {description: 'Meet danger head-on with fierce strength and endurance. A good fit if you imagine a physical protector or relentless warrior.', ability: 'Strength'},
   Bard: {description: 'Use performance and magic to inspire companions and influence a scene. Your instrument might be music, storytelling, or a commanding voice.', ability: 'Charisma'},

@@ -1,4 +1,4 @@
-# Questbound AI DM connection
+# Turquill AI DM connection
 
 ## The Dungeon Master is held to what the player asked — 2026-10-02
 
@@ -19,11 +19,11 @@
 ## Cheaper turns, a story writer and a usage log — 2026-10-01
 
 - **Play model.** The launcher now suggests `gpt-6-luna` (about half the price of `gpt-5.6-luna` per token). Reasoning is sent as `effort: none` for turns on any reasoning model (`ai-request.cjs`); models without reasoning are not sent the field.
-- **Story writer.** `OPENAI_STORY_MODEL` (launcher prompt, remembered in `.questbound-story-model`, changed with `Questbound.cmd -Models`) writes new adventures and heroes with `QUESTBOUND_STORY_REASONING` (default `medium`), an 80-second timeout and room for reasoning tokens. Unset, the play model writes them too. The setup check looks the story model up (`/v1/models/{id}`, no tokens) and reports a wrong ID.
+- **Story writer.** `OPENAI_STORY_MODEL` (launcher prompt, remembered in `.questbound-story-model`, changed with `Turquill.cmd -Models`) writes new adventures and heroes with `QUESTBOUND_STORY_REASONING` (default `medium`), an 80-second timeout and room for reasoning tokens. Unset, the play model writes them too. The setup check looks the story model up (`/v1/models/{id}`, no tokens) and reports a wrong ID.
 - **Smaller requests.** The scene the model reads is trimmed in `sceneFor` (dm-server.cjs): standing guidance moved into the instructions (cached by the provider), portrait text, the played opening, duplicated place descriptions and conversation entries dropped, skill bonuses as one line each, creature templates only when a creature can appear, and no choices or spell list while narrating a resolved turn. Measured on saved scenes: 15.5k → 10.1k characters at a camp, 14.3k → 8.3k in a fight, 15.3k → 9.4k for a wizard. Validation still uses the full context.
 - **Repairs instead of refusals.** A discovery, creature or introduction whose text runs a little long is shortened; a place given a creature becomes a lair. Missing or wrong-kind fields are still refused.
 - **Logs.** Live requests append `{mode, model, input, cached, output, reasoning}` tokens to `.questbound-usage.jsonl`; `node dm-report.cjs [--days N]` sums requests, cached share, estimated cost (prices on file for the two luna models) and rejections. Test runs with a fake provider no longer write to either log; the 309 entries logged on 2026-10-01 were test runs except one.
-- The running DM picks up `generate` changes at once, and reads the chosen models (`.questbound-model` for play, `.questbound-story-model` for stories and heroes; `Questbound.cmd -Models` writes them) on every live request, so changing a model needs no restart. Reasoning settings from the environment and reply streaming apply after a restart with the launcher.
+- The running DM picks up `generate` changes at once, and reads the chosen models (`.questbound-model` for play, `.questbound-story-model` for stories and heroes; `Turquill.cmd -Models` writes them) on every live request, so changing a model needs no restart. Reasoning settings from the environment and reply streaming apply after a restart with the launcher.
 
 ## Current private setup — 2026-09-29
 
@@ -49,7 +49,7 @@ Official reference: https://developers.openai.com/api/docs/guides/structured-out
 
 ## Live connection verified — 2026-09-15
 
-The user configured their private API key. The local health endpoint reported ready, and a real request through the Questbound web UI returned a correct recap of Turq at the abandoned watchtower, the low-high-low signal, and Ember. No action was proposed or applied and the journal was not changed. This confirms one live narration request, not comprehensive AI quality or rules verification. The startup script now defaults to gpt-5.6-luna; that model uses reasoning effort none for short replies. The running service model was not inspected. Keep the private service window open while playing; the key is not persisted by the setup script.
+The user configured their private API key. The local health endpoint reported ready, and a real request through the Turquill web UI returned a correct recap of Turq at the abandoned watchtower, the low-high-low signal, and Ember. No action was proposed or applied and the journal was not changed. This confirms one live narration request, not comprehensive AI quality or rules verification. The startup script now defaults to gpt-5.6-luna; that model uses reasoning effort none for short replies. The running service model was not inspected. Keep the private service window open while playing; the key is not persisted by the setup script.
 
 ## DM actions and conversations — 2026-09-15
 

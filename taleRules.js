@@ -26,7 +26,7 @@ export function taleText(summary,{origin=null}={}){
  if(s.lines.length)parts.push('The story so far:\n'+s.lines.map(l=>'• '+l).join('\n'));
  if(s.deeds.length)parts.push('Deeds: '+s.deeds.map(d=>d.title).join(', ')+'.');
  parts.push(s.stats.places+' places, '+s.stats.people+' people met, '+s.stats.won+' of '+s.stats.fights+' fights won, '+s.stats.gold+' gold.');
- parts.push('Played in Questbound, a tabletop adventure with an AI Dungeon Master.'+(origin?' '+origin:''));
+ parts.push('Played in Turquill, a tabletop adventure with an AI Dungeon Master.'+(origin?' '+origin:''));
  return parts.join('\n\n');
 }
 // Breaks words into lines no wider than `max`, measured by `width(text)` (a canvas's measureText, or a letter count).

@@ -18,7 +18,7 @@ const artKey=subject=>crypto.createHash('sha256').update(JSON.stringify(['questb
 // The two paintings the game may already have of a template's creature (world-art.cjs templateSubject, and the Skirmish).
 const templateKeys=template=>[artKey({campaignId:'questbound-creatures-v1',kind:'creature',id:template}),artKey({campaignId:'hostile-encounter-'+template,kind:'creature',id:'main-foe'})];
 // What the painter is asked for: the picture's own look, in the land it fits first.
-const paintingSubject=p=>({campaignId:libraryCampaign,kind:'creature',id:p.id,name:p.name.replace(/ \(\d\)$/,''),description:((p.band?'A band, shown together: ':'A creature: ')+p.description).slice(0,1800),setting:('Questbound, an original fantasy world. '+(p.terrains[0]??'wild')+' country. A clear, readable view of the creature'+(p.band?'s':'')+'.').slice(0,800)});
+const paintingSubject=p=>({campaignId:libraryCampaign,kind:'creature',id:p.id,name:p.name.replace(/ \(\d\)$/,''),description:((p.band?'A band, shown together: ':'A creature: ')+p.description).slice(0,1800),setting:('Turquill, an original fantasy world. '+(p.terrains[0]??'wild')+' country. A clear, readable view of the creature'+(p.band?'s':'')+'.').slice(0,800)});
 const libraryEntry=p=>({id:p.id,entry:p.entry,kind:p.kind,family:p.family,band:p.band,terrains:p.terrains,...(p.template?{template:p.template}:{}),name:p.name,description:p.description,file:p.id+'.jpg'});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const arg=(name,fallback)=>{const i=process.argv.indexOf(name);return i>=0&&process.argv[i+1]!==undefined?Number(process.argv[i+1]):fallback;};

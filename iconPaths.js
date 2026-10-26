@@ -1,4 +1,4 @@
-// Questbound's own icon set: 24-unit line drawings (stroke = currentColor) used across menus, the HUD and actions.
+// Turquill's own icon set: 24-unit line drawings (stroke = currentColor) used across menus, the HUD and actions.
 // Each entry is SVG inner markup; Icon.js wraps it. `glyph` is the text fallback for platforms without inline SVG.
 export const iconPaths={
  sword:{glyph:'⚔',svg:'<path d="M8.15 14.15 17.95 4.35 20.5 3.5 19.65 6.05 9.85 15.85Z"/><path d="M10.9 13.1 18.3 5.7" opacity=".45"/><path d="M6 12l6 6"/><path d="M8.3 15.7 5.3 18.7"/><circle cx="4.4" cy="19.6" r="1.25"/>'},

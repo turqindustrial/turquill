@@ -1,7 +1,7 @@
 import {modifier,proficiencyBonus} from './characterRules';
 import {weapons,weaponAttacks,shieldInUse,twoHanderInHand} from './weaponRules';
 import {subclassPassive} from './subclassRules';
-// Weapon Mastery, two-weapon fighting, and grappling and shoving: the 2024 rules (SRD 5.2) in Questbound's own words.
+// Weapon Mastery, two-weapon fighting, and grappling and shoving: the 2024 rules (SRD 5.2) in Turquill's own words.
 // Each weapon kind has one mastery property (weaponRules.js); a hero uses it only for kinds they have mastered, and only
 // Barbarians, Fighters, Paladins, Rangers and Rogues master weapons. What a mastery or a grapple leaves on a creature
 // in a fight (prone, grappled, sapped) is kept in game.marks under the creature's key: 'foe', 'ally:0', or a person's id.

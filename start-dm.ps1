@@ -1,5 +1,5 @@
 # Run this privately in a PowerShell terminal. Never paste the key into chat.
-Write-Host 'Questbound private AI setup'
+Write-Host 'Turquill private AI setup'
 Write-Host 'Use your existing complete secret key, not its name or the masked dashboard entry.'
 Write-Host 'The key stays private in this session. Press Ctrl+C to cancel.'
 try {

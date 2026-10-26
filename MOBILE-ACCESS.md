@@ -1,10 +1,10 @@
 # Desktop and phone access
 
-Both links use the same Questbound build. Phone support means a mobile browser, not a separately installed native iPhone or Android app.
+Both links use the same Turquill build. Phone support means a mobile browser, not a separately installed native iPhone or Android app.
 
 ## Start everything
 
-Double-click **Questbound.cmd** in the Questbound folder. It starts, or reuses if already running:
+Double-click **Turquill.cmd** in the game's folder. It starts, or reuses if already running:
 
 | Service | Address | Notes |
 | --- | --- | --- |
@@ -15,20 +15,20 @@ Double-click **Questbound.cmd** in the Questbound folder. It starts, or reuses i
 
 It rebuilds the game when the source is newer than the last build, and it issues a fresh pairing code when the old one has less than two hours left. Everything keeps running after you close the window.
 
-- `Questbound.cmd -Stop` stops everything the launcher started.
-- `Questbound.cmd -ForgetKey` deletes the remembered key.
-- `Questbound.cmd -InstallStartup` starts Questbound in the background when you sign in to Windows (needs a remembered key). Undo it with `-RemoveStartup`.
+- `Turquill.cmd -Stop` stops everything the launcher started.
+- `Turquill.cmd -ForgetKey` deletes the remembered key.
+- `Turquill.cmd -InstallStartup` starts Turquill in the background when you sign in to Windows (needs a remembered key). Undo it with `-RemoveStartup`.
 - Logs are in `.questbound-logs\`.
 
 ## Share with playtesters over the internet
 
-Double-click **Questbound-Share.cmd** (or run `Questbound.cmd -Share`). It starts everything above plus a secure Cloudflare link, then shows a **playtest link** and an **invite code** and copies them to your clipboard. Send both to your testers; they need nothing installed.
+Double-click **Turquill-Share.cmd** (or run `Turquill.cmd -Share`). It starts everything above plus a secure Cloudflare link, then shows a **playtest link** and an **invite code** and copies them to your clipboard. Send both to your testers; they need nothing installed.
 
 - Needs Cloudflare's free tunnel tool once: `winget install --id Cloudflare.cloudflared -e`. No account required.
-- The link is a random `https://….trycloudflare.com` address. It lasts until sharing stops (for example after a reboot); run Questbound-Share.cmd again for a new link and code. While sharing runs, the launcher just shows the current ones.
+- The link is a random `https://….trycloudflare.com` address. It lasts until sharing stops (for example after a reboot); run Turquill-Share.cmd again for a new link and code. While sharing runs, the launcher just shows the current ones.
 - The invite code lasts 7 days and admits up to 40 browsers. Testers' play uses your OpenAI key; each player is limited to 60 Dungeon Master requests per 10 minutes, and up to 3 replies are written at once (others wait their turn).
 - Only the paired gateway is reachable from the internet. The Dungeon Master, shared table, desktop game and your key stay on this PC.
-- Testers can send notes from **☰ → Send feedback**; they collect in `playtest-feedback.md` in the Questbound folder.
+- Testers can send notes from **☰ → Send feedback**; they collect in `playtest-feedback.md` in the game's folder.
 - Browser saves belong to one web address. When the link changes, testers can move their hero with **Settings → Move your hero** (copy a save code on the old link, load it on the new one); otherwise they start a new hero.
 
 ## Phones
@@ -46,12 +46,12 @@ Double-click **Questbound-Share.cmd** (or run `Questbound.cmd -Share`). It start
 ## Full screen
 
 - **Computer and Android:** tap the full-screen button (four corners) at the top right, or press F on a keyboard (Esc leaves). Settings → Display can make the game go full screen on your first tap each visit.
-- **iPhone and iPad:** browsers there don't allow web pages to go full screen. Tap the full-screen button for instructions: in Safari, Share → Add to Home Screen. Questbound then opens from its gold Q icon with no browser bars. The Home Screen version needs pairing once with the current code.
-- **Android:** Chrome's menu → Add to Home screen (or Install app) also opens Questbound full screen.
+- **iPhone and iPad:** browsers there don't allow web pages to go full screen. Tap the full-screen button for instructions: in Safari, Share → Add to Home Screen. Turquill then opens from its icon with no browser bars. The Home Screen version needs pairing once with the current code.
+- **Android:** Chrome's menu → Add to Home screen (or Install app) also opens Turquill full screen.
 
 ## Screen layout
 
-- Questbound opens on a title card; one tap (or any key) begins. That tap is also what lets the browser start sound. The title menu follows: Continue (with your hero's save slot on wide screens), New Adventure, Heroes, Play Together, Dice and Settings.
+- Turquill opens on a title card; one tap (or any key) begins. That tap is also what lets the browser start sound. The title menu follows: Continue (with your hero's save slot on wide screens), New Adventure, Heroes, Play Together, Dice and Settings.
 - In an adventure the game fills the window like a console game, and the page itself never scrolls. A slim bar at the top shows your hero's crest, level and HP; the menu button (☰) opens the game menu (Journal, Character, Party, Settings, Full screen, Mute, Send feedback, Main menu). Tapping your name opens the character sheet.
 - **Phone or tablet upright:** the story takes the whole screen with the message box pinned above a tab bar: **Story**, **Quest**, **Map** and **Log**. In combat, the foe's HP strip sits above the story; tap it to see everyone's HP.
 - **Computer, or a phone or tablet on its side:** quest, map and log sit in a side column next to the story. Turning a phone mid-turn doesn't interrupt the turn.

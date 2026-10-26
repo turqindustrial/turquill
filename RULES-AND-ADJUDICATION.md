@@ -1,10 +1,10 @@
-# Questbound: rules execution and DM judgment
+# Turquill: rules execution and DM judgment
 
 Reviewed September 18, 2026 against the revised official Basic Rules and the local SRD 5.2 class reference.
 
 ## Why a rules reference is not a complete game engine
 
-Questbound began as a small starter adventure. Its engine has explicit code for selected mechanics. Supplying 339 spell descriptions to a model does not implement their targets, areas, conditions, ongoing effects, resource accounting or interactions. Subclass descriptions likewise do not implement every feature. Missing automation is unfinished app development, not a D&D requirement for human arithmetic.
+Turquill began as a small starter adventure. Its engine has explicit code for selected mechanics. Supplying 339 spell descriptions to a model does not implement their targets, areas, conditions, ongoing effects, resource accounting or interactions. Subclass descriptions likewise do not implement every feature. Missing automation is unfinished app development, not a D&D requirement for human arithmetic.
 
 The intended sequence is: interpret player intent → select a supported action → validate requirements → roll and calculate in code → commit game state → narrate the committed result. Current previews reuse the exact dice sequence on commit. Failed requests apply nothing. Unsupported actions must be identified explicitly rather than narrated as completed mechanics.
 

@@ -1,8 +1,8 @@
 import {currentSubclass} from './characterRules';
 // The subclasses a hero may plan. For each class of the System Reference Document 5.2 the one it licenses (Wizards of
-// the Coast, CC BY 4.0) comes first, then three of Questbound's own, written in the game's own words; the Artificer, a
-// Questbound option beyond the SRD, has five specialities. Nothing is taken from other books (see Licences in
-// legalText.js). Every feature is in classFeatureCatalog.json (source 'SRD 5.2' or 'Questbound'); what the game plays
+// the Coast, CC BY 4.0) comes first, then three of Turquill's own, written in the game's own words; the Artificer, a
+// Turquill option beyond the SRD, has five specialities. Nothing is taken from other books (see Licences in
+// legalText.js). Every feature is in classFeatureCatalog.json (source 'SRD 5.2' or 'Turquill'); what the game plays
 // out itself is in subclassRules.js (and the Champion's crits, the Draconic and Life features and the Fiend's gift).
 export const subclassOptions={
  Artificer: {

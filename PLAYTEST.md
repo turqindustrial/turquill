@@ -1,15 +1,15 @@
 # Playtest checklist (about 15 minutes)
 
-Open the playtest link you were sent and enter the invite code. (Hosting on your own PC and Wi-Fi instead: run **Questbound.cmd**, open the Phone link it prints and enter the pairing code.)
+Open the playtest link you were sent and enter the invite code. (Hosting on your own PC and Wi-Fi instead: run **Turquill.cmd**, open the Phone link it prints and enter the pairing code.)
 Tick off what you can, then send what you found with **☰ → Send feedback** in the game (or tell the host, or [open a playtest issue](../../issues/new/choose)).
 
 ## 1. First look (3 min)
 Use headphones if you have them.
-- [ ] The Q emblem and QUESTBOUND title fade in, then "Tap anywhere to begin". Tap: a low swell plays and the title card fades to the main menu.
+- [ ] The emblem and TURQUILL title fade in, then "Tap anywhere to begin". Tap: a low swell plays and the title card fades to the main menu.
 - [ ] The main menu fits on the screen upright and on its side. Buttons are easy to hit with a thumb; nothing scrolls sideways.
 - [ ] The title menu (Continue, New Adventure, Heroes, Play Together, Dice, Settings) fits the screen upright and on its side; on a computer, entries light up under the mouse with a soft tick.
 - [ ] Menu music is playing: slow strings, soft keys and a flute, with no plucking or ticking. The speaker button (top right) mutes; Settings → Sound has the Master, Music, Ambience and Effects levels and Night mode. Tell us what you think of the new music in each place (menu, exploring, shelter, a fight).
-- [ ] Tap the full-screen button (top right). Android: the game fills the screen, and tapping ⛶ again leaves. iPhone: follow the Add to Home Screen steps, open the red Q icon, pair once, and check there are no browser bars.
+- [ ] Tap the full-screen button (top right). Android: the game fills the screen, and tapping ⛶ again leaves. iPhone: follow the Add to Home Screen steps, open its icon, pair once, and check there are no browser bars.
 
 ## 2. Combat test (5 min)
 New Adventure → pick a **ready-made hero** (or play your own) → tap **Random hostile encounter** → **Begin the encounter** (right under the card).

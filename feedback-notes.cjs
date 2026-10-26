@@ -100,7 +100,7 @@ function sessionRatingEntry(note,{now=Date.now(),random=crypto.randomBytes,from=
 }
 // Appends a note to both files. Throws when the disk refuses; the callers answer 500.
 function saveFeedback(file,entry){
- if(!fs.existsSync(file))fs.writeFileSync(file,'# Questbound playtest feedback\n\nNotes sent from inside the game by playtesters. Newest at the bottom.\n');
+ if(!fs.existsSync(file))fs.writeFileSync(file,'# Turquill playtest feedback\n\nNotes sent from inside the game by playtesters. Newest at the bottom.\n');
  fs.appendFileSync(file,entry.markdown);
  fs.appendFileSync(feedbackRecordFile(file),JSON.stringify(entry.record)+'\n');
 }

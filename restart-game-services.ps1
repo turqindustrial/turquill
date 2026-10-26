@@ -33,7 +33,7 @@ foreach ($questTarget in $questTargets) {
         }
     }
     if (-not (Test-QuestboundServiceOwner -Process $questProcess -Root $questRoot -NodePath $questNode -Role $questTarget.Name -Script $questTarget.Script -LauncherPid $questPids.($questTarget.Name) -Session $questSession -SessionWrittenAt $questSessionWritten)) {
-        throw "Cannot verify $($questTarget.Name) belongs to this Questbound folder. Nothing was stopped."
+        throw "Cannot verify $($questTarget.Name) belongs to this game's folder. Nothing was stopped."
     }
     $questArguments = @(('"' + $questScript + '"'))
     if ($questTarget.Name -eq 'share') {
@@ -60,5 +60,5 @@ foreach ($questTask in $questPlan) {
     if (-not $questReady) { throw "$($questTask.Name) did not restart. Check .questbound-logs\$($questTask.Name)-security.err.log." }
     Write-Output "Updated $($questTask.Name)."
 }
-if ($questPlan.Count) { Write-Output 'Server updates applied. Refresh Questbound. Your Dungeon Master and tunnel were left running.' }
-else { Write-Output 'No game services were running. Start Questbound normally to use the updates.' }
+if ($questPlan.Count) { Write-Output 'Server updates applied. Refresh Turquill. Your Dungeon Master and tunnel were left running.' }
+else { Write-Output 'No game services were running. Start Turquill normally to use the updates.' }

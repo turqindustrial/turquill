@@ -23,7 +23,7 @@ const saved={'questbound.character.v1':JSON.stringify(hero),'questbound.adventur
  const heroOnly=await r.readSave(plain);assert.equal(heroOnly.adventure,null);r.applySave(heroOnly,target);assert.equal(target.data['questbound.adventure.v1'],undefined);
  // Nothing broken, foreign or tampered is ever loaded.
  await assert.rejects(r.exportSave(storage()),/no saved hero/);
- await assert.rejects(r.readSave('hello'),/not a Questbound save code/);
+ await assert.rejects(r.readSave('hello'),/not a Turquill save code/);
  await assert.rejects(r.readSave(code.slice(0,-12)),/damaged/);
  await assert.rejects(r.readSave('QB1.'+b64(JSON.stringify({character:JSON.stringify({...hero,level:99}),adventure:null}))),/hero in that code/);
  const other={...hero,name:'Someone Else'};

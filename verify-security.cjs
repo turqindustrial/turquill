@@ -111,7 +111,7 @@ const hashOf=text=>"'sha256-"+crypto.createHash('sha256').update(text).digest('b
  assert.equal(networkVerdict({name:'TheHome',category:'Public'},['TheHome']).ok,true,'a network the host marked as home');
  assert.equal(networkVerdict({name:'Office',category:'DomainAuthenticated'},[]).ok,true);assert.equal(networkVerdict({name:'Flat',category:'Private'},[]).ok,true);
  assert.equal(networkVerdict(null,[]).unknown,true);assert.equal(networkVerdict(null,[]).ok,false,'an unknown network cannot expose the Wi-Fi server');
- const ps1=fs.readFileSync('launch.ps1','utf8');assert.ok(ps1.includes('Questbound-Share.cmd')&&!ps1.includes("Start-Hidden 'phone'"),'the launcher directs phone players to HTTPS and no longer starts plaintext LAN play');
+ const ps1=fs.readFileSync('launch.ps1','utf8');assert.ok(ps1.includes('Turquill-Share.cmd')&&!ps1.includes("Start-Hidden 'phone'"),'the launcher directs phone players to HTTPS and no longer starts plaintext LAN play');
  // Passwords guessers try first are refused.
  for(const p of ['password123','Password1','12345678','qwertyuiop','aaaaaaaa','abcdefghij','my-questbound','iloveyou'])assert.ok(weakPassword(p),p);
  assert.ok(weakPassword('ada.lovelace99','ada.lovelace@example.com'),'the name before the @');

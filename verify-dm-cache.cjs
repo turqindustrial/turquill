@@ -284,7 +284,9 @@ const strictProblems=(s,at,out=[])=>{
   // the budget raised by that much (9207 → 9244) and no more. The arc itself (a line a chapter, in what lasts the tale, out
   // of fights) adds 49 tokens to the ready journey's town and conversation turns: those two budgets raised by exactly that
   // (1420 → 1469, 1360 → 1409; the conversation's was exceeded, the town's left a single token).
-  assert.ok(measured.standing<=9244,'the standing prompt within 9244 tokens (13618 before 2026-10-21, 8853 after its first pass, 8487 before the tellings written ahead, 8660 before Phase A, 9015 before written tales, 9159 before their review, 9184 before the watched road, 9206 before the tale’s road):'+measured.standing);
+  // Lowered on 2026-10-25 by the rename to Turquill (the host: "implement the rename throughout the game"): the game's
+  // name in the standing prompt (YOU ARE, OWN WORLD) took it 9243 → 9241, the budget lowered by that much (9244 → 9242).
+  assert.ok(measured.standing<=9242,'the standing prompt within 9242 tokens (13618 before 2026-10-21, 8853 after its first pass, 8487 before the tellings written ahead, 8660 before Phase A, 9015 before written tales, 9159 before their review, 9184 before the watched road, 9206 before the tale’s road, 9243 before the rename):'+measured.standing);
   assert.ok(measured.schema<=2800,'the reply schema within 2800 tokens (2021 with every effect spelled out, 2226 before the tellings written ahead): '+measured.schema);
   // The reply that changes nothing (the most common): its skeleton, what the model writes besides its words, is held too.
   measured.skeleton=tokens(JSON.stringify({narration:'',dialogue:[],effects:[],suggestions:[]}));

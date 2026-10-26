@@ -1,11 +1,11 @@
-# Questbound launcher: starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
-# Double-click Questbound.cmd to run it. Services already running are reused, never duplicated.
+# Turquill launcher (the files keep their Questbound names; Turquill.cmd runs Questbound.cmd): starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
+# Double-click Turquill.cmd (or Questbound.cmd, the same launcher) to run it. Services already running are reused, never duplicated.
 #   -Stop            stop everything this launcher started
 #   -Dev             serve the desktop game with the live-reloading Expo dev server instead of the finished build
 #   -NoBrowser       do not open the browser
 #   -ForgetKey       delete the remembered (encrypted) API key
 #   -Models          choose the AI models (one for play, optionally a separate story writer) without re-entering the key
-#   -InstallStartup  start Questbound in the background when you sign in to Windows (requires a remembered key)
+#   -InstallStartup  start Turquill in the background when you sign in to Windows (requires a remembered key)
 #   -RemoveStartup   undo -InstallStartup
 #   -Share           also share the game with playtesters over the internet: a secure Cloudflare link plus an invite code
 #   -SetupTunnel     remember a permanent link for -Share from your own free Cloudflare account (a named tunnel's token,
@@ -76,15 +76,15 @@ if ($Stop) {
     if (Get-Process -Id $prop.Value -ErrorAction SilentlyContinue) { & taskkill.exe /PID $prop.Value /T /F | Out-Null; Say "Stopped $($prop.Name)." }
   }
   Remove-Item $pidFile, $shareFile -ErrorAction SilentlyContinue
-  Say 'Questbound services started by this launcher are stopped.' 'Green'
+  Say 'Turquill services started by this launcher are stopped.' 'Green'
   return
 }
 # The host's switch for guests: the share gateway and the Dungeon Master refuse all guest AI while the file exists.
-if ($PauseGuests) { Set-Content $pauseFile ("Paused by the host at " + (Get-Date).ToString('s')) -Encoding ASCII; Say '  Guests are paused: every guest request to the Dungeon Master is refused. Your own play on this PC goes on.' 'Yellow'; Say '  Let them play again with: Questbound.cmd -ResumeGuests' 'DarkGray'; return }
+if ($PauseGuests) { Set-Content $pauseFile ("Paused by the host at " + (Get-Date).ToString('s')) -Encoding ASCII; Say '  Guests are paused: every guest request to the Dungeon Master is refused. Your own play on this PC goes on.' 'Yellow'; Say '  Let them play again with: Turquill.cmd -ResumeGuests' 'DarkGray'; return }
 if ($ResumeGuests) { Remove-Item $pauseFile -ErrorAction SilentlyContinue; Say '  Guests may play again.' 'Green'; return }
 # The host's switch for the ready-journey library: while the file exists the Dungeon Master writes no new journey (read
 # live, no restart); the journeys already written are still offered and started.
-if ($PauseLibrary) { Set-Content $libraryPauseFile ('Paused by the host at ' + (Get-Date).ToString('s')) -Encoding ASCII; Say '  The journey library is paused: no new ready journey is written. Journeys already written stay on offer.' 'Yellow'; Say '  Let it write again with: Questbound.cmd -ResumeLibrary' 'DarkGray'; return }
+if ($PauseLibrary) { Set-Content $libraryPauseFile ('Paused by the host at ' + (Get-Date).ToString('s')) -Encoding ASCII; Say '  The journey library is paused: no new ready journey is written. Journeys already written stay on offer.' 'Yellow'; Say '  Let it write again with: Turquill.cmd -ResumeLibrary' 'DarkGray'; return }
 if ($ResumeLibrary) { Remove-Item $libraryPauseFile -ErrorAction SilentlyContinue; Say '  The journey library may write new journeys again.' 'Green'; return }
 if ($ForgetKey) { Remove-Item $keyFile, $modelFile, $storyModelFile -ErrorAction SilentlyContinue; Say 'The remembered API key was deleted from this PC.' 'Green'; return }
 if ($Models) {
@@ -115,7 +115,7 @@ function Announce-Share($share, [switch]$Force) {
   if (-not $Force -and (Test-Path $discordLastFile) -and (Get-Content $discordLastFile -Raw).Trim() -eq $stamp) { return }
   $hook = Get-DiscordHook; if (-not $hook) { return }
   $until = ([datetime]$share.expiresAt).ToLocalTime().ToString('dddd MMMM d')
-  $text = "**Questbound** playtest link:`n$($share.link)`nInvite code: **$($share.inviteCode)** (good until $until)`nOpen it on your phone or computer. No sign-in needed."
+  $text = "**Turquill** playtest link:`n$($share.link)`nInvite code: **$($share.inviteCode)** (good until $until)`nOpen it on your phone or computer. No sign-in needed."
   try { Send-Discord $hook $text; Set-Content $discordLastFile $stamp -Encoding ASCII; Say '  Posted the link to your Discord channel.' 'DarkGray' }
   catch { Say '  Could not post the link to Discord (the webhook may have been deleted). Run Connect-Discord.cmd again.' 'Yellow' }
 }
@@ -127,7 +127,7 @@ if ($SetupDiscord) {
   $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($hookSecure)
   try { $hook = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($b).Trim() } finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }
   if ($hook -notmatch '^https://(ptb\.|canary\.)?(discord|discordapp)\.com/api/webhooks/\d+/[A-Za-z0-9_-]+$') { Say '  That is not a Discord webhook URL. Nothing was saved.' 'Red'; return }
-  try { Send-Discord $hook 'Questbound will post new playtest links in this channel.' } catch { Say '  Discord did not accept that webhook. Nothing was saved.' 'Red'; return }
+  try { Send-Discord $hook 'Turquill will post new playtest links in this channel.' } catch { Say '  Discord did not accept that webhook. Nothing was saved.' 'Red'; return }
   $hookSecure | ConvertFrom-SecureString | Set-Content $discordFile -Encoding ASCII
   Remove-Item $discordLastFile -ErrorAction SilentlyContinue
   Say '  Saved. New playtest links will be posted to that channel automatically.' 'Green'
@@ -139,7 +139,7 @@ if ($AnnounceLink) {
   if (-not (Test-Path $shareFile)) { Say '  Sharing is not running, so there is no link to post.' 'Yellow'; return }
   Announce-Share (Get-Content $shareFile -Raw | ConvertFrom-Json) -Force; return
 }
-if ($TrustNetwork) { Say 'Use Questbound-Share.cmd for encrypted phone play.' 'Yellow'; return }
+if ($TrustNetwork) { Say 'Use Turquill-Share.cmd for encrypted phone play.' 'Yellow'; return }
 if ($ForgetTunnel) { Remove-Item $tunnelTokenFile, $tunnelHostFile -ErrorAction SilentlyContinue; Say 'The permanent link was forgotten. -Share uses a temporary link again.' 'Green'; return }
 # A permanent link: in the Cloudflare dashboard (Zero Trust > Networks > Tunnels) create a tunnel, give it a public
 # hostname that points to http://127.0.0.1:8087, and paste its token here. The token never touches disk in plain text.
@@ -152,13 +152,13 @@ if ($SetupTunnel) {
   if ($tokenSecure.Length -lt 20) { Say '  That token looks too short. Nothing was saved.' 'Red'; return }
   $tokenSecure | ConvertFrom-SecureString | Set-Content $tunnelTokenFile -Encoding ASCII
   Set-Content $tunnelHostFile $hostName -Encoding ASCII
-  Say "  Saved. Questbound.cmd -Share now uses https://$hostName/ (if sharing is running, stop it first with Questbound.cmd -Stop)." 'Green'
+  Say "  Saved. Turquill.cmd -Share now uses https://$hostName/ (if sharing is running, stop it first with Turquill.cmd -Stop)." 'Green'
   return
 }
 $startupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Questbound.lnk'
-if ($RemoveStartup) { Remove-Item $startupLink -ErrorAction SilentlyContinue; Say 'Questbound will no longer start when you sign in.' 'Green'; return }
+if ($RemoveStartup) { Remove-Item $startupLink -ErrorAction SilentlyContinue; Say 'Turquill will no longer start when you sign in.' 'Green'; return }
 if ($InstallStartup) {
-  if (-not (Test-Path $keyFile)) { Say 'Run Questbound once and choose to remember your API key first; background start cannot ask for it.' 'Yellow'; return }
+  if (-not (Test-Path $keyFile)) { Say 'Run Turquill once and choose to remember your API key first; background start cannot ask for it.' 'Yellow'; return }
   $shell = New-Object -ComObject WScript.Shell
   $link = $shell.CreateShortcut($startupLink)
   $link.TargetPath = 'powershell.exe'
@@ -166,7 +166,7 @@ if ($InstallStartup) {
   $link.WorkingDirectory = $root
   $link.WindowStyle = 7
   $link.Save()
-  Say 'Questbound will start in the background when you sign in to Windows. Undo with: Questbound.cmd -RemoveStartup' 'Green'
+  Say 'Turquill will start in the background when you sign in to Windows. Undo with: Turquill.cmd -RemoveStartup' 'Green'
   return
 }
 
@@ -176,7 +176,7 @@ Say '  Starting your table...' 'DarkYellow'
 Say ''
 
 # 0. First run on a new PC: Node.js must be installed; the game's components are installed once.
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Say '  Questbound needs Node.js. Install the LTS version from https://nodejs.org and run this again.' 'Red'; return }
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Say '  Turquill needs Node.js. Install the LTS version from https://nodejs.org and run this again.' 'Red'; return }
 if (-not (Test-Path (Join-Path $root 'node_modules'))) {
   Say '  First run: installing the game components (a few minutes)...'
   & cmd.exe /c "npm.cmd ci > `"$logs\install.log`" 2>&1"
@@ -220,9 +220,9 @@ else {
     if ($fresh) {
       Say '  Checking the key with one small live reply...'
       & node (Join-Path $root 'check-dm-setup.cjs')
-      if ($LASTEXITCODE -ne 0) { Say '  The key check failed, so nothing was saved. Run Questbound again to retry.' 'Red'; return }
+      if ($LASTEXITCODE -ne 0) { Say '  The key check failed, so nothing was saved. Run Turquill again to retry.' 'Red'; return }
       $remember = Read-Host '  Remember this key on this PC, encrypted to your Windows account? [Y/n]'
-      if ($remember -notmatch '^[nN]') { $secure | ConvertFrom-SecureString | Set-Content $keyFile -Encoding ASCII; Save-Models $model $storyModel; Say '  Saved. Only your Windows account on this PC can unlock it. Forget it with: Questbound.cmd -ForgetKey; change the models with: Questbound.cmd -Models' 'Green' }
+      if ($remember -notmatch '^[nN]') { $secure | ConvertFrom-SecureString | Set-Content $keyFile -Encoding ASCII; Save-Models $model $storyModel; Say '  Saved. Only your Windows account on this PC can unlock it. Forget it with: Turquill.cmd -ForgetKey; change the models with: Turquill.cmd -Models' 'Green' }
     }
     Start-Hidden 'dm' 'node' 'dm-server.cjs' | Out-Null
   } finally {
@@ -246,7 +246,7 @@ else {
 
 # 5. Remote play now requires the encrypted link, including on home Wi-Fi.
 $session = $null
-Say '  Phone access      uses the HTTPS playtest link (Questbound-Share.cmd)' 'DarkGray'
+Say '  Phone access      uses the HTTPS playtest link (Turquill-Share.cmd)' 'DarkGray'
 
 # 6. Sharing with playtesters over the internet (only with -Share): a Cloudflare tunnel to a loopback-only gateway
 #    that asks for an invite code. A quick tunnel's link lasts as long as the tunnel; a permanent link (-SetupTunnel)
@@ -273,7 +273,7 @@ if ($Share) {
       if ($named) {
         # The token reaches cloudflared through its environment, never the command line.
         $tunnelSecure = $null
-        try { $tunnelSecure = (Get-Content $tunnelTokenFile -Raw).Trim() | ConvertTo-SecureString } catch { Say '  The saved tunnel token could not be unlocked on this Windows account. Run Questbound.cmd -SetupTunnel again.' 'Red' }
+        try { $tunnelSecure = (Get-Content $tunnelTokenFile -Raw).Trim() | ConvertTo-SecureString } catch { Say '  The saved tunnel token could not be unlocked on this Windows account. Run Turquill.cmd -SetupTunnel again.' 'Red' }
         if ($tunnelSecure) {
           $tb = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($tunnelSecure)
           try { $env:TUNNEL_TOKEN = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($tb).Trim(); Start-Hidden 'tunnel' "`"$cf`"" 'tunnel --no-autoupdate run' | Out-Null }
@@ -312,9 +312,9 @@ if ($shared) {
   Say "  Invite code:    $($shared.inviteCode)   (valid until $(([datetime]$shared.expiresAt).ToLocalTime().ToString('ddd MMM d, h:mm tt')))" 'Yellow'
   Say '  Send both to your testers. Their play uses your OpenAI key; keep this PC awake while they play.' 'DarkGray'
   if ($named) { Say '  This link stays the same, and so does the invite code until it expires.' 'DarkGray' }
-  else { Say '  The link changes if sharing restarts (for example after a reboot). For a permanent link see Questbound.cmd -SetupTunnel' 'DarkGray' }
+  else { Say '  The link changes if sharing restarts (for example after a reboot). For a permanent link see Turquill.cmd -SetupTunnel' 'DarkGray' }
   Announce-Share $shared
-  try { Set-Clipboard -Value ("Questbound playtest: $($shared.link)  Invite code: $($shared.inviteCode)"); Say '  (Link and code copied to your clipboard.)' 'DarkGray' } catch {}
+  try { Set-Clipboard -Value ("Turquill playtest: $($shared.link)  Invite code: $($shared.inviteCode)"); Say '  (Link and code copied to your clipboard.)' 'DarkGray' } catch {}
 }
 # Playtest notes not yet read (feedback-report.cjs keeps the marker; only its --mark moves it).
 try {
@@ -333,5 +333,5 @@ try {
 } catch {}
 Say ''
 Say '  Everything keeps running in the background after you close this window.' 'DarkGray'
-Say '  Stop it all with: Questbound.cmd -Stop' 'DarkGray'
+Say '  Stop it all with: Turquill.cmd -Stop' 'DarkGray'
 if (-not $NoBrowser) { Start-Process 'http://localhost:8081/' }

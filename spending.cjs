@@ -155,7 +155,7 @@ function createSpending({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now
   const {day,d}=look();
   if(limit!==null&&limit>0){
    const share=d.guests/limit;
-   if(share>=0.9)alert.raise('guests-90','guests have used '+Math.round(share*100)+'% of today\'s '+money(limit)+' allowance ('+money(d.guests)+'). Pause them with Questbound.cmd -PauseGuests if this looks wrong.',{key:'guests-90:'+day,every:86400000});
+   if(share>=0.9)alert.raise('guests-90','guests have used '+Math.round(share*100)+'% of today\'s '+money(limit)+' allowance ('+money(d.guests)+'). Pause them with Turquill.cmd -PauseGuests if this looks wrong.',{key:'guests-90:'+day,every:86400000});
    else if(share>=0.5)alert.raise('guests-50','guests have used '+Math.round(share*100)+'% of today\'s '+money(limit)+' allowance ('+money(d.guests)+').',{key:'guests-50:'+day,every:86400000});
   }
   if(limit!==null&&d.guests>=limit)return {ok:false,status:503,reason:'guests',error:words.guests};

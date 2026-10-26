@@ -5,7 +5,7 @@ labels: ["playtest"]
 body:
   - type: markdown
     attributes:
-      value: Thanks for playing Questbound! Short notes are perfect. Please don't paste invite codes, save codes or anything private here — this page is public.
+      value: Thanks for playing Turquill! Short notes are perfect. Please don't paste invite codes, save codes or anything private here — this page is public.
   - type: input
     id: device
     attributes:

@@ -36,7 +36,7 @@ export default function LaunchScreen({ready,onBegin}){
  // Everything scales with the smaller side so the whole card fits any window, including a phone on its side.
  const short=height<520,ring=Math.round(size*(short?.27:.34)),logo=Math.max(28,Math.min(84,Math.floor((width-48)/9),Math.floor(height/(short?8:7))));
  return <Animated.View style={[StyleSheet.absoluteFill,s.root,{opacity:exit}]}>
-  <Pressable accessibilityRole="button" accessibilityLabel="Tap to begin Questbound" onPress={begin} dataSet={{safe:'pad'}} style={[s.fill,short&&{gap:8,padding:12}]}>
+  <Pressable accessibilityRole="button" accessibilityLabel="Tap to begin Turquill" onPress={begin} dataSet={{safe:'pad'}} style={[s.fill,short&&{gap:8,padding:12}]}>
    <View dataSet={{qb:'launch-glow'}} style={[StyleSheet.absoluteFill,s.passThrough]}/>
    <View dataSet={{qb:'rays'}} style={[StyleSheet.absoluteFill,s.passThrough]}/>
    <View dataSet={{qb:'embers'}} style={[StyleSheet.absoluteFill,s.passThrough]}/>
@@ -46,7 +46,7 @@ export default function LaunchScreen({ready,onBegin}){
    </Animated.View>
    <Animated.View style={{alignItems:'center',opacity:title,transform:[{translateY:title.interpolate({inputRange:[0,1],outputRange:[14,0]})}]}}>
     <Text style={s.eyebrow}>A tabletop adventure</Text>
-    <Text dataSet={{qb:'title',glow:'on'}} style={[s.logo,{fontSize:logo,lineHeight:Math.round(logo*1.22)}]}>Questbound</Text>
+    <Text dataSet={{qb:'title',glow:'on'}} style={[s.logo,{fontSize:logo,lineHeight:Math.round(logo*1.22)}]}>Turquill</Text>
     <Text style={s.tagline}>Stories worth rolling for.</Text>
    </Animated.View>
    <Animated.View style={[s.promptWrap,short&&{marginTop:6},{opacity:prompt}]}>

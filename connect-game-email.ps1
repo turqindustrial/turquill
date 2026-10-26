@@ -1,5 +1,5 @@
 $ErrorActionPreference='Stop'
-$questMailAddress=(Read-Host 'Dedicated Questbound Gmail address').Trim().ToLowerInvariant()
+$questMailAddress=(Read-Host 'Dedicated Turquill Gmail address').Trim().ToLowerInvariant()
 if($questMailAddress -notmatch '^[a-z0-9._%+-]+@gmail\.com$'){throw 'Enter the dedicated Gmail address.'}
 Write-Host 'Use a Google app password, not your ordinary Google password. Nothing is shown or sent to chat.'
 $questMailSecret=Read-Host 'Gmail app password (hidden)' -AsSecureString

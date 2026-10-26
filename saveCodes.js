@@ -15,7 +15,7 @@ export async function exportSave(storage=globalThis.localStorage,compress=typeof
 }
 export async function readSave(code){
  const text=String(code??'').replace(/\s+/g,''),match=text.length<=4000000&&text.match(/^QB([12])\.([A-Za-z0-9+/]+={0,2})$/);
- if(!match)throw Error('That is not a Questbound save code.');
+ if(!match)throw Error('That is not a Turquill save code.');
  let bytes;try{bytes=fromBase64(match[2]);}catch{throw Error(damaged);}
  if(match[1]==='2'){if(typeof DecompressionStream!=='function')throw Error('This browser cannot open that save code. Try a current Chrome, Safari, Edge or Firefox.');try{bytes=await pipe(bytes,new DecompressionStream('gzip'));}catch{throw Error(damaged);}}
  let data,hero,adventure=null;

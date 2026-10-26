@@ -1,6 +1,6 @@
-# Questbound: Permissions agreement
+# Turquill: Permissions agreement
 
-_Last updated 23 October 2026. The same words are shown in the game under Settings → About. Written in legalText.js; `node verify-legal.cjs --write` regenerates this file._
+_Last updated 25 October 2026. The same words are shown in the game under Settings → About. Written in legalText.js; `node verify-legal.cjs --write` regenerates this file._
 
 ## Permissions agreement
 

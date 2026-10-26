@@ -70,7 +70,7 @@ export function dmContext(hero,game,health,input='') {
   if(game.marks)context.fightConditions=Object.entries(game.marks).map(([k,m])=>({who:k==='foe'?foeLabel(game):k.startsWith('ally:')?(game.foeAllies?.[Number(k.slice(5))]?.name??k):(npcLore(game,k)?.name??k),conditions:[m.prone?'prone':null,m.grappled?'grappled':null,m.sapped?'sapped':null,...(m.spells??[]).map(s=>s.cond+' ('+s.id.replace(/-/g,' ')+')')].filter(Boolean)}));
   // Spells that last on the hero without concentration (Mage Armor, Barkskin, Divine Favor, Shillelagh).
   if(game.buffs)context.heroSpellEffects=Object.keys(game.buffs).map(id=>id.replace(/-/g,' '));
-  context.actionContract.openingAttack='Questbound house rule: an initiating hostile attack resolves once before initiative. Initiative then determines the first normal turn among surviving participants. Do not narrate a defender acting before that opening strike or roll initiative yourself; use engineResolved in its supplied order.';
+  context.actionContract.openingAttack='Turquill house rule: an initiating hostile attack resolves once before initiative. Initiative then determines the first normal turn among surviving participants. Do not narrate a defender acting before that opening strike or roll initiative yourself; use engineResolved in its supplied order.';
   context.encounterInitiative=game.encounterInitiative??null;
   // How each person nearby takes to the hero's kind (kin, warm, curious, wary, scornful), with their reason.
   const kindView=id=>{const r=speciesRegard(game,id,hero);return r.stance==='indifferent'?null:{stance:r.stance,reason:r.reason};};

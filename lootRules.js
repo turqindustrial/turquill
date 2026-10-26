@@ -196,7 +196,7 @@ const lootDice=(n,d,random)=>{let t=0;for(let i=0;i<n;i++)t+=1+Math.floor(random
 const chance=(p,random)=>random()<p;
 const treasure=(name,value,note)=>({name,kind:'treasure',qty:1,value,note});
 // Each kind of creature yields what it really would: beasts their hides and teeth, raiders a thin purse and a blade.
-// L is the looter's level, T their tier; coin is multiplied by the tier. Names and notes are Questbound's own.
+// L is the looter's level, T their tier; coin is multiplied by the tier. Names and notes are Turquill's own.
 export const spoilNotes={
  'Silver cloak pin':'A silver pin for fastening a cloak, worked in the shape of a leaf.',
  'Stolen signet ring':'A heavy gold ring with a seal on it that someone will want back.',
