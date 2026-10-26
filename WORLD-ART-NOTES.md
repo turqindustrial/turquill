@@ -1,6 +1,6 @@
 # Individual characters and runtime artwork — September 29, 2026
 
-Questbound creates portraits for encountered NPCs, an illustration of the current location, and a creature portrait during combat. The work happens in the background; the player can continue playing while images appear. Conversation view uses the same portrait as that NPC's nearby-character card.
+Turquill creates portraits for encountered NPCs, an illustration of the current location, and a creature portrait during combat. The work happens in the background; the player can continue playing while images appear. Conversation view uses the same portrait as that NPC's nearby-character card.
 
 New adventures give each starting NPC a unique name, appearance, personality, and speaking manner. Visual descriptions include age, species, build, clothing, facial details, and distinguishing features. The adventure generator rejects identical names or appearance descriptions. The DM receives the same identity details used for the artwork. A creature has its own visual description. There is no longer a fixed male innkeeper/female courier portrait assignment.
 

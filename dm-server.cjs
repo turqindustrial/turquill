@@ -528,7 +528,7 @@ function storyEffort(fallback,read=chosenModel){const chosen=read('.questbound-s
 function turnEffort(fallback,read=chosenModel){const chosen=read('.questbound-dm-effort');return ['none','minimal','low','medium','high'].includes(chosen)?chosen:fallback;}
 // Stories in the making are kept in a module of their own, which stays loaded while this file is reloaded.
 // The day's spending and the host's ceilings on it (spending.cjs) also stay loaded between requests.
-function loadSpending(){if(require('./spending.cjs').revision!==6)delete require.cache[require.resolve('./spending.cjs')];return require('./spending.cjs').spending;}
+function loadSpending(){if(require('./spending.cjs').revision!==7)delete require.cache[require.resolve('./spending.cjs')];return require('./spending.cjs').spending;}
 // A guest's label: the phone gateway (phone-server.cjs) adds it to every request from a paired browser, replacing
 // anything the browser sent. The host's own browser on this PC has none.
 // A paired browser's label is a hex hash; an account player's table turn comes from the account service as account-<id>.

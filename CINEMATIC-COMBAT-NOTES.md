@@ -4,7 +4,7 @@ The generated image for the current location now fills the game viewport behind 
 
 ## Combat order
 
-Questbound now uses the player's requested house rule: an initiating attack resolves once before initiative. This is a custom rule, not a claim about standard D&D initiative.
+Turquill now uses the player's requested house rule: an initiating attack resolves once before initiative. This is a custom rule, not a claim about standard D&D initiative.
 
 For NPC combat, the opening weapon attack or committed harmful spell resolves first. Initiative is then rolled and conscious participants ahead of the player act. The game stops at the player's first normal turn. A player who wins initiative can therefore take that normal turn after the opening strike. Later turns use the saved order without repeating the opening or rerolling initiative. Downed opponents do not act; a miss still starts combat, and an invalid or uncommitted spell does not.
 

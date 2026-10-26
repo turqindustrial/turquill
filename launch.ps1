@@ -171,7 +171,7 @@ if ($InstallStartup) {
 }
 
 Say ''
-Say '  Q U E S T B O U N D' 'Yellow'
+Say '  T U R Q U I L L' 'Yellow'
 Say '  Starting your table...' 'DarkYellow'
 Say ''
 

@@ -26,7 +26,7 @@
 // campaign and when it was made; the usage line follows within seconds), so they drop out of the sums too.
 // The running Dungeon Master keeps this module loaded between requests (it is not reloaded with dm-server.cjs);
 // bump `revision` when it changes (and the literal in dm-server.cjs loadSpending) and the server loads it afresh.
-const revision=6;
+const revision=7;
 const fs=require('node:fs'),path=require('node:path');
 delete require.cache[require.resolve('./alerts.cjs')];
 const {createAlerts}=require('./alerts.cjs'),{createLimiter}=require('./rate-limit.cjs');
