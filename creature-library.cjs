@@ -12,7 +12,7 @@
 // The running Dungeon Master keeps this module loaded (world-art.cjs loads it afresh when it loads): a change here or
 // in creature-catalogue.cjs needs world-art's revision and dm-server.cjs's literals raised together.
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
-const revision=1;
+const revision=2;
 delete require.cache[require.resolve('./creature-catalogue.cjs')];
 const catalogue=require('./creature-catalogue.cjs');
 // The library's own pictures are painted through the Dungeon Master under this campaign: never answered from the

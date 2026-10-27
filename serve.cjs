@@ -18,6 +18,8 @@
 require('./name-migration.cjs').legacyEnv(); // settings given under their old names (QUESTBOUND_*) still count
 const path=require('node:path'),fs=require('node:fs'),crypto=require('node:crypto');
 const number=(value,fallback)=>{const n=Number(value);return Number.isFinite(n)&&n>0?n:fallback;};
+// A local hosted folder from before the rename (.questbound-data beside this file) takes its new name first.
+if(!process.env.TURQUILL_DATA)require('./name-migration.cjs').migrateDataNames(__dirname);
 async function startHosted({dataDir=process.env.TURQUILL_DATA||path.join(__dirname,'.turquill-data'),port=number(process.env.PORT,8080),publicOrigin=process.env.TURQUILL_PUBLIC_ORIGIN||null,inviteCode=process.env.TURQUILL_INVITE_CODE||null,root=path.join(__dirname,'dist-phone'),bind='0.0.0.0',dmPort=0,syncPort=0,dm={},sync={},log=console.log}={}){
  if(!publicOrigin)throw Error('Set TURQUILL_PUBLIC_ORIGIN to the https address players will open (for example https://play.example.com).');
  if(!fs.existsSync(path.join(root,'index.html')))throw Error('Build the game first: npx expo export --platform web --output-dir dist-phone');

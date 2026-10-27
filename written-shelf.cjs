@@ -12,7 +12,7 @@
 // in dm-server.cjs loadWritten) when it changes.
 // A tale for a land (match, 2026-10-23: the next tale in a region or in a land beyond the map is taken from the shelf or
 // the compendium before a new one is written): a listed tale of that terrain the device has not played.
-const revision=3;
+const revision=4;
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const writtenIdPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const writtenSlugPattern=/^[a-z0-9-]{3,28}$/;

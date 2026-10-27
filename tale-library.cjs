@@ -27,7 +27,7 @@
 // The running Dungeon Master keeps this module loaded between requests (it is not reloaded with dm-server.cjs); bump
 // `revision` (and the literal in dm-server.cjs loadLibrary) when it changes. Raise `generation` when the story writer's
 // output changes shape.
-const revision=6,generation=5;
+const revision=7,generation=5;
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const day=86400000;
 // The library's numbers (see the report of 2026-10-13 for the cost reckoning).

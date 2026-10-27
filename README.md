@@ -4,7 +4,7 @@
 Build a hero, roll the dice and play through stories written for you on the spot. Fights, conversations, travel and
 level-ups follow fifth-edition rules; the Dungeon Master narrates and voices the people you meet.
 
-Turquill is in **early access (playtest 1)**. Thank you for helping test it. (It was called Turquill until October 2026: the launcher files, the folder and the saves keep that name, so nothing you have already played is lost. Turquill.cmd and Turquill-Share.cmd still work and do the same as Turquill.cmd and Turquill-Share.cmd.)
+Turquill is in **early access (playtest 1)**. Thank you for helping test it. (It was called Questbound until October 2026. Your heroes, saves and settings moved to the new name by themselves the first time the new version opened, so nothing you have already played is lost; Questbound.cmd and Questbound-Share.cmd still work and do the same as Turquill.cmd and Turquill-Share.cmd.)
 
 ---
 

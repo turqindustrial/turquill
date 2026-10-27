@@ -529,7 +529,7 @@ function storyEffort(fallback,read=chosenModel){const chosen=read('.turquill-sto
 function turnEffort(fallback,read=chosenModel){const chosen=read('.turquill-dm-effort');return ['none','minimal','low','medium','high'].includes(chosen)?chosen:fallback;}
 // Stories in the making are kept in a module of their own, which stays loaded while this file is reloaded.
 // The day's spending and the host's ceilings on it (spending.cjs) also stay loaded between requests.
-function loadSpending(){if(require('./spending.cjs').revision!==7)delete require.cache[require.resolve('./spending.cjs')];return require('./spending.cjs').spending;}
+function loadSpending(){if(require('./spending.cjs').revision!==8)delete require.cache[require.resolve('./spending.cjs')];return require('./spending.cjs').spending;}
 // A guest's label: the phone gateway (phone-server.cjs) adds it to every request from a paired browser, replacing
 // anything the browser sent. The host's own browser on this PC has none.
 // A paired browser's label is a hex hash; an account player's table turn comes from the account service as account-<id>.
@@ -552,10 +552,10 @@ const guestOf=body=>typeof body?.guest==='string'&&/^(?:account-)?[a-f0-9]{16,64
 // writer (no guest label), and only while background writing may spend: spending.cjs `background()` (the host's
 // ceilings and the guests' pause switch) when the module has it; without it, writing is paced by the library alone.
 // Tests pass a stand-in `library`.
-function loadLibrary(){if(require('./tale-library.cjs').revision!==6)delete require.cache[require.resolve('./tale-library.cjs')];return require('./tale-library.cjs').library;}
+function loadLibrary(){if(require('./tale-library.cjs').revision!==7)delete require.cache[require.resolve('./tale-library.cjs')];return require('./tale-library.cjs').library;}
 // The Written tales shelf (written-shelf.cjs) stays loaded too: tales written by hand and checked, served for good
 // (never retired), listed and started at no cost. Tests pass a stand-in `written`.
-function loadWritten(){if(require('./written-shelf.cjs').revision!==3)delete require.cache[require.resolve('./written-shelf.cjs')];return require('./written-shelf.cjs').shelf;}
+function loadWritten(){if(require('./written-shelf.cjs').revision!==4)delete require.cache[require.resolve('./written-shelf.cjs')];return require('./written-shelf.cjs').shelf;}
 function backgroundAllowed(spend){try{return !spend||typeof spend.background!=='function'||spend.background().ok!==false;}catch{return false;}}
 // A journey is offered only when the game's own rules accept it: the tale seats a hero (a ready-made Fighter) and the
 // adventure that results is valid, with its introduction, its errand (every journey starts with orders in hand) and
@@ -638,7 +638,7 @@ function topUpLibrary(library,{apiKey,storyModel,effort,fetchImpl,live=true,spen
 // painted (the journey's opening place, under the journey's art id) or, once world-art.cjs can answer a place from
 // ready-made paintings, whatever its `readyMade(subject)` says. A device never asks for a cover that would be painted.
 function journeyCovers(){
- if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];
+ if(require('./world-art.cjs').revision!==14)delete require.cache[require.resolve('./world-art.cjs')];
  const fs=require('node:fs'),path=require('node:path'),art=require('./world-art.cjs'),dir=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-art');
  return subject=>{try{if(typeof art.artStore?.readyMade==='function'&&art.artStore.readyMade(subject))return true;return fs.existsSync(path.join(dir,art.artKey(art.validateSubject(subject))+'.jpg'));}catch{return false;}};
 }
@@ -652,7 +652,7 @@ function startLibrary({apiKey,model,storyModel=model,storyReasoning='medium',lib
 // held-back messages and any pause. Tests pass a stand-in `moderation`; runs against a fake provider skip it.
 // The host's library of ready-made people (people-library.cjs) stays loaded too (its list is read again within 30 s
 // of changing); world-art.cjs loads it afresh when it loads, so a change there raises both revisions together.
-function loadPeople(){if(require('./people-library.cjs').revision!==4)delete require.cache[require.resolve('./people-library.cjs')];return require('./people-library.cjs');}
+function loadPeople(){if(require('./people-library.cjs').revision!==5)delete require.cache[require.resolve('./people-library.cjs')];return require('./people-library.cjs');}
 // The people to offer the Dungeon Master where the hero is (context.world.peopleToMeet): a few suited to the kind of
 // place and its land, never one already met in this game (context.world.poolTaken), the same few at a place until one
 // of them is met (poolTaken holds their numbers: 42 for np042). Returns the offered library entries by id; none when the library is empty or cannot be read.
@@ -670,7 +670,7 @@ async function peopleToMeetFor(context,lib,alsoTaken=new Set()){
 // a face. Tests pass a stand-in `portraits` ({takenIn}); none when nothing can be read.
 async function portraitsTaken(context,{live=false,portraits=null}={}){
  try{
-  const store=portraits??(live?(()=>{if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore?.people;})():null);
+  const store=portraits??(live?(()=>{if(require('./world-art.cjs').revision!==14)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore?.people;})():null);
   const ids=[context?.story?.id,context?.story?.artId].filter(id=>typeof id==='string'&&id.length&&id.length<=120);
   return store?.takenIn&&ids.length?await store.takenIn(ids):new Set();
  }catch{return new Set();}
@@ -686,7 +686,7 @@ function pooledIntroduce(p,offered,lib){
 // A dozen ready-made people the story writer may cast as residents (adventure-generator.cjs castResidents), by chance,
 // at most three trained; none when the library is empty or cannot be read.
 async function castFor(lib){try{return lib?.people?await lib.people.suited({seed:Date.now()+':'+Math.random(),count:12}):null;}catch{return null;}}
-function loadModeration(){if(require('./moderation.cjs').revision!==1)delete require.cache[require.resolve('./moderation.cjs')];return require('./moderation.cjs').moderation;}
+function loadModeration(){if(require('./moderation.cjs').revision!==2)delete require.cache[require.resolve('./moderation.cjs')];return require('./moderation.cjs').moderation;}
 // What the player typed in this request, if anything: a turn's words (never a scene cue the game wrote), the idea for
 // a tale of their own, or the description for a hero drafted by the AI.
 function typedByPlayer(body){
@@ -695,7 +695,7 @@ function typedByPlayer(body){
  if(c.mode==='art'||c.mode==='diagnostics'||c.mode==='moderate'||c.mode==='people-batch'||c.sceneTrigger)return '';
  return typeof body.input==='string'?body.input:'';
 }
-function loadStoryJobs(){if(require('./story-jobs.cjs').revision!==1)delete require.cache[require.resolve('./story-jobs.cjs')];return require('./story-jobs.cjs').storyJobs;}
+function loadStoryJobs(){if(require('./story-jobs.cjs').revision!==2)delete require.cache[require.resolve('./story-jobs.cjs')];return require('./story-jobs.cjs').storyJobs;}
 function liveModels(model,storyModel,read=chosenModel){
  const play=read('.turquill-model'),story=read('.turquill-story-model');
  if(play){if(storyModel===model)storyModel=play;model=play;}
@@ -805,7 +805,7 @@ async function generate(body,{apiKey,model,storyModel=model,reasoning='none',sto
    try{topUpLibrary(shelf,{apiKey,storyModel,effort:live?storyEffort(storyReasoning):storyReasoning,fetchImpl,live,spend});}catch{}
    return {journeys:shelf.list({cover}),written:shelved};
   }
-  if(body.context.mode==='art'){if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore.request(body.context.subject,{apiKey,model,retry:body.context.retry===true,safety,mayPaint,host:!guest,onUnmatched:note=>recordCreatureMiss(note,live,guest),onPainted:(u,imageModel)=>recordUsage('art',model,u,live,guest,{images:1,imageModel,job:hostJobOf(body.context.subject,guest)})});}
+  if(body.context.mode==='art'){if(require('./world-art.cjs').revision!==14)delete require.cache[require.resolve('./world-art.cjs')];return require('./world-art.cjs').artStore.request(body.context.subject,{apiKey,model,retry:body.context.retry===true,safety,mayPaint,host:!guest,onUnmatched:note=>recordCreatureMiss(note,live,guest),onPainted:(u,imageModel)=>recordUsage('art',model,u,live,guest,{images:1,imageModel,job:hostJobOf(body.context.subject,guest)})});}
   // Only the host checks the AI connection: its answer describes the key's shape.
   if(body.context.mode==='diagnostics'){if(guest)throw Object.assign(Error('Only the host can check the AI connection, on the PC itself.'),{httpStatus:403});return diagnose({apiKey,model,fetchImpl});}
   // The host's library of ready-made people is written in batches (make-people-library.cjs, people-writer.cjs): only the
@@ -1364,5 +1364,5 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
     }catch(e){send(e.httpStatus??502,{error:e.name==='TimeoutError'?'The AI timed out. Your adventure is unchanged.':e.message});}finally{if(slot)release();}
   });
 }
-if(require.main===module){require('./name-migration.cjs').migrateDataNames(process.env.TURQUILL_DATA||__dirname);const port=Number(process.env.TURQUILL_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
+if(require.main===module){const port=Number(process.env.TURQUILL_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
 module.exports={loadWritten,taleLand,taleMatch,sharedTale,keptTale,standingPrompt,heroPrompt,replySchemaFor,asFields,flatReply,cacheKeyFor,promptLayout,sceneParts,sceneMessages,turnRequest,requestParts,requestScene,phaseFields,hostJobOf,recordCreatureMiss,castFor,peopleToMeetFor,portraitsTaken,pooledIntroduce,introduceSchema,loadPeople,recordWriteFailure,cleanRemember,memoryInstructions,typedByPlayer,startLibrary,topUpLibrary,libraryPaused,journeyCheck,unusable,transient,tellingCut,castableSpell,castWords,distinctDialogue,echoes,turnEffort,storyEffort,questInstructions,liveModels,chosenModel,createServer,generate,validRequest,validRuling,checkedHp,partialNarration,streamedText,sceneFor,repairedDiscovery,repairedCreature,repairedIntroduce,repairedJson,replyShape,contractInstructions};

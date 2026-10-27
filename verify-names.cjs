@@ -22,8 +22,12 @@ assert.equal(renamedKey('turquill.theme.v1'),null);assert.equal(renamedKey('othe
  const moved=migrateStorage(s);assert.deepEqual(moved.sort(),['turquill.adventure.v1','turquill.profile.guest.turquill.character.v1','turquill.theme.v1']);
  assert.deepEqual(Object.fromEntries(s.map),{'other':'x','turquill.adventure.v1':'{"a":1}','turquill.profile.guest.turquill.character.v1':'{"name":"Kara"}','turquill.theme.v1':'{"theme":"green"}'});
  assert.deepEqual(migrateStorage(s),[],'a second run moves nothing');}
-// A key already under its new name wins; the old one goes.
-{const s=store({'questbound.audio.v1':'old','turquill.audio.v1':'new'});migrateStorage(s);assert.deepEqual(Object.fromEntries(s.map),{'turquill.audio.v1':'new'});}
+// A key already under its new name wins; a different old value is kept beside it, never lost; the same value just goes.
+{const s=store({'questbound.audio.v1':'old','turquill.audio.v1':'new','questbound.theme.v1':'t','turquill.theme.v1':'t'});migrateStorage(s);
+ assert.deepEqual(Object.fromEntries(s.map),{'turquill.audio.v1':'new','turquill.renamed-conflict.questbound.audio.v1':'old','turquill.theme.v1':'t'});
+ assert.deepEqual(migrateStorage(s),[],'the kept value is not moved again');}
+// When even the second write fails, the value goes back under its old name.
+{const s=store({'questbound.roster.v1':'r'});const set=s.setItem;s.setItem=(k,v)=>{if(k.startsWith('turquill.'))throw Error('quota');return set(k,v);};migrateStorage(s);assert.equal(s.getItem('questbound.roster.v1'),'r');}
 // A save too large to copy beside its old self is moved all the same (the old key goes first).
 {const big='x'.repeat(4000),s=store({'questbound.roster.v1':big,'turquill.small':'1'},{quota:4000+'questbound.roster.v1'.length+20+30});
  migrateStorage(s);assert.equal(s.getItem('turquill.roster.v1'),big);assert.equal(s.getItem('questbound.roster.v1'),null);}
@@ -59,10 +63,26 @@ const {migrateDataNames,migrateDesktopFolders,legacyEnv}=require('./name-migrati
  const d=migrateDesktopFolders(home);assert.deepEqual(d.renamed,['Desktop/Questbound people']);assert.ok(fs.existsSync(path.join(home,'Desktop','Turquill people')));assert.ok(fs.existsSync(path.join(home,'Desktop','Questbound written tales')),'a Desktop copy is never merged or deleted');
  fs.rmSync(dir,{recursive:true,force:true});}
 {const env={QUESTBOUND_DATA:'/old',QUESTBOUND_DM_PORT:'9',TURQUILL_DM_PORT:'8084',OTHER:'x'};legacyEnv(env);assert.equal(env.TURQUILL_DATA,'/old');assert.equal(env.TURQUILL_DM_PORT,'8084','a new setting wins');}
-// Every server, the hosted runner and the launcher run it before anything else.
+// Every server reads old settings first. Only the launcher (with nothing of the game running) and the hosted runner
+// (which starts everything itself) rename files: a server renaming them under services still running from before the
+// update would leave those with empty libraries and no spending record (the review of 2026-10-27).
 for(const f of ['dm-server.cjs','sync-server.cjs','account-server.cjs','phone-server.cjs','desktop-server.cjs','serve.cjs']){const text=fs.readFileSync(f,'utf8'),at=text.indexOf("require('./name-migration.cjs').legacyEnv();");assert.ok(at>=0&&at<=text.indexOf('require(')&&!text.slice(0,at).includes('process.env'),f+' reads old settings before anything else');}
-for(const f of ['dm-server.cjs','sync-server.cjs','phone-server.cjs','desktop-server.cjs','serve.cjs'])assert.ok(fs.readFileSync(f,'utf8').includes("require('./name-migration.cjs').migrateDataNames("),f+' renames the data files as it starts');
-{const launch=fs.readFileSync('launch.ps1','utf8'),at=launch.indexOf("& node (Join-Path $root 'name-migration.cjs') --desktop --quiet");assert.ok(at>0&&at<launch.indexOf('$keyFile'),'the launcher renames everything before it reads a file');assert.ok(!/[^\x00-\x7f]/.test(launch),'launch.ps1 stays pure ASCII');}
+for(const f of ['dm-server.cjs','sync-server.cjs','account-server.cjs','phone-server.cjs','desktop-server.cjs'])assert.ok(!fs.readFileSync(f,'utf8').includes('migrateDataNames('),f+' never renames files under running services');
+{const serve=fs.readFileSync('serve.cjs','utf8');assert.ok(serve.includes("require('./name-migration.cjs').migrateDataNames(dataDir);")&&serve.indexOf("if(!process.env.TURQUILL_DATA)require('./name-migration.cjs').migrateDataNames(__dirname);")<serve.indexOf('async function startHosted'),'serve.cjs renames its folder and a local default one');}
+{const launch=fs.readFileSync('launch.ps1','utf8').replace(/\r\n/g,'\n'),at=launch.indexOf("& node (Join-Path $root 'name-migration.cjs') --desktop --quiet"),guard=launch.indexOf('$busy = @(8084, 8086, 8087');
+ assert.ok(at>0&&at<launch.indexOf('$keyFile')&&guard>0&&guard<at&&launch.includes("if ($oldNames.Count -and -not $Stop) {")&&launch.includes("if ($cmd -like '*desktop-server.cjs*') { $busy += 8081 }"),'the launcher renames everything before it reads a file, only with nothing of the game running and never on -Stop');
+ assert.ok(launch.includes("$logs = Join-Path $root '.questbound-logs'; $pidFile = Join-Path $logs 'pids.json'; $shareFile = Join-Path $root '.questbound-share-session.json'"),'-Stop finds services recorded under the old names');
+ assert.ok(!/[^\x00-\x7f]/.test(launch),'launch.ps1 stays pure ASCII');
+ assert.ok(fs.readFileSync('restart-game-services.ps1','utf8').includes("The game files still have their old names."),'the restarter refuses to mix old and new names');}
+// The ignore files keep the old names too, so nothing of the host's is ever committed or built into an image.
+for(const f of ['.gitignore','.dockerignore'])assert.ok(/^\.questbound-\*$/m.test(fs.readFileSync(f,'utf8'))&&/^\.turquill-\*$/m.test(fs.readFileSync(f,'utf8')),f+' ignores both names');
+// A key file is adopted under its new name, never made afresh beside the old one (backups and keyed records need it).
+{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-key-'));fs.writeFileSync(path.join(dir,'.questbound-backup-key.dpapi'),'k');
+ const src=fs.readFileSync('private-secrets.cjs','utf8');const adopt=new Function('fs','path',src.match(/function adoptOldName\(file\)\{[^\n]*\}/)[0]+';return adoptOldName;')(fs,path);
+ adopt(path.join(dir,'.turquill-backup-key.dpapi'));assert.equal(fs.readFileSync(path.join(dir,'.turquill-backup-key.dpapi'),'utf8'),'k');assert.ok(!fs.existsSync(path.join(dir,'.questbound-backup-key.dpapi')));
+ assert.ok(/function secretKey\(file\)\{\n adoptOldName\(file\);/.test(src.replace(/\r\n/g,'\n'))&&/function secretKeyAsync\(file\)\{\n adoptOldName\(file\);/.test(src.replace(/\r\n/g,'\n')),'both key readers adopt an old-named key first');fs.rmSync(dir,{recursive:true,force:true});}
+// The account service reads the old header names too (a gateway from before the update sends them).
+{const acct=fs.readFileSync('account-server.cjs','utf8');for(const h of ['client','secure','local'])assert.ok(acct.includes(`(req.headers['x-turquill-${h}']??req.headers['x-questbound-${h}'])`),'reads X-Questbound-'+h);}
 
 // 3. The launchers: Turquill.cmd is the real one; the old names run it.
 assert.ok(fs.readFileSync('Turquill.cmd','utf8').includes('launch.ps1')&&fs.readFileSync('Turquill-Share.cmd','utf8').includes('launch.ps1" -Share'));
@@ -70,7 +90,7 @@ assert.ok(fs.readFileSync('Questbound.cmd','utf8').includes('call "%~dp0Turquill
 
 // 4. Nothing of the old name is left but the stored identifiers (their bytes are hashed or saved) and history.
 {const keep=/questbound-(?:art-v1|account-v1|cloud-v1|ban-v1|table-ban-v1|campaign-invite-v2|invite-caller-v1|guest-v1|metrics-v1|mod-v1|people-plan-v2|people-plan-2|people-picks|place-picks|creature-picks|hero-face|creatures-v1|people-library|place-library|creature-library)/g;
- const allowed=new Set(['storageMigration.js','name-migration.cjs','verify-names.cjs','Questbound.cmd','Questbound-Share.cmd','account-server.cjs','phone-server.cjs','public/index.html','verify-theme.cjs','launch.ps1','AGENTS.md','assets/title/ART-NOTES.md','make-emblem.cjs']);
+ const allowed=new Set(['storageMigration.js','name-migration.cjs','verify-names.cjs','Questbound.cmd','Questbound-Share.cmd','account-server.cjs','phone-server.cjs','public/index.html','verify-theme.cjs','launch.ps1','AGENTS.md','assets/title/ART-NOTES.md','make-emblem.cjs','accounts.cjs','private-secrets.cjs','restart-game-services.ps1','serve.cjs']);
  const files=execSync('git ls-files',{encoding:'utf8'}).split('\n').filter(f=>f&&!f.startsWith('save-fixtures/')&&!f.startsWith('public/fonts/')&&!/\.(png|jpe?g|webp|woff2?|ico|zip)$/i.test(f)&&fs.existsSync(f));
  // Phrases that name the old kind on purpose: the migrations, the wrappers and their comments.
  const meant=/QUESTBOUND_\*|questbound\.\*|\.questbound-\*|Questbound(?:-Share)?\.cmd|questbound_(?:account|phone)|questbound\.theme\.v1|\(Questbound, until 2026-10-27\)/g;

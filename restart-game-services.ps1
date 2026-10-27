@@ -6,6 +6,9 @@ $questRoot = $PSScriptRoot
 . (Join-Path $questRoot 'restart-service-rules.ps1')
 $questNode = (Get-Command node -ErrorAction Stop).Source
 $questPidFile = Join-Path $questRoot '.turquill-logs\pids.json'
+# Files still under their old names (before 2026-10-27): the services running now use them, so a restart here would mix
+# the two. Stop everything and start Turquill again instead; the launcher renames the files with nothing running.
+if (-not (Test-Path -LiteralPath $questPidFile) -and (Test-Path -LiteralPath (Join-Path $questRoot '.questbound-logs\pids.json'))) { throw 'The game files still have their old names. Stop everything (Turquill.cmd -Stop) and start Turquill again; nothing was stopped.' }
 $questPids = Get-Content -LiteralPath $questPidFile -Raw | ConvertFrom-Json
 $questPlan = @()
 $questTargets = @(

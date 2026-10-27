@@ -76,7 +76,7 @@ function createSyncServer({dir=path.join(__dirname,'.turquill-table'),cloudDir=p
  const server=http.createServer(async(req,res)=>{
   const origin=req.headers.origin,send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store',...(allowedOrigins.has(origin)?{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Credentials':'true','Vary':'Origin'}:{})});res.end(JSON.stringify(data));};
   // A guest's cookie lasts 90 days and is renewed when used (accounts.cjs renews the token once a day); an account's lasts a week.
-  const setSession=(token,days=7)=>{const secure=req.headers['x-turquill-secure']==='1'?'; Secure':'';res.setHeader('Set-Cookie',['turquill_account='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age='+(token?days*86400:0)+secure,...(/(?:^|;\s*)questbound_account=/.test(req.headers.cookie??'')?['questbound_account=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'+secure]:[])]);};
+  const setSession=(token,days=7)=>{const secure=(req.headers['x-turquill-secure']??req.headers['x-questbound-secure'])==='1'?'; Secure':'';res.setHeader('Set-Cookie',['turquill_account='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age='+(token?days*86400:0)+secure,...(/(?:^|;\s*)questbound_account=/.test(req.headers.cookie??'')?['questbound_account=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'+secure]:[])]);};
   const loginResult=result=>{if(result.token){setSession(result.token);const {token,...publicResult}=result;return publicResult;}return result;};
   if(!loopbackHost(req))return send(403,{error:'Use the Turquill game on this PC.'});
   if(origin&&!allowedOrigins.has(origin))return send(403,{error:'Origin not allowed.'});
@@ -87,7 +87,7 @@ function createSyncServer({dir=path.join(__dirname,'.turquill-table'),cloudDir=p
    if(req.method!=='POST'||!req.headers['content-type']?.startsWith('application/json'))return send(404,{error:'Not found.'});
    if(!allowedOrigins.has(origin))return send(403,{error:'Use the Turquill game to reach the table.'});
    route=req.url.slice(1);if(!routes.has(route))return send(404,{error:'Not found.'});
-   caller=String(req.headers['x-turquill-client']??'this-pc').slice(0,80);
+   caller=String((req.headers['x-turquill-client']??req.headers['x-questbound-client'])??'this-pc').slice(0,80);
    if(perCaller.has(route)){const seconds=routeLimits.get(route)(caller);if(seconds)return tooMany(res,send,route,seconds);}
    let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>2500000)return send(413,{error:'This adventure is too large.'});}
    if(liveRoutes.has(route)&&Buffer.byteLength(raw)>1024)return send(413,{error:'Invalid request.'});
@@ -130,11 +130,11 @@ function createSyncServer({dir=path.join(__dirname,'.turquill-table'),cloudDir=p
     // A join by invite code waits once this caller (or everyone) has got codes wrong too often; a wrong code is counted.
     const byInvite=route==='campaign-join'&&b.invite!==undefined;
     if(byInvite){const held=inviteGuard.blocked(caller);if(held){ops.audit('invite-guess-denied',{route,status:429});res.setHeader('Retry-After',String(held.seconds));return send(429,{error:inviteWords[held.whose]});}}
-    let result;try{result=await campaigns[route.slice(9)](req.headers['x-turquill-local']==='1'?{...user,local:true}:user,b);}catch(e){if(byInvite&&e.inviteMiss){inviteGuard.miss(caller);ops.audit('invite-wrong',{route,status:404});}throw e;}
+    let result;try{result=await campaigns[route.slice(9)]((req.headers['x-turquill-local']??req.headers['x-questbound-local'])==='1'?{...user,local:true}:user,b);}catch(e){if(byInvite&&e.inviteMiss){inviteGuard.miss(caller);ops.audit('invite-wrong',{route,status:404});}throw e;}
     return send(result.conflict?409:200,result);}
    if(route==='usage'){if(b.kind==='dm')ops.consume(user.id,'dm-requests',300);return send(200,{allowed:true,id:user.id});}
    if(route==='ops-status'||route==='ops-verify-backups'){
-    if(req.headers['x-turquill-local']!=='1')return send(403,{error:'Host diagnostics are available only on the desktop.'});
+    if((req.headers['x-turquill-local']??req.headers['x-questbound-local'])!=='1')return send(403,{error:'Host diagnostics are available only on the desktop.'});
     if(user.guest)return send(403,{error:'Sign in with an account to see host diagnostics.'});
     return send(200,route==='ops-status'?ops.status():ops.backup.verify());
    }

@@ -227,4 +227,4 @@ function createArtStore({directory=path.join(process.env.TURQUILL_DATA||__dirnam
  return {request,readyMade,size:()=>jobs.size,places,people,creatures};
 }
 const artStore=createArtStore();
-module.exports={revision:13,createArtStore,artStore,validateSubject,artKey,artPrompt,DEFAULT_IMAGE_MODEL,creatureCampaign,creatureTemplates,templateSubject};
+module.exports={revision:14,createArtStore,artStore,validateSubject,artKey,artPrompt,DEFAULT_IMAGE_MODEL,creatureCampaign,creatureTemplates,templateSubject};

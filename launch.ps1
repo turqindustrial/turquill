@@ -1,5 +1,5 @@
-# Turquill launcher (the files keep their Turquill names; Turquill.cmd runs Turquill.cmd): starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
-# Double-click Turquill.cmd (or Turquill.cmd, the same launcher) to run it. Services already running are reused, never duplicated.
+# Turquill launcher: starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
+# Double-click Turquill.cmd to run it (Questbound.cmd, its old name, runs the same launcher). Services already running are reused, never duplicated.
 #   -Stop            stop everything this launcher started
 #   -Dev             serve the desktop game with the live-reloading Expo dev server instead of the finished build
 #   -NoBrowser       do not open the browser
@@ -21,8 +21,25 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 # The game's files were named .questbound-* until 2026-10-27; they take their new names (.turquill-*) here first, and so
-# do the Desktop copies of the libraries. A second run finds nothing to do. (name-migration.cjs)
-try { & node (Join-Path $root 'name-migration.cjs') --desktop --quiet } catch {}
+# do the Desktop copies of the libraries (name-migration.cjs; a second run finds nothing to do). Only with nothing of the
+# game running: services started before the update use the old names, and renaming their files under them would leave
+# them with empty libraries and no spending record. -Stop stops them first (it finds them under the old names).
+$oldNames = @(Get-ChildItem -LiteralPath $root -Force -Filter '.questbound-*' -ErrorAction SilentlyContinue)
+if ($oldNames.Count -and -not $Stop) {
+  $busy = @(8084, 8086, 8087 | Where-Object { Get-NetTCPConnection -State Listen -LocalPort $_ -ErrorAction SilentlyContinue })
+  foreach ($owner in @(Get-NetTCPConnection -State Listen -LocalPort 8081 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique)) {
+    $cmd = (Get-CimInstance Win32_Process -Filter "ProcessId = $owner" -ErrorAction SilentlyContinue).CommandLine
+    if ($cmd -like '*desktop-server.cjs*') { $busy += 8081 }
+  }
+  if ($busy.Count) {
+    Write-Host ''
+    Write-Host '  Turquill has new names for its files, and they are renamed once, with nothing running.' -ForegroundColor Yellow
+    Write-Host "  Still running (ports $($busy -join ', ')): stop the Dungeon Master window with Ctrl+C if you started it yourself," -ForegroundColor Yellow
+    Write-Host '  then run Turquill.cmd -Stop, then start Turquill again.' -ForegroundColor Yellow
+    return
+  }
+  try { & node (Join-Path $root 'name-migration.cjs') --desktop --quiet } catch {}
+}
 $oldStartupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Questbound.lnk'
 $logs = Join-Path $root '.turquill-logs'
 $pidFile = Join-Path $logs 'pids.json'
@@ -31,6 +48,10 @@ $modelFile = Join-Path $root '.turquill-model'
 $storyModelFile = Join-Path $root '.turquill-story-model'
 $sessionFile = Join-Path $root '.turquill-phone-session.json'
 $shareFile = Join-Path $root '.turquill-share-session.json'
+# Before the rename the services were recorded under the old names: -Stop finds them there.
+if ($Stop -and -not (Test-Path (Join-Path $root '.turquill-logs')) -and (Test-Path (Join-Path $root '.questbound-logs'))) {
+  $logs = Join-Path $root '.questbound-logs'; $pidFile = Join-Path $logs 'pids.json'; $shareFile = Join-Path $root '.questbound-share-session.json'
+}
 $tunnelTokenFile = Join-Path $root '.turquill-tunnel.dpapi'
 $tunnelHostFile = Join-Path $root '.turquill-tunnel-host'
 $discordFile = Join-Path $root '.turquill-discord.dpapi'

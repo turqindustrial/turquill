@@ -119,4 +119,4 @@ function createPlaceLibrary({directory=path.join(process.env.TURQUILL_DATA||__di
  }
  return {answer,refresh,entries:()=>usable(),complete:()=>complete};
 }
-module.exports={revision:1,createPlaceLibrary,choosePicture,matchOf,libraryEligible,libraryCampaign,relatedKinds,placeKinds,terrains,kindTerrainComplete};
+module.exports={revision:2,createPlaceLibrary,choosePicture,matchOf,libraryEligible,libraryCampaign,relatedKinds,placeKinds,terrains,kindTerrainComplete};

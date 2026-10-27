@@ -3,7 +3,7 @@
 // stays open for more than a moment, so neither a phone's gateway nor the shared link's tunnel gives up on it.
 // The running Dungeon Master keeps this module loaded between requests (it is not reloaded with dm-server.cjs), so
 // keep it small and steady; bump `revision` when it changes and the server loads it afresh.
-const revision=1;
+const revision=2;
 const keep=15*60*1000,atOnce=4,held=60;
 const jobIdOk=id=>typeof id==='string'&&/^[A-Za-z0-9-]{16,64}$/.test(id);
 function createStoryJobs({now=Date.now}={}){

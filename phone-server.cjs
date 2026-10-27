@@ -266,7 +266,6 @@ function networkVerdict(profile,trusted=[]){
  return {ok:false,name:profile.name};
 }
 if(require.main===module){
- require('./name-migration.cjs').migrateDataNames(process.env.TURQUILL_DATA||__dirname);
  const args=process.argv.slice(2),publicOrigin=args.includes('--public')?args[args.indexOf('--public')+1]:null;
  if(!fs.existsSync(path.join(__dirname,'dist-phone','index.html'))){console.error('Build the game first with npm run build:web.');process.exitCode=1;}
  else if(publicOrigin){

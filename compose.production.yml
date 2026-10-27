@@ -12,12 +12,13 @@ services:
     restart: unless-stopped
     ports: ["127.0.0.1:8080:8080"]
     tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
-    volumes: ["turquill-data:/data"]
+    # The volume keeps the name it had before the rename of 2026-10-27, so a running host keeps its accounts and tables.
+    volumes: ["questbound-data:/data"]
     environment:
       TURQUILL_DATA: /data
-      TURQUILL_PUBLIC_ORIGIN: ${TURQUILL_PUBLIC_ORIGIN:?Set the HTTPS game origin}
+      TURQUILL_PUBLIC_ORIGIN: ${TURQUILL_PUBLIC_ORIGIN:-${QUESTBOUND_PUBLIC_ORIGIN:?Set the HTTPS game origin}}
       OPENAI_API_KEY: ${OPENAI_API_KEY:?Supply the host secret privately}
-      TURQUILL_MAIL_SENDER: ${TURQUILL_MAIL_SENDER:?Set the dedicated Gmail address}
-      TURQUILL_MAIL_PASSWORD: ${TURQUILL_MAIL_PASSWORD:?Supply the Gmail app password privately}
+      TURQUILL_MAIL_SENDER: ${TURQUILL_MAIL_SENDER:-${QUESTBOUND_MAIL_SENDER:?Set the dedicated Gmail address}}
+      TURQUILL_MAIL_PASSWORD: ${TURQUILL_MAIL_PASSWORD:-${QUESTBOUND_MAIL_PASSWORD:?Supply the Gmail app password privately}}
 volumes:
-  turquill-data:
+  questbound-data:

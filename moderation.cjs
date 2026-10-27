@@ -17,7 +17,7 @@
 // Master for twenty minutes (sexual content involving minors counts twice).
 const crypto=require('node:crypto'),fs=require('node:fs'),path=require('node:path');
 const {moderationLabel}=require('./bans.cjs');
-const revision=1;
+const revision=2;
 const ENDPOINT='https://api.openai.com/v1/moderations',MODEL='omni-moderation-latest';
 const limits={
  turn:{'sexual/minors':0.1,'hate':0.6,'hate/threatening':0.5,'harassment':0.85,'harassment/threatening':0.9,'sexual':0.75,'self-harm/instructions':0.5},

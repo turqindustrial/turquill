@@ -19,7 +19,7 @@
 // too, except a face of an invented people (one with `kin`, or with features no common people has) and a face painted
 // for one of the hero's own tales (`from`: someone there wears it).
 const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
-const revision=2;
+const revision=3;
 const {faceIdPattern:facePattern,unlikeOf}=require('./people-library.cjs');
 const isHeroCampaign=c=>/^hero-[0-9a-z]{1,13}$/.test(String(c));
 // What world-art.cjs validateSubject keeps of a hero subject beside the usual fields: only known values.

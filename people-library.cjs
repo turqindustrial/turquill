@@ -18,7 +18,7 @@
 // The running Dungeon Master keeps this module loaded (world-art.cjs loads it afresh when it loads): a change here needs
 // world-art's revision and dm-server.cjs's literals raised together.
 const fs=require('node:fs/promises'),fsSync=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const revision=4;
+const revision=5;
 // Copies of the game's own lists (verify-people-library.cjs checks that they agree): characterRules species and
 // classes, mapRules placeKinds and terrains.
 const speciesList=['Dragonborn','Dwarf','High Elf','Wood Elf','Drow','Gnome','Goblin','Goliath','Half-Elf','Halfling','Human','Orc','Tiefling'];
