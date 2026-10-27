@@ -309,12 +309,12 @@ input::placeholder,textarea::placeholder{font-style:italic;}
 [data-qb=emblem-turn]{animation:qb-emblem-turn 36s linear infinite;will-change:transform;}
 @keyframes qb-emblem-turn{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 [data-qb=emblem-ring]{background-image:url(/emblem/ring-v2.webp);}
-[data-qb=emblem-core]{background-image:url(/emblem/core-v2.webp);}
+[data-qb=emblem-core]{background-image:url(/emblem/core-v3.webp);}
 [data-qb=emblem-glow]{opacity:.55;animation:qb-emblem-glow 7s ease-in-out infinite;}
 [data-qb=emblem-glow][data-part=ring]{background-image:url(/emblem/ring-glow-v2.webp);}
-[data-qb=emblem-glow][data-part=core]{background-image:url(/emblem/core-glow-v2.webp);animation-delay:-3.5s;}
+[data-qb=emblem-glow][data-part=core]{background-image:url(/emblem/core-glow-v3.webp);animation-delay:-3.5s;}
 @keyframes qb-emblem-glow{0%,100%{opacity:.3;}50%{opacity:.9;}}
-[data-qb=emblem-sheen]{overflow:hidden;-webkit-mask:url(/emblem/core-v2.webp) center/100% 100% no-repeat;mask:url(/emblem/core-v2.webp) center/100% 100% no-repeat;}
+[data-qb=emblem-sheen]{overflow:hidden;-webkit-mask:url(/emblem/core-v3.webp) center/100% 100% no-repeat;mask:url(/emblem/core-v3.webp) center/100% 100% no-repeat;}
 [data-qb=emblem-shine]{background:linear-gradient(105deg,transparent 22%,var(--qb-emblem-shine) 50%,transparent 78%);opacity:0;transform:translateX(-120%);animation:qb-emblem-sheen 12s ease-in-out 2s infinite;}
 @keyframes qb-emblem-sheen{0%{opacity:0;transform:translateX(-120%);}6%{opacity:1;}28%{opacity:1;transform:translateX(240%);}29%,100%{opacity:0;transform:translateX(240%);}}
 [data-qb=emblem-twinkle]{background-image:${sparkle};background-size:contain;opacity:0;animation:qb-emblem-twinkle 6.4s ease-in-out infinite;}
@@ -322,7 +322,7 @@ input::placeholder,textarea::placeholder{font-style:italic;}
 [data-qb=emblem-twinkle][data-star=south]{animation-delay:3.2s;}
 [data-qb=emblem-twinkle][data-star=north]{animation-delay:4.8s;}
 @keyframes qb-emblem-twinkle{0%,60%,100%{opacity:0;transform:scale(.3) rotate(0deg);}72%{opacity:1;transform:scale(1) rotate(30deg);}86%{opacity:0;transform:scale(.5) rotate(60deg);}}
-[data-qb=emblem-mark]{background:url(/emblem/seal-v1.webp) center/contain no-repeat;filter:var(--qb-emblem-filter);}
+[data-qb=emblem-mark]{background:url(/emblem/seal-v2.webp) center/contain no-repeat;filter:var(--qb-emblem-filter);}
 [data-qb=launch-prompt]{animation:qb-pulse 2.2s ease-in-out infinite;}
 @keyframes qb-pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
 /* Game HUD and phone tab bar: dark glass, always on top of the scene. They are almost opaque, so they carry no blur
@@ -433,7 +433,7 @@ ${L}[data-qb=gold],${L}[data-qb=logo]{filter:none !important;text-shadow:none !i
 ${L}[data-qb=crest]{background:radial-gradient(circle at 50% 35%,rgb(var(--ql-raised)) 0%,rgb(var(--ql-panel)) 60%,rgb(var(--ql-well)) 100%) !important;box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .12),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-main) / .55),inset 0 1px 2px rgb(255 255 255 / .8),inset 0 -4px 8px rgb(var(--ql-shadow) / .06),0 4px 12px rgb(var(--ql-shadow) / .12);}
 ${L}[data-qb=crest] svg{filter:none;}
 /* The small emblem in the top bar sits on the same dark medallion as the large one. */
-${L}[data-qb=emblem-mark]{background:url(/emblem/seal-v1.webp) center/contain no-repeat,radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 90%,rgb(170,50,84) 92%,rgb(120,28,56) 95%,rgba(60,30,30,0) 98%);}
+${L}[data-qb=emblem-mark]{background:url(/emblem/seal-v2.webp) center/contain no-repeat,radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 90%,rgb(170,50,84) 92%,rgb(120,28,56) 95%,rgba(60,30,30,0) 98%);}
 ${L}[data-qb=badge]{background:linear-gradient(180deg,rgb(var(--ql-fillTop)),rgb(var(--ql-fillEdge))) !important;box-shadow:0 0 0 1.5px rgb(var(--ql-raised)),0 1px 3px rgb(var(--ql-shadow) / .25);}
 ${L}[data-qb=portrait]{box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .14),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-main) / .45),0 8px 22px rgb(var(--ql-shadow) / .14);}
 ${L}[data-qb=portrait-hot]{box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .14),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-blood) / .55),0 8px 22px rgb(var(--ql-blood) / .14);}

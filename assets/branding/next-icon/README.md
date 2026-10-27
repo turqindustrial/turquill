@@ -4,7 +4,7 @@ The host asked on 2026-10-10 to "design the new phone icon but keep it stored un
 holds it. Nothing here is served or referenced by the game: the live icons are still the red emblem made by
 `node make-icons.cjs` from `assets/title/icon.html`, at `?v=4`.
 
-The design: the Questbound emblem (the host's painting, `assets/title/questbound-emblem.webp` from `make-emblem.cjs`)
+The design: the Questbound emblem (the host's painting, `assets/title/turquill-emblem.webp` from `make-emblem.cjs`)
 in gold, the Gold theme's treatment (`grayscale(1) sepia(1) saturate(2.4) hue-rotate(-2deg) brightness(1.4)
 contrast(1.25)`, a little more contrast at small sizes): pale yellow-gold highlights, deep bronze shadows, on a deep
 dark ground with a faint warm glow, cut close to the serpent ring so the Q reads on a home screen and in a browser tab.
@@ -37,7 +37,7 @@ nothing else).
    - `fullscreen.js` (the `apple-touch-icon` link it adds),
    - `phone-server.cjs` (the pairing page's icon links); the share gateway must then be restarted.
 3. Make it the page `make-icons.cjs` draws by default: copy `icon.html` over `assets/title/icon.html` (change its
-   picture path from `../../title/questbound-emblem.webp` to `questbound-emblem.webp`) and give `make-icons.cjs`'s
+   picture path from `../../title/turquill-emblem.webp` to `turquill-emblem.webp`) and give `make-icons.cjs`'s
    main list the insets used for `nextIcons` (the small icons all cut close to the ring), then run `node make-icons.cjs`
    to check it draws the same files.
 4. Update `verify-presentation.cjs` (it checks `?v=4` and the live icon list), `assets/title/ART-NOTES.md` and the title
