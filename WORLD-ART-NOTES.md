@@ -9,9 +9,9 @@ Existing adventures remain compatible. Their portraits use the existing name, ro
 ## Saving and API behavior
 
 - Each image is identified by campaign ID, subject type, and individual subject ID. Another character or another campaign gets a separate image; a repeated visit reuses the saved image.
-- Images and descriptive metadata are stored locally in `.questbound-art/`, which is ignored by source control. They are separate from browser saves. Back up that folder along with the project to retain artwork when moving computers.
+- Images and descriptive metadata are stored locally in `.turquill-art/`, which is ignored by source control. They are separate from browser saves. Back up that folder along with the project to retain artwork when moving computers.
 - The existing private DM service and its configured API key make the requests. No key is sent to the game browser, and no additional key is required.
-- The Responses API uses the configured DM model with the `image_generation` tool. Default image model: `gpt-image-2.5-flare`, overridable by `QUESTBOUND_IMAGE_MODEL`. Portraits use 1024×1024; scenes use 1536×1024; low quality, JPEG, compression 80; `store: false`.
+- The Responses API uses the configured DM model with the `image_generation` tool. Default image model: `gpt-image-2.5-flare`, overridable by `TURQUILL_IMAGE_MODEL`. Portraits use 1024×1024; scenes use 1536×1024; low quality, JPEG, compression 80; `store: false`.
 - Requests are deduplicated and queued one at a time. Only encountered subjects are requested, not the entire unvisited map. Failed generation is not automatically repeated; the full portrait/scene offers Retry illustration. Cached images survive browser and server restarts.
 - New images use API credit. Images are downloaded once into the local cache and reused. Browser reloads and opening/closing the same conversation do not request another generation.
 - Hidden motives and campaign secrets are excluded from portrait prompts. Provider error bodies and credential fragments are never displayed to the player.

@@ -53,11 +53,11 @@ export default function DungeonMaster({hero,game,health,act,onConversationChange
   const [attackOpen,setAttackOpen]=useState(false),[attackTarget,setAttackTarget]=useState(null);
   const closeAttack=()=>{setAttackOpen(false);setAttackTarget(null);};
   // A one-time "How to play" card for new players; dismissed once per device.
-  const [tips,setTips]=useState(()=>{try{return !globalThis.localStorage?.getItem('questbound.tips.v1');}catch{return false;}});
+  const [tips,setTips]=useState(()=>{try{return !globalThis.localStorage?.getItem('turquill.tips.v1');}catch{return false;}});
   // A player who read the primer while their tale was written needs only a reminder; the Skirmish teaches as it goes.
-  const [primed]=useState(()=>{try{return !!globalThis.localStorage?.getItem('questbound.primer.v1');}catch{return false;}});
+  const [primed]=useState(()=>{try{return !!globalThis.localStorage?.getItem('turquill.primer.v1');}catch{return false;}});
   const lesson=tips?skirmishHint(game,health,combatBasics(gearedHero(hero,game)).hp):null;
-  const dismissTips=()=>{setTips(false);try{globalThis.localStorage?.setItem('questbound.tips.v1','seen');}catch{}};
+  const dismissTips=()=>{setTips(false);try{globalThis.localStorage?.setItem('turquill.tips.v1','seen');}catch{}};
   useEffect(()=>{if(tips&&lastTurnId>=3)dismissTips();},[lastTurnId]);
   useEffect(()=>{setSpellsOpen(false);setCastSpell(null);closeAttack();},[lastTurnId]);
   // Tell the table while this player is taking a turn, so others wait instead of racing.

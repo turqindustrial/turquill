@@ -1,4 +1,4 @@
-// The one list of Questbound's rules files, in the order they are put together: the campaign server's rules engine
+// The one list of Turquill's rules files, in the order they are put together: the campaign server's rules engine
 // (rules-engine.cjs), the checks (verify-*.cjs), dm-probe, dm-judgment and balance-check all read it here. A new
 // rules file goes into `rulesFiles` once, at the place its top-level values need (a file whose top level reads another
 // file's constant comes after it; functions may be in any order). Concatenated files share one scope, so every

@@ -4,12 +4,12 @@
 // progress", "make sure to keep in mind every class, race, and gender", then "let's cut that npc amount to 300 for now
 // and make sure they are all entirely unique"). Run by hand on the host's PC, through the host's own running Dungeon
 // Master (loopback, as the desktop game asks; the API key never leaves it):
-//   node make-people-library.cjs              writes the people (text), 20 at a time, into .questbound-people/library.json
-//   node make-people-library.cjs --portraits  paints each person's portrait, one at a time, into .questbound-people/<id>.jpg
+//   node make-people-library.cjs              writes the people (text), 20 at a time, into .turquill-people/library.json
+//   node make-people-library.cjs --portraits  paints each person's portrait, one at a time, into .turquill-people/<id>.jpg
 // Options: --limit N (at most N people or portraits this run), --budget D (stop before this run spends D dollars),
 // --plan (write the plan and say what is left to do and about what it would cost; nothing is asked of anyone),
 // --batch 2 (the second batch as well: see below), --no-desktop (no copy to the Desktop folder). Both phases are
-// resumable: what is done is skipped. Everything is under QUESTBOUND_DATA when that is set (a hosted game), else beside
+// resumable: what is done is skipped. Everything is under TURQUILL_DATA when that is set (a hosted game), else beside
 // this file.
 // The second batch (2026-10-22, the host's words: "make about 30 different portraits per race, appealing to all classes
 // and non classes alike, then add them to the roster of character portraits that we already have"), ids np301…np690:
@@ -21,7 +21,7 @@
 //   node make-people-library.cjs --batch 2 --plan        the plan and the expected cost (about $0.03 a portrait)
 //   node make-people-library.cjs --batch 2               writes the 390 people (text, cents in all)
 //   node make-people-library.cjs --portraits             paints every person not yet painted, one at a time
-// The plan (.questbound-people/plan.json, written first and always the same), ids np001…np300: 169 trained people, every
+// The plan (.turquill-people/plan.json, written first and always the same), ids np001…np300: 169 trained people, every
 // class with every species exactly once, genders turning so that each class and each species has all three; and 131
 // ordinary people (no class) spread evenly over the 39 species and gender pairs (three each, four for fourteen of them).
 // Every slot has a calling of its own (roleHint: a calling and a twist, never two alike) and a hook theme of its own
@@ -118,7 +118,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const arg=(name,fallback)=>{const i=process.argv.indexOf(name);return i>=0&&process.argv[i+1]!==undefined?Number(process.argv[i+1]):fallback;};
 function runCost(dataDir,since){
  const s=require('./spending.cjs');let text=0;
- try{for(const line of fs.readFileSync(path.join(dataDir,'.questbound-usage.jsonl'),'utf8').split('\n'))if(line.trim())try{const e=JSON.parse(line);if(e.mode==='people'&&Date.parse(e.at)>=since)text+=s.costOf(e);}catch{}}catch{}
+ try{for(const line of fs.readFileSync(path.join(dataDir,'.turquill-usage.jsonl'),'utf8').split('\n'))if(line.trim())try{const e=JSON.parse(line);if(e.mode==='people'&&Date.parse(e.at)>=since)text+=s.costOf(e);}catch{}}catch{}
  return text;
 }
 const billing=message=>/insufficient_quota|billing|exceeded your current quota|HTTP 401|HTTP 403|rejected image-generation authorization|cannot generate images|usage limit|unavailable to this API project|not configured/i.test(String(message));
@@ -127,8 +127,8 @@ function writeAtomic(file,text){
  for(let i=0;;i++){try{fs.renameSync(temporary,file);return;}catch(e){if(i>=5)throw e;const until=Date.now()+200;while(Date.now()<until);}}
 }
 async function main(){
- const dataDir=process.env.QUESTBOUND_DATA||__dirname,dir=path.join(dataDir,'.questbound-people'),dm=process.env.QB_DM_URL||'http://127.0.0.1:8084/dm';
- const desktop=process.argv.includes('--no-desktop')?null:path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Questbound people');
+ const dataDir=process.env.TURQUILL_DATA||__dirname,dir=path.join(dataDir,'.turquill-people'),dm=process.env.QB_DM_URL||'http://127.0.0.1:8084/dm';
+ const desktop=process.argv.includes('--no-desktop')?null:path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Turquill people');
  const limit=arg('--limit',Infinity),budget=arg('--budget',Infinity),started=Date.now(),batch=arg('--batch',1);
  if(![1,2].includes(batch)){console.log('--batch is 1 or 2.');return 1;}
  fs.mkdirSync(dir,{recursive:true});

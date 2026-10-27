@@ -28,12 +28,12 @@ const tick=()=>new Promise(r=>setImmediate(r));
  b.fire('keydown',{key:'F',target:{tagName:'DIV'},preventDefault(){}});await tick();assert.equal(b.full,false);
  // Optional auto full screen on the first tap, remembered per device, and it does not fight the F key.
  b=browser();b.api.initializeFullscreen();b.fire('pointerup',{});await tick();assert.equal(b.full,false,'Off by default');
- b.api.setDisplayPrefs({autoFullscreen:true});assert.equal(JSON.parse(b.store['questbound.display.v1']).autoFullscreen,true);
- assert.equal(b.api.displayState().screenEffects,true,'Screen flashes and shake are on by default');b.api.setDisplayPrefs({screenEffects:false});assert.equal(b.api.displayState().screenEffects,false);assert.equal(JSON.parse(b.store['questbound.display.v1']).autoFullscreen,true,'Changing one display choice keeps the others');b.api.setDisplayPrefs({screenEffects:true});
+ b.api.setDisplayPrefs({autoFullscreen:true});assert.equal(JSON.parse(b.store['turquill.display.v1']).autoFullscreen,true);
+ assert.equal(b.api.displayState().screenEffects,true,'Screen flashes and shake are on by default');b.api.setDisplayPrefs({screenEffects:false});assert.equal(b.api.displayState().screenEffects,false);assert.equal(JSON.parse(b.store['turquill.display.v1']).autoFullscreen,true,'Changing one display choice keeps the others');b.api.setDisplayPrefs({screenEffects:true});
  b.fire('pointerup',{});await tick();assert.equal(b.full,true);
- b=browser();b.store['questbound.display.v1']=JSON.stringify({autoFullscreen:true});b.api.initializeFullscreen();b.fire('keydown',{key:'f',target:{tagName:'DIV'},preventDefault(){}});await tick();assert.equal(b.full,true,'F with auto enabled enters once, not twice');
+ b=browser();b.store['turquill.display.v1']=JSON.stringify({autoFullscreen:true});b.api.initializeFullscreen();b.fire('keydown',{key:'f',target:{tagName:'DIV'},preventDefault(){}});await tick();assert.equal(b.full,true,'F with auto enabled enters once, not twice');
  // Installed Home Screen apps are already full screen; iPhone falls back to Home Screen instructions.
- b=browser({installed:true});b.store['questbound.display.v1']=JSON.stringify({autoFullscreen:true});b.api.initializeFullscreen();b.fire('pointerup',{});await tick();assert.equal(b.full,false);assert.equal(b.api.displayState().installed,true);
+ b=browser({installed:true});b.store['turquill.display.v1']=JSON.stringify({autoFullscreen:true});b.api.initializeFullscreen();b.fire('pointerup',{});await tick();assert.equal(b.full,false);assert.equal(b.api.displayState().installed,true);
  b=browser({supported:false,ua:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',platform:'iPhone'});b.api.initializeFullscreen();
  const s=b.api.displayState();assert.equal(s.supported,false);assert.equal(s.ios,true);assert.equal(await b.api.enterFullscreen(),false);
  assert.equal(browser({supported:false,platform:'MacIntel',touch:5}).api.displayState().ios,true,'iPadOS reports as a Mac with touch');

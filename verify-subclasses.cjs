@@ -41,9 +41,9 @@ for(const [cls,list] of Object.entries(plain(r.legacySubclassOptions)))for(const
 assert.equal(r.validPlannedSubclass({class:'Wizard',plannedSubclass:'Snarewright'}),false,'a subclass belongs to its class');
 
 // ---- 2. The catalog and the engine's table agree ----
-const questbound=ours.map(([,n])=>n);
+const turquill=ours.map(([,n])=>n);
 const featureNames=new Set();
-for(const name of questbound){
+for(const name of turquill){
  const spec=r.subclassEngine[name];assert.ok(spec,name+' is in subclassRules.js');
  const cls=spec.class,rows=catalog.filter(f=>f.subclass===name);
  assert.ok(rows.length>0,name+' has catalog features');

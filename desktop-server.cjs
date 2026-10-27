@@ -1,4 +1,5 @@
 // Serves the exported game (dist-phone) to this PC at http://localhost:8081. Loopback only; never serves workspace files.
+require('./name-migration.cjs').legacyEnv(); // settings given under their old names (QUESTBOUND_*) still count
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const {setBaseHeaders,filePolicies,publicFile}=require('./security-headers.cjs');
 const {feedbackEntry,sessionRatingEntry,saveFeedback,FEEDBACK_BODY_LIMIT}=require('./feedback-notes.cjs');
@@ -12,7 +13,9 @@ const hashedFile=(relative,file)=>(/^\/(_expo|assets)\//.test(relative)&&/[.-][0
 // How long the table service may take: a turn waits on the Dungeon Master, a held wait answers within about 25 s.
 const syncTimeout=route=>route==='campaign-turn'?240000:route==='campaign-wait'?40000:20000;
 const cacheFor=(relative,file)=>path.basename(file)==='index.html'?'no-store':hashedFile(relative,file)?'public, max-age=31536000, immutable':'no-cache';
-function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,syncBackend='http://127.0.0.1:8086',fetchImpl=fetch,feedbackFile=path.join(__dirname,'playtest-feedback.md'),metricsFile=path.join(__dirname,'.questbound-metrics.jsonl'),now=Date.now}={}){
+// Each Set-Cookie of the account service is passed on as its own header (joined, a browser reads them as one).
+const setCookies=headers=>{const list=headers?.getSetCookie?.();if(list?.length)return list;const one=headers?.get?.('set-cookie');return one?[one]:[];};
+function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,syncBackend='http://127.0.0.1:8086',fetchImpl=fetch,feedbackFile=path.join(__dirname,'playtest-feedback.md'),metricsFile=path.join(__dirname,'.turquill-metrics.jsonl'),now=Date.now}={}){
  root=path.resolve(root);
  const feedbackTimes=[],metricsTimes=[],writeMetrics=metricsFile?metricsWriter(metricsFile,{now}):null;
  const ownPage=req=>[`http://localhost:${port}`,`http://127.0.0.1:${port}`].includes(req.headers.origin);
@@ -62,8 +65,8 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
     // A held wait (campaign-wait, about 25 s) gets a little longer than the service holds it, and is let go upstream the
     // moment the browser goes away; a turn keeps going even then (it is kept on the table either way).
     const gone=new AbortController();if(route==='campaign-wait')res.on('close',()=>{if(!res.writableFinished)gone.abort();});
-    const response=await fetchImpl(syncBackend+'/'+route,{method:'POST',headers:{Origin:'http://localhost:8081','Content-Type':'application/json',Cookie:req.headers.cookie??'','X-Questbound-Client':'desktop','X-Questbound-Local':'1'},body:raw,signal:AbortSignal.any([AbortSignal.timeout(syncTimeout(route)),gone.signal])});
-    const cookie=response.headers.get('set-cookie');if(cookie)res.setHeader('Set-Cookie',cookie);res.writeHead(response.status,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(await response.text());
+    const response=await fetchImpl(syncBackend+'/'+route,{method:'POST',headers:{Origin:'http://localhost:8081','Content-Type':'application/json',Cookie:req.headers.cookie??'','X-Turquill-Client':'desktop','X-Turquill-Local':'1'},body:raw,signal:AbortSignal.any([AbortSignal.timeout(syncTimeout(route)),gone.signal])});
+    const cookie=setCookies(response.headers);if(cookie.length)res.setHeader('Set-Cookie',cookie);res.writeHead(response.status,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(await response.text());
    }catch{if(res.destroyed||res.writableEnded)return;return res.writeHead(503,{'Content-Type':'application/json'}).end(JSON.stringify({error:'The account and campaign service is unavailable.'}));}
   }
   let relative;try{relative=decodeURIComponent(new URL(req.url,'http://localhost').pathname);}catch{return res.writeHead(400).end();}
@@ -86,7 +89,8 @@ function createDesktopServer({root=path.join(__dirname,'dist-phone'),port=8081,s
  return server;
 }
 if(require.main===module){
- const port=Number(process.env.QUESTBOUND_DESKTOP_PORT??8081),server=createDesktopServer({port});
+ require('./name-migration.cjs').migrateDataNames(process.env.TURQUILL_DATA||__dirname);
+ const port=Number(process.env.TURQUILL_DESKTOP_PORT??8081),server=createDesktopServer({port});
  server.on('error',e=>{console.error(e.code==='EADDRINUSE'?'Something is already using port '+port+'.':e.message);process.exitCode=1;});
  server.listen(port,'127.0.0.1',()=>console.log('Turquill desktop ready at http://localhost:'+port+'/'));
 }

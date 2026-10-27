@@ -1,9 +1,9 @@
 // Anonymous play counts (the host's request of 2026-10-13: "anonymous counts of how long sessions last, where people
 // quit and how many turns fail, with the privacy text updated to match"). Each browser that has not turned them off
-// (Settings → Help improve Questbound, playMetrics.js) sends one small record of mechanical counts when a session goes
+// (Settings → Help improve Turquill, playMetrics.js) sends one small record of mechanical counts when a session goes
 // out of sight: how long it was played, turns sent, turns that failed and how, where it ended, the tale opening chosen,
 // how a story wait went, phone or desktop, and the build. The gateways (phone-server.cjs, desktop-server.cjs) check it
-// against this strict schema and append it to .questbound-metrics.jsonl (metrics.jsonl in a hosted data folder);
+// against this strict schema and append it to .turquill-metrics.jsonl (metrics.jsonl in a hosted data folder);
 // play-report.cjs reads it. Records older than metricsRetentionDays are pruned.
 //
 // Nothing typed or named can be recorded: every field is a number, a boolean, a fixed word from a list, or a random
@@ -58,9 +58,9 @@ function metricsRecord(body,{now=Date.now(),from='link'}={}){
   wait:{started:wait.started,done:wait.done,failed:wait.failed,waited:wait.waited,pending:wait.pending},
  }};
 }
-// The records file beside the feedback notes: .questbound-metrics.jsonl on the host's PC (git-ignored with every
-// .questbound-* file), metrics.jsonl in a hosted data folder.
-const metricsFileIn=(dir,hosted=false)=>path.join(dir,hosted?'metrics.jsonl':'.questbound-metrics.jsonl');
+// The records file beside the feedback notes: .turquill-metrics.jsonl on the host's PC (git-ignored with every
+// .turquill-* file), metrics.jsonl in a hosted data folder.
+const metricsFileIn=(dir,hosted=false)=>path.join(dir,hosted?'metrics.jsonl':'.turquill-metrics.jsonl');
 // Drops records older than the retention; returns how many were dropped. Never throws.
 function pruneMetrics(file,{now=Date.now(),days=metricsRetentionDays}={}){
  try{

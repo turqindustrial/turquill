@@ -38,7 +38,7 @@ const tailOf=q=>{const last=q.input.at(-1);return last.role==='developer'&&q.inp
  assert.ok(fs.readFileSync('useDmTurn.js','utf8').includes('extra:{...suggestionsFlag(),...extra}'),'the device sends it with every request');
  {const t=fs.readFileSync('useDmTurn.js','utf8');assert.ok(t.includes('table.turn(opening.scene,{npcId:id,greet:true,...suggestionsFlag(),')&&t.includes('table.turn(question,{npcId:target,...suggestionsFlag(),'),'both table turns carry it');}assert.ok(fs.readFileSync('useSharedTable.js','utf8').includes('...(suggest===false?{suggest:false}:{}),baseVersion'),'and the table sends it on');
  assert.ok(fs.readFileSync('server-turn.cjs','utf8').includes("...(request.suggest===false?{suggest:false}:{})"),'the campaign server keeps only false');
- {const src=fs.readFileSync('suggestionPanel.js','utf8');assert.ok(src.includes("export const panelKey='questbound.suggestions.v1'")&&src.includes('export const suggestionsClosed=()=>!loadPanel().open'),'closed means the panel the player sees is closed');}
+ {const src=fs.readFileSync('suggestionPanel.js','utf8');assert.ok(src.includes("export const panelKey='turquill.suggestions.v1'")&&src.includes('export const suggestionsClosed=()=>!loadPanel().open'),'closed means the panel the player sees is closed');}
 
  // ---- 2. A telling reads only what a telling can use ----
  replies=[{narration:'You lean over the ledger.',check:{skill:'Investigation',ability:'Intelligence',dc:13,mode:'normal',reason:'Reading the ledger',success:'You spot the altered entries.',failure:'The numbers swim together.',damageCount:0,damageDie:6,damageOn:'none'}}];

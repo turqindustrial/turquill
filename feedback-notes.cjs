@@ -21,9 +21,9 @@ function sanitise(value,depth=0){
  if(typeof value==='object'){const out={};for(const [k,v] of Object.entries(value).slice(0,40))out[oneLine(k,40)||'_']=sanitise(v,depth+1);return out;}
  return null;
 }
-// Where the records go: .questbound-feedback.jsonl beside playtest-feedback.md (git-ignored with every
-// .questbound-* file), or feedback.jsonl beside a notes file with any other name (a hosted data folder, the checks).
-const feedbackRecordFile=file=>path.join(path.dirname(file),path.basename(file).startsWith('playtest')?'.questbound-feedback.jsonl':'feedback.jsonl');
+// Where the records go: .turquill-feedback.jsonl beside playtest-feedback.md (git-ignored with every
+// .turquill-* file), or feedback.jsonl beside a notes file with any other name (a hosted data folder, the checks).
+const feedbackRecordFile=file=>path.join(path.dirname(file),path.basename(file).startsWith('playtest')?'.turquill-feedback.jsonl':'feedback.jsonl');
 const stars=rating=>'★'.repeat(rating)+'☆'.repeat(5-rating);
 // note: {text, rating, context:{player,hero,device,where,screen,story}, details}. Returns {error} or {markdown,record}.
 function feedbackEntry(note,{now=Date.now(),guest=null,random=crypto.randomBytes}={}){

@@ -1,6 +1,6 @@
 // How the Dungeon Master tells violence, chosen per device. Deaths are always described precisely; brutality only
 // decides how much blood and gore the telling shows.
-const KEY='questbound.story.v1';
+const KEY='turquill.story.v1';
 export const brutalityLevels=[
  {id:'restrained',label:'Restrained',icon:'shield',description:'Every killing blow and fall is told exactly, but blood and gore stay out of view.'},
  {id:'gritty',label:'Gritty',icon:'swords',description:'Wounds, blood and pain are described plainly, as they are.'},

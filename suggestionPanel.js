@@ -1,6 +1,6 @@
 // The Suggestions panel on this device (DungeonMaster.js draws it; DmSuggestions.js its strip): open or closed, and the
 // sub-tab (say, speak or actions) last chosen. It starts closed and is remembered per device.
-export const panelKey='questbound.suggestions.v1';
+export const panelKey='turquill.suggestions.v1';
 // Whether this device has never opened or closed Suggestions (nothing saved yet).
 export const panelUnset=()=>{try{return globalThis.localStorage?.getItem(panelKey)==null;}catch{return false;}};
 export const loadPanel=()=>{try{const v=JSON.parse(globalThis.localStorage?.getItem(panelKey)??'null');return {open:v?.open===true,tab:['say','speak','actions'].includes(v?.tab)?v.tab:'say'};}catch{return {open:false,tab:'say'};}};

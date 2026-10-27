@@ -1,5 +1,5 @@
-// What the Dungeon Master cost and where it stumbled: sums the local usage log (.questbound-usage.jsonl, one line per
-// live request) and the rejection log (.questbound-diagnostics.jsonl) for today, or the last N days with --days N.
+// What the Dungeon Master cost and where it stumbled: sums the local usage log (.turquill-usage.jsonl, one line per
+// live request) and the rejection log (.turquill-diagnostics.jsonl) for today, or the last N days with --days N.
 // Prices are per million tokens (input, cached input, output) for the models the launcher suggests (spending.cjs, which
 // also prices each painting); other models show tokens only. Nothing here calls the provider.
 // It also shows today's spending and this month's against the host's ceilings (spending.cjs), and whether guests are
@@ -7,7 +7,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {prices,paintingPrice,costOf,createSpending}=require('./spending.cjs');
 const arg=name=>{const i=process.argv.indexOf(name);return i>=0?process.argv[i+1]:undefined;};
-const dir=arg('--dir')?path.resolve(arg('--dir')):process.env.QUESTBOUND_DATA||__dirname;
+const dir=arg('--dir')?path.resolve(arg('--dir')):process.env.TURQUILL_DATA||__dirname;
 const usd=n=>'$'+n.toFixed(2),pct=(n,of)=>of?' ('+Math.round(100*n/of)+'%)':'';
 // Where today and the month stand against the ceilings, in a few short phrases.
 function standing(s){
@@ -25,7 +25,7 @@ if(process.argv.includes('--status')){
 const days=Math.max(1,Number(process.argv[process.argv.indexOf('--days')+1])||1);
 const since=new Date(Date.now()-(days-1)*86400000);since.setHours(0,0,0,0);
 const lines=file=>{try{return fs.readFileSync(path.join(dir,file),'utf8').split(/\r?\n/).map(l=>{try{return JSON.parse(l);}catch{return null;}}).filter(e=>e&&new Date(e.at)>=since);}catch{return [];}};
-const usage=lines('.questbound-usage.jsonl'),noted=lines('.questbound-diagnostics.jsonl'),rejections=noted.filter(e=>e.error),looks=noted.filter(e=>e.secondLook);
+const usage=lines('.turquill-usage.jsonl'),noted=lines('.turquill-diagnostics.jsonl'),rejections=noted.filter(e=>e.error),looks=noted.filter(e=>e.secondLook);
 const money=n=>'$'+n.toFixed(n<1?3:2);
 console.log('Dungeon Master report, '+(days===1?'today':'last '+days+' days')+' (since '+since.toLocaleString()+')');
 if(!usage.length)console.log('\nNo live requests recorded yet. The usage log starts with the first turn after this version of the DM was deployed.');
@@ -78,14 +78,14 @@ else{
 // The host's ceilings (spending.cjs): how close today and the month are, and whether guests are paused.
 {const s=createSpending({dir,alerts:{raise:()=>false}}).summary(),w=standing(s);
  console.log('\nCeilings (US dollars a day unless said; change them in the files named, or write "off"):');
- console.log('  All AI spending today: '+w.total+' (.questbound-total-budget). Past it guests and background writing stop; your own play on this PC goes on.');
- console.log('  All guests together: '+w.guests+' (.questbound-guest-budget); '+(s.share===null?'no limit for each player':'each player up to '+usd(s.share)+' (.questbound-player-budget), the most any one used today '+usd(s.topGuest))+'.');
+ console.log('  All AI spending today: '+w.total+' (.turquill-total-budget). Past it guests and background writing stop; your own play on this PC goes on.');
+ console.log('  All guests together: '+w.guests+' (.turquill-guest-budget); '+(s.share===null?'no limit for each player':'each player up to '+usd(s.share)+' (.turquill-player-budget), the most any one used today '+usd(s.topGuest))+'.');
  console.log('  Background writing (tales written ahead) today: '+usd(s.background)+'.');
- console.log('  This month, guests and background writing: '+w.month+' (.questbound-month-budget).');
+ console.log('  This month, guests and background writing: '+w.month+' (.turquill-month-budget).');
  console.log('  Host jobs (you fund these) today: '+usd(s.hostJobs??0)+': the people, place and creature libraries you build by hand; never counted against any ceiling.');
  console.log(s.paused?'  GUESTS ARE PAUSED: every guest request is refused. Resume with Turquill.cmd -ResumeGuests.':'  Guests are not paused (pause them at once with Turquill.cmd -PauseGuests).');
  // The ready-journey library (dm-server.cjs libraryPaused): paused, nothing new is written; journeys on offer stay.
- console.log(fs.existsSync(path.join(dir,'.questbound-library-paused'))?'  THE JOURNEY LIBRARY IS PAUSED: no new ready journey is written. Resume with Turquill.cmd -ResumeLibrary.':'  The journey library writes new journeys as old ones retire (pause it with Turquill.cmd -PauseLibrary).');}
+ console.log(fs.existsSync(path.join(dir,'.turquill-library-paused'))?'  THE JOURNEY LIBRARY IS PAUSED: no new ready journey is written. Resume with Turquill.cmd -ResumeLibrary.':'  The journey library writes new journeys as old ones retire (pause it with Turquill.cmd -PauseLibrary).');}
 console.log('\nRejected replies: '+rejections.length+(usage.length?' of '+usage.length+' live requests':''));
 const byError={};for(const r of rejections)byError[r.error]=(byError[r.error]??0)+1;
 for(const [error,n] of Object.entries(byError).sort((a,b)=>b[1]-a[1]))console.log('  '+String(n).padStart(4)+'  '+error);

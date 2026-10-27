@@ -12,52 +12,52 @@ The launcher (`Turquill.cmd`) runs the game on one Windows PC for friends on you
 
 | Variable | Meaning |
 |---|---|
-| `QUESTBOUND_PUBLIC_ORIGIN` | The https address players open, for example `https://play.example.com`. Required. |
+| `TURQUILL_PUBLIC_ORIGIN` | The https address players open, for example `https://play.example.com`. Required. |
 | `PORT` | The port the gateway listens on. Platforms set it; `8080` otherwise. |
-| `QUESTBOUND_DATA` | The data folder. `/data` in the container. |
+| `TURQUILL_DATA` | The data folder. `/data` in the container. |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | The key and the play model (`gpt-6-luna`). `OPENAI_STORY_MODEL` optionally names a different story writer. |
-| `QUESTBOUND_INVITE_CODE` | Eight digits. Without it a code is made once and kept in the data folder, so a restart never changes it. The log prints it. |
-| `QUESTBOUND_MAX_PLAYERS` | Paired browsers at once (500). |
-| `QUESTBOUND_REQUIRE_ACCOUNTS` | `1` requires a signed-in, email-verified account to play, whatever `accountsRequired` in `accountRules.js` says. Without it the switch decides: during the beta it is off and players without an account play as anonymous guests. |
-| `QUESTBOUND_TURNS_PER_PLAYER` | Dungeon Master turns per browser per ten minutes (60). `QUESTBOUND_TURNS_IN_ALL` caps the whole gateway (1200). |
-| `QUESTBOUND_DM_CONCURRENCY`, `QUESTBOUND_DM_REASONING`, `QUESTBOUND_STORY_REASONING`, `QUESTBOUND_IMAGE_MODEL` | As for the PC (see AI-SETUP.md). |
+| `TURQUILL_INVITE_CODE` | Eight digits. Without it a code is made once and kept in the data folder, so a restart never changes it. The log prints it. |
+| `TURQUILL_MAX_PLAYERS` | Paired browsers at once (500). |
+| `TURQUILL_REQUIRE_ACCOUNTS` | `1` requires a signed-in, email-verified account to play, whatever `accountsRequired` in `accountRules.js` says. Without it the switch decides: during the beta it is off and players without an account play as anonymous guests. |
+| `TURQUILL_TURNS_PER_PLAYER` | Dungeon Master turns per browser per ten minutes (60). `TURQUILL_TURNS_IN_ALL` caps the whole gateway (1200). |
+| `TURQUILL_DM_CONCURRENCY`, `TURQUILL_DM_REASONING`, `TURQUILL_STORY_REASONING`, `TURQUILL_IMAGE_MODEL` | As for the PC (see AI-SETUP.md). |
 
-Write `.questbound-story-effort` and `.questbound-dm-effort` into the data folder to set the story writer's and the Dungeon Master's effort, as on the PC.
+Write `.turquill-story-effort` and `.turquill-dm-effort` into the data folder to set the story writer's and the Dungeon Master's effort, as on the PC.
 
 ### The place-art library
 
-Every place the players reach is shown from a library of ready landscape paintings instead of being painted at the time (about 3 cents a place saved). The library is the PC's `.questbound-place-art/` folder (`library.json` and one `<id>.jpg` per picture, about 60 MB for 171 pictures). It is not in git and not in the Docker image (`.questbound-*` is ignored by both), so copy the whole folder into the data folder, as `/data/.questbound-place-art/` (for example `fly sftp`, `docker cp` or `scp` into the volume), before players arrive. Without it, or for a land it has no picture of yet, places are painted and paid for as before; `serve.cjs` says so in its log at start. The pictures each place was given are kept in `/data/.questbound-art/place-picks/`, with the other pictures. Copy a newer library over the old one at any time: places keep the picture they were given, and the Dungeon Master reads `library.json` again within half a minute.
+Every place the players reach is shown from a library of ready landscape paintings instead of being painted at the time (about 3 cents a place saved). The library is the PC's `.turquill-place-art/` folder (`library.json` and one `<id>.jpg` per picture, about 60 MB for 171 pictures). It is not in git and not in the Docker image (`.turquill-*` is ignored by both), so copy the whole folder into the data folder, as `/data/.turquill-place-art/` (for example `fly sftp`, `docker cp` or `scp` into the volume), before players arrive. Without it, or for a land it has no picture of yet, places are painted and paid for as before; `serve.cjs` says so in its log at start. The pictures each place was given are kept in `/data/.turquill-art/place-picks/`, with the other pictures. Copy a newer library over the old one at any time: places keep the picture they were given, and the Dungeon Master reads `library.json` again within half a minute.
 
 ### The people library
 
-Most people the players meet are drawn from a library of ready-made people, each with a portrait painted once, so meeting someone new costs nothing to paint (about 3 cents a person saved). The library is the PC's `.questbound-people/` folder (`library.json` and one `<id>.jpg` per person, made by `node make-people-library.cjs` and `--portraits` through the host's own Dungeon Master; `faces.json` and one `nf<number>.jpg` per face painted in play, added by `node import-painted-faces.cjs --write`; `plan.json` is only the script's). Like the place art it is in neither git nor the Docker image, so copy the whole folder into the data folder, as `/data/.questbound-people/`, before players arrive. Without it the Dungeon Master invents and paints everyone as before; a person whose portrait is missing is painted as before. Copy a newer library over the old one at any time: the Dungeon Master reads `library.json` again within half a minute.
+Most people the players meet are drawn from a library of ready-made people, each with a portrait painted once, so meeting someone new costs nothing to paint (about 3 cents a person saved). The library is the PC's `.turquill-people/` folder (`library.json` and one `<id>.jpg` per person, made by `node make-people-library.cjs` and `--portraits` through the host's own Dungeon Master; `faces.json` and one `nf<number>.jpg` per face painted in play, added by `node import-painted-faces.cjs --write`; `plan.json` is only the script's). Like the place art it is in neither git nor the Docker image, so copy the whole folder into the data folder, as `/data/.turquill-people/`, before players arrive. Without it the Dungeon Master invents and paints everyone as before; a person whose portrait is missing is painted as before. Copy a newer library over the old one at any time: the Dungeon Master reads `library.json` again within half a minute.
 
 ### The written tales
 
-The Written tales shelf is served from the PC's `.questbound-written/` folder (one `<slug>.json` a tale, checked with `node check-written-tale.cjs` before it goes there, and `plays.json`, the shelf's own count of starts). It is in neither git nor the Docker image (the repository is public, and a tale's twists would be readable), so copy the whole folder into the data folder, as `/data/.questbound-written/`, before players arrive; the host keeps a copy in the Desktop folder "Questbound written tales". Without it the New Adventure screen offers the story writer's journeys and openings as before. Add or replace a tale at any time: the Dungeon Master reads the folder again within half a minute, serves only tales the game's own rules accept (a refused file is noted in the diagnostics) and never retires one. Starting a written tale costs nothing.
+The Written tales shelf is served from the PC's `.turquill-written/` folder (one `<slug>.json` a tale, checked with `node check-written-tale.cjs` before it goes there, and `plays.json`, the shelf's own count of starts). It is in neither git nor the Docker image (the repository is public, and a tale's twists would be readable), so copy the whole folder into the data folder, as `/data/.turquill-written/`, before players arrive; the host keeps a copy in the Desktop folder "Turquill written tales". Without it the New Adventure screen offers the story writer's journeys and openings as before. Add or replace a tale at any time: the Dungeon Master reads the folder again within half a minute, serves only tales the game's own rules accept (a refused file is noted in the diagnostics) and never retires one. Starting a written tale costs nothing.
 
 ### The creature library
 
-Every creature the players fight (a lair's or an errand's threat, an ambush, a tale's main foe when it is a creature, the vault's guardians, the Skirmish's foe) is shown from a library of ready creature pictures instead of being painted for each tale (about 3 cents a creature saved). The library is the PC's `.questbound-creatures/` folder (`library.json` and one `<id>.jpg` per picture, made once by `node make-creature-library.cjs` through the host's own Dungeon Master, from the kinds in `creature-catalogue.cjs`). Like the place art it is in neither git nor the Docker image, so copy the whole folder into the data folder, as `/data/.questbound-creatures/`, before players arrive. Without it creatures are painted as before (creatures of the game's own kinds once for everyone); a creature the library has nothing like is painted as before and noted in the diagnostics (`node dm-report.cjs` lists them under "Creatures painted for want of a library picture"). The pictures each creature was given are kept in `/data/.questbound-art/creature-picks/`. Copy a newer library over the old one at any time: creatures keep the picture they were given, and the Dungeon Master reads `library.json` again within half a minute.
+Every creature the players fight (a lair's or an errand's threat, an ambush, a tale's main foe when it is a creature, the vault's guardians, the Skirmish's foe) is shown from a library of ready creature pictures instead of being painted for each tale (about 3 cents a creature saved). The library is the PC's `.turquill-creatures/` folder (`library.json` and one `<id>.jpg` per picture, made once by `node make-creature-library.cjs` through the host's own Dungeon Master, from the kinds in `creature-catalogue.cjs`). Like the place art it is in neither git nor the Docker image, so copy the whole folder into the data folder, as `/data/.turquill-creatures/`, before players arrive. Without it creatures are painted as before (creatures of the game's own kinds once for everyone); a creature the library has nothing like is painted as before and noted in the diagnostics (`node dm-report.cjs` lists them under "Creatures painted for want of a library picture"). The pictures each creature was given are kept in `/data/.turquill-art/creature-picks/`. Copy a newer library over the old one at any time: creatures keep the picture they were given, and the Dungeon Master reads `library.json` again within half a minute.
 
 ## With Docker
 
 ```bash
-docker build -t questbound .
-docker run -d --name questbound -p 8080:8080 -v questbound-data:/data \
+docker build -t turquill .
+docker run -d --name turquill -p 8080:8080 -v turquill-data:/data \
   -e OPENAI_API_KEY=... -e OPENAI_MODEL=gpt-6-luna \
-  -e QUESTBOUND_PUBLIC_ORIGIN=https://play.example.com questbound
-docker logs questbound     # prints the invite code
+  -e TURQUILL_PUBLIC_ORIGIN=https://play.example.com turquill
+docker logs turquill     # prints the invite code
 ```
 
-Put TLS in front (the platform's proxy, or Caddy with `reverse_proxy 127.0.0.1:8080`). The gateway must see the public hostname in the `Host` header and the visitor's address in a header the proxy sets and visitors cannot forge. By default it reads the last `X-Forwarded-For` entry (the one the nearest proxy added; anything a visitor wrote before it is ignored), or `Fly-Client-IP` on Fly.io. If your platform names the visitor in another header (`CF-Connecting-IP` behind Cloudflare, `True-Client-IP`, `X-Real-IP`), set `QUESTBOUND_CLIENT_IP_HEADER` to that header's name; never name one the platform passes through from visitors unchanged. Per-visitor brakes (wrong codes, sign-ups) are only as honest as that header; per-browser limits do not depend on it.
+Put TLS in front (the platform's proxy, or Caddy with `reverse_proxy 127.0.0.1:8080`). The gateway must see the public hostname in the `Host` header and the visitor's address in a header the proxy sets and visitors cannot forge. By default it reads the last `X-Forwarded-For` entry (the one the nearest proxy added; anything a visitor wrote before it is ignored), or `Fly-Client-IP` on Fly.io. If your platform names the visitor in another header (`CF-Connecting-IP` behind Cloudflare, `True-Client-IP`, `X-Real-IP`), set `TURQUILL_CLIENT_IP_HEADER` to that header's name; never name one the platform passes through from visitors unchanged. Per-visitor brakes (wrong codes, sign-ups) are only as honest as that header; per-browser limits do not depend on it.
 
 ## Without Docker
 
 ```bash
 npm ci
 npx expo export --platform web --output-dir dist-phone
-QUESTBOUND_PUBLIC_ORIGIN=https://play.example.com QUESTBOUND_DATA=/srv/questbound \
+TURQUILL_PUBLIC_ORIGIN=https://play.example.com TURQUILL_DATA=/srv/turquill \
   OPENAI_API_KEY=... OPENAI_MODEL=gpt-6-luna node serve.cjs
 ```
 
@@ -80,6 +80,6 @@ From the PC's own usage log (`node dm-report.cjs --days 7`, October 2026): a gam
 
 Remote play requires HTTPS. Plain LAN links are disabled. Use `Turquill-Share.cmd` locally. The account service must be restarted together with the desktop and public gateways after the new export is built. Older account sessions are deliberately rejected until the email is verified.
 
-For a separate host, `compose.production.yml` provides non-root, read-only, capability and resource restrictions. It binds the gateway to loopback for a trusted TLS proxy. Supply `QUESTBOUND_MAIL_SENDER` (the dedicated Gmail address) and `QUESTBOUND_MAIL_PASSWORD` (its app password) through protected deployment secrets/environment, alongside the existing provider secret. Do not put secret values in the compose file. `/data` must be writable by UID 1000 and persistent. Configure proxy hostname and client-IP trust for your actual host. Docker deployment has not been exercised in this environment.
+For a separate host, `compose.production.yml` provides non-root, read-only, capability and resource restrictions. It binds the gateway to loopback for a trusted TLS proxy. Supply `TURQUILL_MAIL_SENDER` (the dedicated Gmail address) and `TURQUILL_MAIL_PASSWORD` (its app password) through protected deployment secrets/environment, alongside the existing provider secret. Do not put secret values in the compose file. `/data` must be writable by UID 1000 and persistent. Configure proxy hostname and client-IP trust for your actual host. Docker deployment has not been exercised in this environment.
 
 Back up the persistent volume and encryption key securely off-device; rehearse recovery on a separate instance. See SECURITY.md for exact verification and backup behavior, rollout requirements and limits.

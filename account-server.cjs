@@ -1,4 +1,5 @@
 // Private account/campaign service. Browser callers use their same-origin gateway.
+require('./name-migration.cjs').legacyEnv(); // settings given under their old names (QUESTBOUND_*) still count
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {createAccounts}=require('./accounts.cjs'),{loopbackHost}=require('./security-headers.cjs');
 const {createLimiter}=require('./rate-limit.cjs'),{createCampaigns,validSnapshot}=require('./campaigns.cjs'),{createOperations,atomic}=require('./operations.cjs'),{createMailer}=require('./mailer.cjs');
@@ -7,15 +8,17 @@ const {createInviteGuard,inviteWords}=require('./invite-guard.cjs');
 // The terms players accept are the ones legalText.js carries, so the date has one source.
 const currentTerms=(()=>{try{return /export const legalUpdated='([^']+)'/.exec(require('node:fs').readFileSync(require('node:path').join(__dirname,'legalText.js'),'utf8'))[1];}catch{return '10 October 2026';}})();
 // Whether a signed-in, email-verified account is needed to play: one switch, accountsRequired in accountRules.js (read
-// from the file, as legalUpdated is above), or QUESTBOUND_REQUIRE_ACCOUNTS=1 for a hosted game. While it is off (the
+// from the file, as legalUpdated is above), or TURQUILL_REQUIRE_ACCOUNTS=1 for a hosted game. While it is off (the
 // beta), a browser without a session is given an anonymous guest identity (account-guest) and plays with it.
 const requiredInFile=(()=>{try{return /export const accountsRequired=(true|false);/.exec(fs.readFileSync(path.join(__dirname,'accountRules.js'),'utf8'))[1]==='true';}catch{return false;}})();
-const accountsRequiredNow=()=>process.env.QUESTBOUND_REQUIRE_ACCOUNTS==='1'||requiredInFile;
+const accountsRequiredNow=()=>process.env.TURQUILL_REQUIRE_ACCOUNTS==='1'||requiredInFile;
 const allowedOrigins=new Set(['http://localhost:8081','http://localhost:8082']);
 const accountRoutes=['guest','register','login','verify','save','load','status','logout','logout-all','password','delete'];
 const campaignRoutes=['create','join','list','invite','turn','edit','report','ban','unban','tale','wait','typing'];
 const routes=new Set(['poll','save','leave','cloud-save','cloud-load','usage','ops-status','ops-verify-backups',...accountRoutes.map(x=>'account-'+x),...campaignRoutes.map(x=>'campaign-'+x)]);
-const cookieToken=req=>req.headers.cookie?.match(/(?:^|;\s*)questbound_account=([a-f0-9]{64})(?:;|$)/)?.[1]??'';
+// The sign-in cookie was questbound_account until the rename of 2026-10-27; a browser that still holds only that one is
+// read by it (a guest's is renewed under the new name within a day), and setting the new one always expires the old.
+const cookieToken=req=>req.headers.cookie?.match(/(?:^|;\s*)turquill_account=([a-f0-9]{64})(?:;|$)/)?.[1]??req.headers.cookie?.match(/(?:^|;\s*)questbound_account=([a-f0-9]{64})(?:;|$)/)?.[1]??'';
 const cloudKey=code=>{const c=String(code??'').toUpperCase().replace(/[^A-Z0-9]/g,'');return /^[A-Z0-9]{12}$/.test(c)?crypto.createHash('sha256').update('questbound-cloud-v1:'+c).digest('hex'):null;};
 // The host's own words about bans and reports (2026-10-13): "add per-player mute or report and a host ban". A
 // browser the host of the whole game has banned (node accounts.cjs ban …, bans.cjs) is refused everything here: the
@@ -40,13 +43,13 @@ async function askDungeonMaster(fetchImpl,dmBackend,payload,user,{onNarration=nu
  if(!response.ok||body?.error)throw Object.assign(Error(body?.error||'The Dungeon Master could not respond.'),{status:502});
  return body;
 }
-function createSyncServer({dir=path.join(__dirname,'.questbound-table'),cloudDir=path.join(__dirname,'.questbound-cloud'),accountsDir=path.join(__dirname,'.questbound-accounts'),cloudLimit=200,limits={},now=Date.now,mailer=null,operations=null,ask=null,moderate=null,feedbackFile=null,randomImpl,dmBackend='http://127.0.0.1:8084',fetchImpl=fetch,accountOptions={},accountsRequired=accountsRequiredNow(),live,inviteLimits={}}={}){
+function createSyncServer({dir=path.join(__dirname,'.turquill-table'),cloudDir=path.join(__dirname,'.turquill-cloud'),accountsDir=path.join(__dirname,'.turquill-accounts'),cloudLimit=200,limits={},now=Date.now,mailer=null,operations=null,ask=null,moderate=null,feedbackFile=null,randomImpl,dmBackend='http://127.0.0.1:8084',fetchImpl=fetch,accountOptions={},accountsRequired=accountsRequiredNow(),live,inviteLimits={}}={}){
  const dataDir=path.dirname(accountsDir),ops=operations??createOperations({dir:dataDir,now}),mail=mailer??createMailer({dir:dataDir});
  // The private storage key is unlocked at once in the background (the first table opened after a restart needed it).
  if(!operations)ops.warm?.();
  const bans=createBans({dir:accountsDir,now});
  // Wrong campaign invite codes per caller and overall (invite-guard.cjs), so guessing a short code stays impractical.
- const inviteGuard=createInviteGuard({file:path.join(dataDir,'.questbound-invite-misses.json'),now,limits:inviteLimits});
+ const inviteGuard=createInviteGuard({file:path.join(dataDir,'.turquill-invite-misses.json'),now,limits:inviteLimits});
  let campaigns=null;
  const accounts=createAccounts({allowGuests:!accountsRequired,onGuestRemoved:id=>campaigns?.removeAccount(id),...accountOptions,dir:accountsDir,now,validSnapshot,mailer:mail,backup:ops.backup,audit:ops.audit});
  const dmAsk=ask??((payload,user,options)=>askDungeonMaster(fetchImpl,dmBackend,payload,user,options));
@@ -73,7 +76,7 @@ function createSyncServer({dir=path.join(__dirname,'.questbound-table'),cloudDir
  const server=http.createServer(async(req,res)=>{
   const origin=req.headers.origin,send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store',...(allowedOrigins.has(origin)?{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Credentials':'true','Vary':'Origin'}:{})});res.end(JSON.stringify(data));};
   // A guest's cookie lasts 90 days and is renewed when used (accounts.cjs renews the token once a day); an account's lasts a week.
-  const setSession=(token,days=7)=>res.setHeader('Set-Cookie','questbound_account='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age='+(token?days*86400:0)+(req.headers['x-questbound-secure']==='1'?'; Secure':''));
+  const setSession=(token,days=7)=>{const secure=req.headers['x-turquill-secure']==='1'?'; Secure':'';res.setHeader('Set-Cookie',['turquill_account='+token+'; HttpOnly; SameSite=Strict; Path=/; Max-Age='+(token?days*86400:0)+secure,...(/(?:^|;\s*)questbound_account=/.test(req.headers.cookie??'')?['questbound_account=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'+secure]:[])]);};
   const loginResult=result=>{if(result.token){setSession(result.token);const {token,...publicResult}=result;return publicResult;}return result;};
   if(!loopbackHost(req))return send(403,{error:'Use the Turquill game on this PC.'});
   if(origin&&!allowedOrigins.has(origin))return send(403,{error:'Origin not allowed.'});
@@ -84,7 +87,7 @@ function createSyncServer({dir=path.join(__dirname,'.questbound-table'),cloudDir
    if(req.method!=='POST'||!req.headers['content-type']?.startsWith('application/json'))return send(404,{error:'Not found.'});
    if(!allowedOrigins.has(origin))return send(403,{error:'Use the Turquill game to reach the table.'});
    route=req.url.slice(1);if(!routes.has(route))return send(404,{error:'Not found.'});
-   caller=String(req.headers['x-questbound-client']??'this-pc').slice(0,80);
+   caller=String(req.headers['x-turquill-client']??'this-pc').slice(0,80);
    if(perCaller.has(route)){const seconds=routeLimits.get(route)(caller);if(seconds)return tooMany(res,send,route,seconds);}
    let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>2500000)return send(413,{error:'This adventure is too large.'});}
    if(liveRoutes.has(route)&&Buffer.byteLength(raw)>1024)return send(413,{error:'Invalid request.'});
@@ -127,11 +130,11 @@ function createSyncServer({dir=path.join(__dirname,'.questbound-table'),cloudDir
     // A join by invite code waits once this caller (or everyone) has got codes wrong too often; a wrong code is counted.
     const byInvite=route==='campaign-join'&&b.invite!==undefined;
     if(byInvite){const held=inviteGuard.blocked(caller);if(held){ops.audit('invite-guess-denied',{route,status:429});res.setHeader('Retry-After',String(held.seconds));return send(429,{error:inviteWords[held.whose]});}}
-    let result;try{result=await campaigns[route.slice(9)](req.headers['x-questbound-local']==='1'?{...user,local:true}:user,b);}catch(e){if(byInvite&&e.inviteMiss){inviteGuard.miss(caller);ops.audit('invite-wrong',{route,status:404});}throw e;}
+    let result;try{result=await campaigns[route.slice(9)](req.headers['x-turquill-local']==='1'?{...user,local:true}:user,b);}catch(e){if(byInvite&&e.inviteMiss){inviteGuard.miss(caller);ops.audit('invite-wrong',{route,status:404});}throw e;}
     return send(result.conflict?409:200,result);}
    if(route==='usage'){if(b.kind==='dm')ops.consume(user.id,'dm-requests',300);return send(200,{allowed:true,id:user.id});}
    if(route==='ops-status'||route==='ops-verify-backups'){
-    if(req.headers['x-questbound-local']!=='1')return send(403,{error:'Host diagnostics are available only on the desktop.'});
+    if(req.headers['x-turquill-local']!=='1')return send(403,{error:'Host diagnostics are available only on the desktop.'});
     if(user.guest)return send(403,{error:'Sign in with an account to see host diagnostics.'});
     return send(200,route==='ops-status'?ops.status():ops.backup.verify());
    }

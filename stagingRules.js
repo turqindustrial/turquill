@@ -12,7 +12,7 @@ import {storyEvents} from './storyLog';
 import {readyHero} from './pregens';
 import {validAdventure,adventureSnapshot} from './adventureStorage';
 // ---------- Written tales: the staging format (WRITTEN-TALES.md) ----------
-// A written tale (the Short, Medium and Long shelf, .questbound-written/<slug>.json) carries its plan in one optional
+// A written tale (the Short, Medium and Long shelf, .turquill-written/<slug>.json) carries its plan in one optional
 // story field, `staging`: per chapter the conditions the engine checks to close it (found), its beats, complications,
 // pressure steps (the antagonist's clock), a set-piece fight and a choice; for the tale its stakes, the boss held back
 // to its chapter (confrontFrom) and the endings the engine picks. Authors write places and people by their exact names;

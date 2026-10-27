@@ -6,8 +6,8 @@ const game=r.newAdventure(hero);const fixture={hero,adventure:r.adventureSnapsho
 const script=`
  const fixture=${JSON.stringify(fixture)};
  if(location.pathname==='/fixture'){
- localStorage.setItem('questbound.character.v1',JSON.stringify(fixture.hero));
- localStorage.setItem('questbound.adventure.v1',JSON.stringify(fixture.adventure));
+ localStorage.setItem('turquill.character.v1',JSON.stringify(fixture.hero));
+ localStorage.setItem('turquill.adventure.v1',JSON.stringify(fixture.adventure));
  history.replaceState(null,'','/');
  }
  const originalFetch=window.fetch.bind(window);

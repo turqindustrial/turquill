@@ -1,12 +1,12 @@
 // Disposable two-browser shared-table QA. Never connects to the live table or AI.
 const http=require('node:http'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {createSyncServer}=require('./sync-server.cjs'),r=require('./verify-dm-integration.cjs');
-const dir=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-sync-ui-')),root=path.resolve('dist-phone');
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-sync-ui-')),root=path.resolve('dist-phone');
 const table=createSyncServer({dir});
 const hero={name:'Shared Table Tester',race:'Human',species:'Human',class:'Fighter',level:1,background:'Soldier',scores:{Strength:16,Dexterity:14,Constitution:14,Intelligence:10,Wisdom:12,Charisma:10},spells:[]};
 hero.equipment=r.equipmentFor(hero);
 const adventure=r.adventureSnapshot(hero,r.newAdventure(hero),{current:r.combatBasics(hero).hp,temp:0},true);
-const fixture=`if(location.pathname==='/fixture'){localStorage.setItem('questbound.character.v1',${JSON.stringify(JSON.stringify(hero))});localStorage.setItem('questbound.adventure.v1',${JSON.stringify(JSON.stringify(adventure))});localStorage.removeItem('questbound.table.v1');history.replaceState(null,'','/');}`;
+const fixture=`if(location.pathname==='/fixture'){localStorage.setItem('turquill.character.v1',${JSON.stringify(JSON.stringify(hero))});localStorage.setItem('turquill.adventure.v1',${JSON.stringify(JSON.stringify(adventure))});localStorage.removeItem('turquill.table.v1');history.replaceState(null,'','/');}`;
 const servers=[];
 table.server.listen(0,'127.0.0.1',()=>{
  const tablePort=table.server.address().port;
@@ -23,7 +23,7 @@ table.server.listen(0,'127.0.0.1',()=>{
     let raw='';for await(const chunk of req)raw+=chunk;
     const body=JSON.parse(raw);res.setHeader('Content-Type','application/json');
     if(body.context?.mode==='art'){
-     const cache=path.resolve('.questbound-art'),image=fs.readdirSync(cache).find(name=>name.endsWith('.jpg'));
+     const cache=path.resolve('.turquill-art'),image=fs.readdirSync(cache).find(name=>name.endsWith('.jpg'));
      res.end(JSON.stringify({status:'ready',key:'test-art',dataUrl:'data:image/jpeg;base64,'+fs.readFileSync(path.join(cache,image)).toString('base64')}));return;
     }
     res.end(JSON.stringify({narration:'The table records your action.',actionId:null,castCommand:null,ruling:null,worldEvent:null,check:null,dialogue:[],recruitment:[]}));return;

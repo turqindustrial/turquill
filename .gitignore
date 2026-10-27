@@ -46,18 +46,18 @@ yarn-error.*
 !.env.example
 
 # Locally generated campaign art and prompt metadata
-.questbound-art/
-.questbound-phone-session.json
+.turquill-art/
+.turquill-phone-session.json
 dist-phone/
 
 # Local diagnostics, shared-table saves and the encrypted launcher key
-.questbound-diagnostics.jsonl*
-.questbound-table/
-.questbound-key.dpapi
-.questbound-model
-.questbound-logs/
-.questbound-share-session.json
-.questbound-share-sessions.json
+.turquill-diagnostics.jsonl*
+.turquill-table/
+.turquill-key.dpapi
+.turquill-model
+.turquill-logs/
+.turquill-share-session.json
+.turquill-share-sessions.json
 playtest-feedback.md
 
 # Game builds (the launcher builds dist-phone locally)
@@ -72,7 +72,7 @@ LIVE-*-REPORT.json
 AI-CHARACTER-*.json
 
 # Anything else the launcher or services keep on this PC (sessions, cloud saves, tunnel settings).
-.questbound-*
+.turquill-*
 
 # Local assistant tooling
 .claude/

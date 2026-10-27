@@ -1,6 +1,6 @@
 # Turn playback, conversations, and opening choices — September 29, 2026
 
-The main game remains at http://localhost:8081/. Development changes are in the local questbound project; saved characters and adventures remain in browser storage on their original origin.
+The main game remains at http://localhost:8081/. Development changes are in the local turquill project; saved characters and adventures remain in browser storage on their original origin.
 
 ## What changed
 

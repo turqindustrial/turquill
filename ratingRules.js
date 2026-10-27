@@ -5,7 +5,7 @@
 // Asked only at a natural stopping point (a chapter finished, the tale complete, a long rest after a good while, the
 // hero's death, or leaving the play screen for the title after a quarter of an hour), never in a fight, while dying,
 // while a tale is written or a turn order stands; never more than once a day; never in a device's first twenty minutes
-// of play; and after a "Not now" not again for a week (a month after two in a row). Settings → Help improve Questbound
+// of play; and after a "Not now" not again for a week (a month after two in a row). Settings → Help improve Turquill
 // turns it off.
 export const ratingAnswers=['great','good','okay','rough'];
 export const ratingAnswerLabels={great:'Great',good:'Good',okay:'Okay',rough:'Rough'};

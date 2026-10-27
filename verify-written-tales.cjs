@@ -12,7 +12,7 @@ const same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b),m);
 const fixture=JSON.parse(read('written-fixture.json'));
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-written-'));
-const shelfDir=path.join(tmp,'.questbound-written');fs.mkdirSync(shelfDir);
+const shelfDir=path.join(tmp,'.turquill-written');fs.mkdirSync(shelfDir);
 const listed={...fixture,listed:true,firstTale:true,order:1};
 const write=(name,value)=>fs.writeFileSync(path.join(shelfDir,name),typeof value==='string'?value:JSON.stringify(value));
 write(fixture.slug+'.json',listed);
@@ -182,11 +182,11 @@ write('plays.json','{}');
 
  // ---- 6. The bundle canary: no client file imports a tale, and the game a browser downloads holds no tale's secret ----
  {const client=fs.readdirSync('.').filter(f=>/\.js$/.test(f));
-  for(const f of client){const src=read(f);assert.ok(!/(?:\bfrom\s*|\brequire\(\s*|\bfetch\(\s*)['"`][^'"`]*(?:questbound-written|written-fixture|written-shelf|tales\/drafts)/.test(src),f+' never imports or fetches a tale');}
+  for(const f of client){const src=read(f);assert.ok(!/(?:\bfrom\s*|\brequire\(\s*|\bfetch\(\s*)['"`][^'"`]*(?:turquill-written|written-fixture|written-shelf|tales\/drafts)/.test(src),f+' never imports or fetches a tale');}
   const dist=path.join(__dirname,'dist-phone');
-  const roots=[process.env.QUESTBOUND_DATA,__dirname].filter(Boolean);try{const common=execFileSync('git',['-C',__dirname,'rev-parse','--git-common-dir'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:5000}).trim();if(common)roots.push(path.dirname(path.resolve(__dirname,common)));}catch{}
+  const roots=[process.env.TURQUILL_DATA,__dirname].filter(Boolean);try{const common=execFileSync('git',['-C',__dirname,'rev-parse','--git-common-dir'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:5000}).trim();if(common)roots.push(path.dirname(path.resolve(__dirname,common)));}catch{}
   const secrets=[fixture.story.secret];
-  for(const root of [...new Set(roots)]){const dir=path.join(root,'.questbound-written');let names=[];try{names=fs.readdirSync(dir).filter(n=>n.endsWith('.json')&&n!=='plays.json');}catch{}for(const n of names){try{const t=JSON.parse(read(path.join(dir,n)));if(typeof t?.story?.secret==='string')secrets.push(t.story.secret);}catch{}}}
+  for(const root of [...new Set(roots)]){const dir=path.join(root,'.turquill-written');let names=[];try{names=fs.readdirSync(dir).filter(n=>n.endsWith('.json')&&n!=='plays.json');}catch{}for(const n of names){try{const t=JSON.parse(read(path.join(dir,n)));if(typeof t?.story?.secret==='string')secrets.push(t.story.secret);}catch{}}}
   let scanned=0;
   if(fs.existsSync(dist)){const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(/\.(js|html|json|css|map)$/.test(e.name)){scanned++;const text=read(p);for(const s of secrets)assert.ok(!text.includes(s.slice(0,40)),p+' holds a tale\'s secret');}}};walk(dist);}
   console.log('  bundle canary: '+secrets.length+' secret(s) looked for in '+scanned+' built file(s)'+(fs.existsSync(dist)?'':' (no dist-phone here)')+'.');}

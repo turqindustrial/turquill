@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "Turquill",
-    "slug": "questbound",
+    "slug": "turquill",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/questbound-icon.png",
+    "icon": "./assets/turquill-icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#08060a",
     "ios": {
@@ -19,7 +19,7 @@
       }
     },
     "web": {
-      "favicon": "./assets/questbound-favicon.png",
+      "favicon": "./assets/turquill-favicon.png",
       "name": "Turquill",
       "shortName": "Turquill",
       "display": "fullscreen",

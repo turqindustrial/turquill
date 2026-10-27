@@ -5,7 +5,7 @@
 import {findDmEndpoint,askDm} from './dmConnection';
 import storage from './playerStorage';
 import {cleanWritten,cleanTaleRecords,nextTaleRecord} from './shelfRules';
-export const journeyKey='questbound.journeys.v1';
+export const journeyKey='turquill.journeys.v1';
 const journeyId=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const journeyText=(v,max)=>typeof v==='string'?v.replace(/\s+/g,' ').trim().slice(0,max):'';
 const journeyLands=['plains','forest','hills','mountains','coast','marsh','desert','snow','caverns'];
@@ -56,12 +56,12 @@ export async function noteTaleRecord(game,hero,{seconds=null,store=storage}={}){
  }catch{return null;}
 }
 // The tab of the shelf this device used last (per device, guarded: storage that refuses just means the first tab).
-export const shelfKey='questbound.shelf.v1';
+export const shelfKey='turquill.shelf.v1';
 export function savedShelfTab(){try{const v=JSON.parse(globalThis.localStorage?.getItem(shelfKey)??'{}');return typeof v?.tab==='string'?v.tab:null;}catch{return null;}}
 export function saveShelfTab(tab){try{globalThis.localStorage?.setItem(shelfKey,JSON.stringify({tab}));}catch{}}
 // "A tale waits in <Land>" answered Not now (sequelRules.js taleWaitsKey: the tale and the land), per device, the last
 // 100, guarded: storage that refuses just means the card may show again.
-export const landTalesKey='questbound.landtales.v1';
+export const landTalesKey='turquill.landtales.v1';
 export function dismissedLandTales(){try{const v=JSON.parse(globalThis.localStorage?.getItem(landTalesKey)??'{}');return Array.isArray(v?.not)?v.not.filter(k=>typeof k==='string').slice(-100):[];}catch{return [];}}
 export function dismissLandTale(key){const not=[...dismissedLandTales().filter(k=>k!==key),String(key).slice(0,200)].slice(-100);try{globalThis.localStorage?.setItem(landTalesKey,JSON.stringify({not}));}catch{}return not;}
 // Asks the Dungeon Master what is on the shelf (a quick look, like an illustration): the written tales and the ready

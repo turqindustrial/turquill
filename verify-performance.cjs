@@ -59,7 +59,7 @@ assert.deepEqual(fs.readdirSync('public/fonts').filter(f=>f.endsWith('.woff2')).
 
 // 3. Atmosphere: Auto, Full or Light, saved per device; old saved display settings load with the defaults.
 function display(saved){
- const store={},dataset={};if(saved)store['questbound.display.v1']=JSON.stringify(saved);
+ const store={},dataset={};if(saved)store['turquill.display.v1']=JSON.stringify(saved);
  const context={document:{documentElement:{dataset},head:{appendChild(){}},createElement:()=>({setAttribute(){}}),querySelector:()=>null,addEventListener(){}},localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>{store[k]=String(v);}},navigator:{userAgent:'Windows',maxTouchPoints:0},matchMedia:()=>({matches:false}),screen:{}};
  context.globalThis=context;
  const api=vm.runInNewContext(fs.readFileSync('fullscreen.js','utf8').replace(/export /g,'')+'\n({initializeFullscreen,displayState,setDisplayPrefs,effectsMode})',context);
@@ -98,7 +98,7 @@ w.api.setCovered('scene',false,doc);assert.equal(root.dataset.covered,undefined)
 
 // 5. The desktop server: the page and the font sheet are checked again, content-hashed files are kept for good.
 const {createDesktopServer}=require('./desktop-server.cjs');
-const root2=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-perf-'));
+const root2=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-perf-'));
 fs.mkdirSync(path.join(root2,'fonts'));fs.mkdirSync(path.join(root2,'_expo','static','js','web'),{recursive:true});
 fs.writeFileSync(path.join(root2,'index.html'),'<h1>game</h1>');fs.writeFileSync(path.join(root2,'fonts','fonts-v2.css'),'/* faces */');fs.writeFileSync(path.join(root2,'fonts','inter-400-latin.woff2'),'font');
 fs.writeFileSync(path.join(root2,'_expo','static','js','web','index-0123456789abcdef0123456789abcdef.js'),'bundle');fs.writeFileSync(path.join(root2,'favicon.ico'),'icon');

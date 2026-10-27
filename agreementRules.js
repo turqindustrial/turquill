@@ -1,7 +1,7 @@
 import {legalUpdated} from './legalText';
 // The permissions agreement (legalText.js, shown by Agreement.js) is accepted once per browser, before the first
 // game, and asked again when the legal texts change: the record holds the date and the version accepted, nothing else.
-export const agreementKey='questbound.agreement.v1';
+export const agreementKey='turquill.agreement.v1';
 export const agreementVersion=legalUpdated;
 const storage=()=>{try{return globalThis.localStorage??null;}catch{return null;}};
 export function agreementStatus(store=storage()){

@@ -19,7 +19,7 @@ assert.ok(/html, body \{ height: 100%; margin: 0; background: var\(--b0, #08060a
 for(const side of ['top','right','bottom','left'])assert.ok(layout.includes('--sa-'+side[0]+':env(safe-area-inset-'+side+',0px)'),'webLayout reads the '+side+' inset');
 assert.ok(layout.includes("html.qb-keyboard{--sa-b:0px;}"),'with a keyboard up the bottom inset is dropped');
 const rootRule=layout.match(/'#root\{([^}]*)\}'/)?.[1]??'';
-assert.ok(rootRule&&!/padding/.test(rootRule)&&rootRule.includes('height:var(--questbound-height,100dvh)'),'#root fills the visible screen with no padding, so the painting reaches every edge');
+assert.ok(rootRule&&!/padding/.test(rootRule)&&rootRule.includes('height:var(--turquill-height,100dvh)'),'#root fills the visible screen with no padding, so the painting reaches every edge');
 assert.ok(layout.includes("'[data-safe=pad],[data-qb=scrim]{box-sizing:border-box;border-style:solid !important;border-color:transparent !important;border-width:var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l) !important;}'"),'frames and dialog shades keep their content inside the insets');
 assert.ok(layout.includes("'[data-qb=scrim]>[data-qb=sheet]{max-height:100% !important;}'"),'a dialog is never taller than its shade leaves room for');
 for(const bar of ['hud','tabbar'])assert.ok(new RegExp("html \\[data-qb="+bar+"\\]\\{margin-[a-z]+:calc\\(-1 \\* var\\(--sa-").test(layout)&&layout.includes('background-origin:border-box !important;}'),'the '+bar+' reaches into the inset beside it');

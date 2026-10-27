@@ -72,13 +72,13 @@ assert.equal(wrapLimit(2,36,6),78);assert.equal(wrapLimit(1,34,6),34);assert.equ
 
 // 3. The title: the valley painting, simply framed.
 const app=read('App.js'),home=read('HomeScreen.js');
-assert.ok(app.includes("const titlePainting=require('./assets/title/questbound-title.jpg');")&&app.includes("dataSet={{qb:'backdrop',frame:homeShape.wide?'wide':'tall'}}"));
-assert.ok(fs.existsSync('assets/title/questbound-title.jpg')&&fs.statSync('assets/title/questbound-title.jpg').size===190839,'the valley painting from b1fcc0f');
-for(const gone of ['questbound-title-wide.jpg','questbound-title-tall.jpg'])assert.ok(!fs.existsSync(path.join('assets/title',gone)),gone+' is deleted');
+assert.ok(app.includes("const titlePainting=require('./assets/title/turquill-title.jpg');")&&app.includes("dataSet={{qb:'backdrop',frame:homeShape.wide?'wide':'tall'}}"));
+assert.ok(fs.existsSync('assets/title/turquill-title.jpg')&&fs.statSync('assets/title/turquill-title.jpg').size===190839,'the valley painting from b1fcc0f');
+for(const gone of ['turquill-title-wide.jpg','turquill-title-tall.jpg'])assert.ok(!fs.existsSync(path.join('assets/title',gone)),gone+' is deleted');
 const named=[];
-const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(['node_modules','.git','dist','dist-phone','dist-phone-next','project-memory','.expo'].includes(entry.name)||entry.name.startsWith('.questbound'))continue;const file=path.join(dir,entry.name);
+const walk=dir=>{for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(['node_modules','.git','dist','dist-phone','dist-phone-next','project-memory','.expo'].includes(entry.name)||entry.name.startsWith('.turquill'))continue;const file=path.join(dir,entry.name);
  if(entry.isDirectory()){if(dir==='.'||dir.startsWith('assets')||dir.startsWith('public'))walk(file);}
- else if(/\.(js|cjs|html|md|json|css)$/.test(entry.name)&&entry.name!=='verify-presentation.cjs'&&entry.name!=='AGENTS.md'&&/questbound-title-(wide|tall)/.test(read(file)))named.push(file);}};
+ else if(/\.(js|cjs|html|md|json|css)$/.test(entry.name)&&entry.name!=='verify-presentation.cjs'&&entry.name!=='AGENTS.md'&&/turquill-title-(wide|tall)/.test(read(file)))named.push(file);}};
 walk('.');
 assert.deepEqual(named,[],'files still name the retired paintings');
 assert.ok(!home.includes('titleArt')&&!home.includes('menuBase')&&!app.includes('titleArt')&&!app.includes('--qb-title-')&&!web.includes('qb-title-')&&!web.includes('data-frame=band'));
@@ -91,14 +91,14 @@ assert.ok(app.includes('unprotected={saved&&!account&&accountsOffered()}'),'the 
 // 4. The emblem: the host's painting, made into layers by make-emblem.cjs.
 const isWebp=file=>{const bytes=fs.readFileSync(file);return bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP';};
 const layers=['ring-v2','core-v3','ring-glow-v2','core-glow-v3','seal-v2','seal-ring-v1','seal-core-v2'].map(name=>'public/emblem/'+name+'.webp');
-for(const file of [...layers,'assets/title/turquill-emblem.webp','assets/title/questbound-seal-source.webp'])assert.ok(fs.existsSync(file)&&isWebp(file)&&fs.statSync(file).size<400000,file+' is a WebP under 400 KB');
+for(const file of [...layers,'assets/title/turquill-emblem.webp','assets/title/turquill-seal-source.webp'])assert.ok(fs.existsSync(file)&&isWebp(file)&&fs.statSync(file).size<400000,file+' is a WebP under 400 KB');
 for(const name of ['seal-v2','seal-ring-v1','seal-core-v2'])assert.ok(fs.statSync('public/emblem/'+name+'.webp').size<60000,name+': the top bar, boot card and pairing page pictures stay light');
 // Under the blade the turning ring holds scales lined up by measurement (mismatch), blended in past the blade's outline.
 // The serpent ring comes from the host's painting (make-emblem.cjs); the Turquill sword and quill are drawn over the
 // painting's still layer with the Q and the dagger taken out (make-turquill-core.cjs), and the small pictures are made
 // from the two layers (make-turquill-emblem.cjs), since 2026-10-26.
-const maker=read('make-emblem.cjs');assert.ok(maker.includes('questbound-seal-source.webp')&&['public/emblem/ring-v2.webp','public/emblem/ring-glow-v2.webp','public/emblem/seal-ring-v1.webp','public/emblem/core-v2.webp'].every(file=>maker.includes(file))&&maker.includes('bladeShare')&&maker.includes('ringShare')&&maker.includes('function mismatch('),'make-emblem.cjs makes the ring layers from the painting');
-{const core=read('make-turquill-core.cjs'),rest=read('make-turquill-emblem.cjs');assert.ok(core.includes('core-v2.webp')&&core.includes('core-v3.webp')&&core.includes('questbound-seal-source.webp')&&core.includes("globalCompositeOperation='destination-out'")&&core.includes('const sword=')&&core.includes('const quill='),'make-turquill-core.cjs draws the sword and quill over the painting\'s still layer with the Q taken out');
+const maker=read('make-emblem.cjs');assert.ok(maker.includes('turquill-seal-source.webp')&&['public/emblem/ring-v2.webp','public/emblem/ring-glow-v2.webp','public/emblem/seal-ring-v1.webp','public/emblem/core-v2.webp'].every(file=>maker.includes(file))&&maker.includes('bladeShare')&&maker.includes('ringShare')&&maker.includes('function mismatch('),'make-emblem.cjs makes the ring layers from the painting');
+{const core=read('make-turquill-core.cjs'),rest=read('make-turquill-emblem.cjs');assert.ok(core.includes('core-v2.webp')&&core.includes('core-v3.webp')&&core.includes('turquill-seal-source.webp')&&core.includes("globalCompositeOperation='destination-out'")&&core.includes('const sword=')&&core.includes('const quill='),'make-turquill-core.cjs draws the sword and quill over the painting\'s still layer with the Q taken out');
  assert.ok(['public/emblem/core-glow-v3.webp','public/emblem/seal-v2.webp','public/emblem/seal-core-v2.webp','assets/title/turquill-emblem.webp'].every(file=>rest.includes(file)),'make-turquill-emblem.cjs makes the small pictures from the two layers');}
 assert.ok(!fs.existsSync('serpent.js'),'the drawn serpent is retired');
 for(const file of sources)assert.ok(!/qb:'(serpent|launch-ring|bezel)'/.test(read(file))&&!read(file).includes("from './serpent'"),file+' no longer draws the old seal');
@@ -131,15 +131,15 @@ assert.ok(gateway.includes('<div class="seal" aria-hidden="true"><i class="ring"
 for(const file of ['phone-server.cjs','desktop-server.cjs'])assert.ok(read(file).includes("'.webp':'image/webp'"),file+' serves WebP as an image');
 const icon=read('assets/title/icon.html');
 assert.ok(icon.includes('url(turquill-emblem.webp)')&&!icon.includes('fonts.googleapis.com')&&!icon.includes('qb-serpent'),'the app icon is the emblem and needs no internet');
-assert.ok(read('make-icons.cjs').includes("[48,'assets/questbound-favicon.png','inset=.01&simple=1']")&&read('make-icons.cjs').includes("[180,'public/icons/apple-touch-icon.png','inset=.06&simple=1']"),'small icons are cut close to the ring');
+assert.ok(read('make-icons.cjs').includes("[48,'assets/turquill-favicon.png','inset=.01&simple=1']")&&read('make-icons.cjs').includes("[180,'public/icons/apple-touch-icon.png','inset=.06&simple=1']"),'small icons are cut close to the ring');
 for(const file of ['public/manifest.json','public/index.html','fullscreen.js','phone-server.cjs'])assert.ok(!/\.png\?v=[1234]\b/.test(read(file))&&/\.png\?v=5\b/.test(read(file)),file+' asks for the new icons (the sword and quill, 2026-10-26)');
 // The gold icon for the next big update is stored, not deployed (2026-10-10): its whole set and how to switch it in.
 {const dir='assets/branding/next-icon/',readme=read(dir+'README.md');
- for(const file of ['apple-touch-icon.png','icon-192.png','icon-512.png','maskable-512.png','questbound-favicon.png','favicon-32.png','questbound-icon.png','android-icon-background.png','android-icon-foreground.png','android-icon-monochrome.png'])assert.ok(fs.existsSync(dir+file)&&readme.includes('`'+file+'`'),dir+file+' is stored and described');
+ for(const file of ['apple-touch-icon.png','icon-192.png','icon-512.png','maskable-512.png','turquill-favicon.png','favicon-32.png','turquill-icon.png','android-icon-background.png','android-icon-foreground.png','android-icon-monochrome.png'])assert.ok(fs.existsSync(dir+file)&&readme.includes('`'+file+'`'),dir+file+' is stored and described');
  assert.ok(readme.includes('?v=6')&&read('make-icons.cjs').includes("process.argv.includes('--next')")&&read(dir+'icon.html').includes('url(../../title/turquill-emblem.webp)'),'the stored icon says how to switch it in and is drawn by make-icons.cjs --next');
  for(const file of ['public/manifest.json','public/index.html','fullscreen.js','phone-server.cjs',...sources])assert.ok(!read(file).includes('next-icon'),file+' does not use the stored icon yet');}
 // The desktop side column folds to a rail (remembered per device) so a conversation can take the whole width.
-{const adv=read('Adventure.js');assert.ok(adv.includes("const sideKey='questbound.side.v1'")&&adv.includes('label="Hide the side panel"')&&adv.includes('label="Show the side panel"')&&adv.includes("qb:'side-rail'")&&/wide&&folded&&/.test(adv)&&/wide&&!folded&&/.test(adv),'the side column can be folded and unfolded on wide screens');}
+{const adv=read('Adventure.js');assert.ok(adv.includes("const sideKey='turquill.side.v1'")&&adv.includes('label="Hide the side panel"')&&adv.includes('label="Show the side panel"')&&adv.includes("qb:'side-rail'")&&/wide&&folded&&/.test(adv)&&/wide&&!folded&&/.test(adv),'the side column can be folded and unfolded on wide screens');}
 // Hover tooltips live in one element on <body> above every layer (tooltips.js), kept inside the window, beside the
 // button for the folded side rail; no CSS ::after tooltip is left to be clipped by a panel.
 {const t=read('tooltips.js'),entry=read('index.js');assert.ok(entry.includes("import {initializeTooltips} from './tooltips';")&&entry.includes('initializeTooltips();'),'the tooltip layer starts with the game');

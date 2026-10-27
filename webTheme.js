@@ -503,10 +503,10 @@ html[data-appearance=light][data-effects=light] [data-qb=hud]{background:linear-
 html[data-appearance=light][data-effects=light] [data-qb=slot]{background:linear-gradient(160deg,rgb(var(--ql-raised)),rgb(var(--ql-panel))) !important;}
 `;
 export function initializeWebTheme(){
- if(typeof document==='undefined'||document.getElementById('questbound-theme'))return;
+ if(typeof document==='undefined'||document.getElementById('turquill-theme'))return;
  // The typefaces come from this host (public/fonts); the page template requests them, and this is the fallback when it did not.
  if(!document.getElementById('qb-fonts')){const fontsLink=document.createElement('link');fontsLink.id='qb-fonts';fontsLink.rel='stylesheet';fontsLink.href='/fonts/fonts-v2.css';document.head.appendChild(fontsLink);}
- const style=document.createElement('style');style.id='questbound-theme';style.textContent=css+lightCss;document.head.appendChild(style);
+ const style=document.createElement('style');style.id='turquill-theme';style.textContent=css+lightCss;document.head.appendChild(style);
  document.querySelector('meta[name="theme-color"]')?.setAttribute('content','#0a070b');
  document.title='Turquill';
 }

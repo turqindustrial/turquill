@@ -13,7 +13,7 @@ const {generate,topUpLibrary,journeyCheck,startLibrary,libraryPaused,typedByPlay
 const {generateAdventure}=require('./adventure-generator.cjs');
 const {journeyStory,journeyPitch}=require('./journey-fixtures.cjs');
 const crypto=require('node:crypto');
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-journeys-'));
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-journeys-'));
 const day=86400000,same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b),m);
 (async()=>{
  // ---- The numbers ----
@@ -192,12 +192,12 @@ const day=86400000,same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b
   assert.equal(topUpLibrary(d,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:keys.fetchImpl,live:false,spend:{background:()=>({ok:false,reason:'total'})}}),false,'past a ceiling nothing is written');assert.equal(d.list().length,0);
   assert.equal(topUpLibrary(d,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:keys.fetchImpl,live:false,spend:{check:()=>({ok:true})}}),true,'a spending module without the background check does not stop it');await d.settled();
   assert.equal(topUpLibrary(d,{apiKey:'',storyModel:'m',fetchImpl:keys.fetchImpl,live:false}),false,'no key, no writing');}
- // The host's pause (2026-10-22, the stories spec Phase 0): while .questbound-library-paused exists (read live, under
- // QUESTBOUND_DATA when set) nothing is written, by a top-up, the start-up fill or a listing; journeys already written
+ // The host's pause (2026-10-22, the stories spec Phase 0): while .turquill-library-paused exists (read live, under
+ // TURQUILL_DATA when set) nothing is written, by a top-up, the start-up fill or a listing; journeys already written
  // are still listed and started; a fill under way stops at its next journey; removing the file resumes it at once.
- {const data=path.join(tmp,'paused-data'),was=process.env.QUESTBOUND_DATA;fs.mkdirSync(data,{recursive:true});process.env.QUESTBOUND_DATA=data;
+ {const data=path.join(tmp,'paused-data'),was=process.env.TURQUILL_DATA;fs.mkdirSync(data,{recursive:true});process.env.TURQUILL_DATA=data;
   try{
-   const flag=path.join(data,'.questbound-library-paused');fs.writeFileSync(flag,'Paused by the host');assert.equal(libraryPaused(),true);
+   const flag=path.join(data,'.turquill-library-paused');fs.writeFileSync(flag,'Paused by the host');assert.equal(libraryPaused(),true);
    const d=createLibrary({dir:path.join(tmp,'paused'),now:()=>clock,random,size:2,floor:2}),was2=calls.length;
    assert.equal(topUpLibrary(d,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:keys.fetchImpl,live:false}),false,'paused: nothing is written');
    assert.equal(startLibrary({apiKey:'k',model:'m',library:d,fetchImpl:keys.fetchImpl}),false,'nor at start-up');
@@ -212,30 +212,30 @@ const day=86400000,same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b
    const pausing=async(url,options)=>{wrote++;if(wrote===1)fs.writeFileSync(flag,'Paused');return keys.fetchImpl(url,options);};
    assert.equal(topUpLibrary(e,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:pausing,live:true,spend:{background:()=>({ok:true})}}),true);await e.settled();
    assert.equal(wrote,1,'the fill stopped at its next journey');assert.equal(e.list().length,1);
-   const diag=path.join(data,'.questbound-diagnostics.jsonl');assert.ok(!fs.existsSync(diag)||!fs.readFileSync(diag,'utf8').includes('"write"'),'a pause is not a failure');
+   const diag=path.join(data,'.turquill-diagnostics.jsonl');assert.ok(!fs.existsSync(diag)||!fs.readFileSync(diag,'utf8').includes('"write"'),'a pause is not a failure');
    // The paused attempt is not a failure: no ten-minute wait after -ResumeLibrary, and it is not counted against the day
    // (the project review, 2026-10-22).
    assert.equal(e.info().writesToday,1,'only the journey written counts toward the day');
    fs.rmSync(flag);assert.equal(libraryPaused(),false);
    assert.equal(topUpLibrary(e,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:keys.fetchImpl,live:false}),true,'resumed: writing again at once');await e.settled();assert.equal(e.list().length,3);
-  }finally{if(was===undefined)delete process.env.QUESTBOUND_DATA;else process.env.QUESTBOUND_DATA=was;}
-  const ps=fs.readFileSync('launch.ps1','utf8');assert.ok(/\[switch\]\$PauseLibrary,\[switch\]\$ResumeLibrary/.test(ps)&&ps.includes("Join-Path $root '.questbound-library-paused'")&&/if \(\$PauseLibrary\) \{ Set-Content \$libraryPauseFile/.test(ps)&&/if \(\$ResumeLibrary\) \{ Remove-Item \$libraryPauseFile/.test(ps),'Turquill.cmd -PauseLibrary / -ResumeLibrary');
+  }finally{if(was===undefined)delete process.env.TURQUILL_DATA;else process.env.TURQUILL_DATA=was;}
+  const ps=fs.readFileSync('launch.ps1','utf8');assert.ok(/\[switch\]\$PauseLibrary,\[switch\]\$ResumeLibrary/.test(ps)&&ps.includes("Join-Path $root '.turquill-library-paused'")&&/if \(\$PauseLibrary\) \{ Set-Content \$libraryPauseFile/.test(ps)&&/if \(\$ResumeLibrary\) \{ Remove-Item \$libraryPauseFile/.test(ps),'Turquill.cmd -PauseLibrary / -ResumeLibrary');
   assert.ok(![...ps].some(ch=>ch.charCodeAt(0)>127),'launch.ps1 stays pure ASCII');}
  // A failed write is noted in the diagnostics with its kind only (live runs), so the next failure can be told apart
  // (the first live journey was cut off by Node's own fetch after 308 s on 2026-10-13 and left no trace).
- {const data=path.join(tmp,'data'),was=process.env.QUESTBOUND_DATA;fs.mkdirSync(data,{recursive:true});process.env.QUESTBOUND_DATA=data;
+ {const data=path.join(tmp,'data'),was=process.env.TURQUILL_DATA;fs.mkdirSync(data,{recursive:true});process.env.TURQUILL_DATA=data;
   try{
    const d=createLibrary({dir:path.join(tmp,'noted'),now:()=>clock,random,size:2,floor:2});
    const down=async()=>new Response(JSON.stringify({error:{code:'server_error',message:'provider words'}}),{status:500,headers:{'content-type':'application/json'}});
    assert.equal(topUpLibrary(d,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:down,live:true,spend:{background:()=>({ok:true})}}),true);await d.settled();
-   const notes=fs.readFileSync(path.join(data,'.questbound-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
+   const notes=fs.readFileSync(path.join(data,'.turquill-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
    assert.equal(notes.length,1);assert.equal(notes[0].write,'library');assert.equal(notes[0].failure,'http');assert.equal(notes[0].status,500);assert.ok(Number.isFinite(notes[0].seconds));assert.ok(!JSON.stringify(notes[0]).includes('provider words'),'never what the provider said');
    const quiet=createLibrary({dir:path.join(tmp,'quiet'),now:()=>clock,random,size:2,floor:2});topUpLibrary(quiet,{apiKey:'k',storyModel:'m',effort:'high',fetchImpl:down,live:false});await quiet.settled();
-   assert.equal(fs.readFileSync(path.join(data,'.questbound-diagnostics.jsonl'),'utf8').trim().split('\n').length,1,'a run against a stand-in provider notes nothing');
-  }finally{if(was===undefined)delete process.env.QUESTBOUND_DATA;else process.env.QUESTBOUND_DATA=was;}}
+   assert.equal(fs.readFileSync(path.join(data,'.turquill-diagnostics.jsonl'),'utf8').trim().split('\n').length,1,'a run against a stand-in provider notes nothing');
+  }finally{if(was===undefined)delete process.env.TURQUILL_DATA;else process.env.TURQUILL_DATA=was;}}
  // When the Dungeon Master starts, the library tops itself up.
  {const d=createLibrary({dir:path.join(tmp,'start'),now:()=>clock,random,size:1,floor:1});assert.equal(startLibrary({apiKey:'k',model:'m',library:d,fetchImpl:keys.fetchImpl}),true);await d.settled();assert.equal(d.list().length,1);
-  const dm=fs.readFileSync('dm-server.cjs','utf8');assert.ok(dm.includes("if(fetchImpl===fetch&&apiKey&&model&&process.env.QUESTBOUND_LIBRARY!=='off')setTimeout(()=>{try{require(__filename).startLibrary("),'createServer starts it (live only)');}
+  const dm=fs.readFileSync('dm-server.cjs','utf8');assert.ok(dm.includes("if(fetchImpl===fetch&&apiKey&&model&&process.env.TURQUILL_LIBRARY!=='off')setTimeout(()=>{try{require(__filename).startLibrary("),'createServer starts it (live only)');}
  // The story writer: a pitch only for the library, beside the story and not in it.
  {const got=await generateAdventure({input:'x',context:{mode:'adventure',introId:'easy',ahead:true,libraryBrief:{seed:'a salt town',terrain:'coast',mood:journeyMoods[0],others:[]},choices:[]}},{apiKey:'k',model:'m',fetchImpl:keys.fetchImpl});
   assert.ok(got.pitch&&got.pitch.hook&&got.story.pitch===undefined,'the pitch travels beside the story');
@@ -273,7 +273,7 @@ const day=86400000,same=(a,b,m)=>assert.equal(JSON.stringify(a),JSON.stringify(b
   assert.equal(c.fateJourney(clean,()=>.99).id,clean[2].id);assert.equal(c.fateJourney([],Math.random),null);
   const store={v:{},async getItem(k){return this.v[k]??null;},async setItem(k,v){this.v[k]=v;}};
   same(await c.playedJourneys(store),[]);await c.rememberJourney(clean[0].id,store);await c.rememberJourney(clean[0].id,store);await c.rememberJourney('nope',store);same(await c.playedJourneys(store),[clean[0].id],'remembered once, ids only');
-  assert.equal(c.journeyKey,'questbound.journeys.v1');}
+  assert.equal(c.journeyKey,'turquill.journeys.v1');}
  // ---- The screen and the game ----
  {const screen=fs.readFileSync('AdventureIntros.js','utf8'),app=['App.js','startTale.js'].map(f=>fs.readFileSync(f,'utf8')).join(' ');
   assert.ok(screen.includes('function JourneyShelf')&&screen.includes('function JourneyCard')&&screen.includes("label={busy?'One moment…':'Begin this journey'}")&&screen.includes('READY NOW')&&screen.includes("i.idea||i.id==='surprise'||i.local"),'the journeys as cards between Your own tale and Let fate decide');

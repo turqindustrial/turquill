@@ -211,15 +211,15 @@ const strictProblems=(s,at,out=[])=>{
   const out=await generate({input:'I look.',context:ctx},{apiKey:'k',model:'m',fetchImpl:once});
   assert.equal(out.narration,'Fine.');assert.equal(seen.length,2);assert.equal(seen[1].prompt_cache_key,undefined);
   await generate({input:'I look.',context:ctx},{apiKey:'k',model:'m',fetchImpl:once});assert.equal(seen.length,3,'not tried again');
-  delete globalThis.__questboundNoCacheKey;
+  delete globalThis.__turquillNoCacheKey;
   // Any other refusal is reported as before.
   await assert.rejects(generate({input:'I look.',context:ctx},{apiKey:'k',model:'m',fetchImpl:async()=>({ok:false,status:400,headers:{get:()=>null},json:async()=>({error:{message:'Bad request.'}})})}),/could not complete this request/);
-  assert.equal(globalThis.__questboundNoCacheKey,undefined);
+  assert.equal(globalThis.__turquillNoCacheKey,undefined);
   // A provider that refuses the effects list is asked again at once with every effect spelled out as a field (the
   // schema before 2026-10-21), for the rest of the process; its reply is read as it is.
   {const schemas=[];const reply=await generate({input:'I look.',context:ctx},{apiKey:'k',model:'m',fetchImpl:async(u,opt)=>{const q=JSON.parse(opt.body);schemas.push(q.text.format.schema);if(schemas.length===1)return {ok:false,status:400,headers:{get:()=>null},json:async()=>({error:{message:"Invalid schema for response_format 'dm_reply': anyOf is not supported here."}})};return {ok:true,json:async()=>({status:'completed',output:[{type:'message',content:[{type:'output_text',text:JSON.stringify(full({narration:'You look.',worldEvent:'Dust settles.'}))}]}]})};}});
    assert.equal(schemas.length,2);assert.deepEqual(schemas[0],replySchemaFor());assert.deepEqual(schemas[1],require('./dm-schemas.cjs').spelledOutSchema());assert.equal(reply.narration,'You look.');assert.equal(reply.worldEvent,'Dust settles.');
-   delete globalThis.__questboundSpelledOut;}
+   delete globalThis.__turquillSpelledOut;}
   assert.equal(promptLayout,3);}
 
  // ---- 5b. Token budgets (the host, 2026-10-21: "optimize token usage even further we shouldn't need that many per turn") ----
@@ -315,7 +315,7 @@ const strictProblems=(s,at,out=[])=>{
  // dm-report.cjs shows the cached share and the input per turn, for turns sent in parts, in the cache order and before it.
  {const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'qb-cache-'));
   const now=new Date().toISOString(),line=o=>JSON.stringify({at:now,mode:'turn',model:'gpt-6-luna',output:200,reasoning:0,ask:1,...o});
-  fs.writeFileSync(path.join(dir,'.questbound-usage.jsonl'),[line({input:20000,cached:10000}),line({input:19000,cached:17000,layout:2}),line({input:20000,cached:18000,layout:3,phase:'turn'}),line({input:18000,cached:16000,layout:3,phase:'told'}),line({input:20000,cached:19000,layout:3,phase:'turn',ask:2,aside:true})].join('\n')+'\n');
+  fs.writeFileSync(path.join(dir,'.turquill-usage.jsonl'),[line({input:20000,cached:10000}),line({input:19000,cached:17000,layout:2}),line({input:20000,cached:18000,layout:3,phase:'turn'}),line({input:18000,cached:16000,layout:3,phase:'told'}),line({input:20000,cached:19000,layout:3,phase:'turn',ask:2,aside:true})].join('\n')+'\n');
   const out=require('node:child_process').spawnSync(process.execPath,['dm-report.cjs','--dir',dir],{cwd:__dirname,encoding:'utf8'}).stdout;fs.rmSync(dir,{recursive:true,force:true});
   assert.match(out,/sent in parts: 3 turn requests, 19333 input tokens each on average, 91% of them cached/);assert.match(out,/by phase: turns 2 \(93%\), tellings and cues 1 \(89%\), second looks 1 \(95%\)\./);
   assert.match(out,/in the cache order: 1 turn requests, 19000 input tokens each on average, 89% of them cached/);assert.match(out,/before it: 1 turn requests, 20000 input tokens each on average, 50% of them cached/);}

@@ -7,6 +7,6 @@ try{
  else if(command==='export'){
   const data=ops.backup.read(id,version),snapshot=data.snapshot;
   if(!validSnapshot(snapshot))throw Error('Backup failed adventure validation.');
-  const out=path.resolve(process.env.QUESTBOUND_DATA||__dirname,'.questbound-restored-'+id+'.json');fs.writeFileSync(out,JSON.stringify(data,null,2),{flag:'wx',mode:0o600});console.log('Validated backup exported for review. Existing saves were not changed.');
+  const out=path.resolve(process.env.TURQUILL_DATA||__dirname,'.turquill-restored-'+id+'.json');fs.writeFileSync(out,JSON.stringify(data,null,2),{flag:'wx',mode:0o600});console.log('Validated backup exported for review. Existing saves were not changed.');
  }else console.log('Usage: node backup-tool.cjs verify | list <backup-id> | export <backup-id> <version>');
 }catch{console.error('Backup operation failed. No active save was changed.');process.exitCode=1;}

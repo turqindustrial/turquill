@@ -24,7 +24,7 @@ Nothing below is a line of code the assistant can write alone. Each is an owner'
 5. **Content and voice.** The tales are written live and differ every time; a hit also needs a few authored campaigns that are reliably excellent, a recognisable world, and a narrator voice better than the browser's (a paid text-to-speech service, a few cents a thousand characters).
 6. **Live operations.** Someone on call when OpenAI has a bad day, a status page, backups of the data folder tested by restoring them, a way to ban a player, moderation of what people type at shared tables.
 7. **Players.** The share card and the invite code are the start of a loop; a hit needs a community (Discord), creators playing it on camera, a trailer, a landing page, a mailing list, and patient weekly releases with a changelog. Nobody has heard of the game yet.
-8. **Rights.** The rules text is licensed (CC-BY, the SRD notices are in the game); the game was renamed Turquill on 2026-10-25 (another company has filed "Questbound" in the UK for games and software); the host checked the public registers that day (no mark found), which is not a lawyer's clearance: have the name cleared in the owner's markets before money changes hands.
+8. **Rights.** The rules text is licensed (CC-BY, the SRD notices are in the game); the game was renamed Turquill on 2026-10-25 (another company has filed "Turquill" in the UK for games and software); the host checked the public registers that day (no mark found), which is not a lawyer's clearance: have the name cleared in the owner's markets before money changes hands.
 
 ## Before the full launch
 

@@ -9,12 +9,12 @@
 //
 // The device is counted by a random metrics id of its own (not the guest identity, cookie or anything the Dungeon Master,
 // feedback or a shared table sees), so returning devices can be counted while these records join to nothing else.
-// Settings → Help improve Questbound turns the counts off; the id is then forgotten and nothing more is sent.
+// Settings → Help improve Turquill turns the counts off; the id is then forgotten and nothing more is sent.
 // The same setting holds whether to ask "How was that session?" (ratingRules.js) and when it was last asked.
 import {agreementStatus} from './agreementRules';
 import {subscribeProblems,recentProblems} from './problemLog';
 import {pageBuild} from './feedbackRules';
-export const insightKey='questbound.insight.v1';
+export const insightKey='turquill.insight.v1';
 const INSIGHT_IDLE=5*60000,INSIGHT_NEW_SESSION=30*60000;
 const insightListeners=new Set();
 const insightStore=()=>{try{return globalThis.localStorage??null;}catch{return null;}};
@@ -64,7 +64,7 @@ export function failureOf(problem){
 let session=null,talkingNow=false,lastPersist=0;
 // A reload of the tab (or a phone bringing the page back) carries on the same session while it is less than half an
 // hour old: the counts are kept in this tab's sessionStorage (never sent anywhere else).
-const SESSION_KEY='questbound.insight.session.v1';
+const SESSION_KEY='turquill.insight.session.v1';
 function saveSession(){try{if(session)globalThis.sessionStorage?.setItem(SESSION_KEY,JSON.stringify(session));}catch{}}
 function resumedSession(now){
  try{

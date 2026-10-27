@@ -244,33 +244,33 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-people-'));
      const written=c.brief.map((s,i)=>({...person(s.slot,{name:'Ka'+letters(s.slot.slice(2))+' Mor'+letters(s.slot.slice(2)),gender:s.gender,species:s.species,class:s.class,age:s.age??'adult',role:'A '+s.roleHint+'.',appearance:'A figure '+own(s.slot,0,20)+'.',hook:own(s.slot,40,8)+' '+s.hookTheme+'.',placeKinds:s.placeKinds,terrains:[s.terrain]}),slot:s.slot,...(i===0&&batches===1?{name:'Gandalf Grey'}:{})}));
      const out=writer.tidyPeople({people:written},c.brief,c.avoidNames);
      // Once, a person the stand-in passes but who looks like someone the script already keeps: the script refuses them.
-     if(batches===2&&!copied&&out.people.length){copied=true;const kept=JSON.parse(fs.readFileSync(path.join(data,'.questbound-people','library.json'),'utf8'))[0];out.people[0]={...out.people[0],appearance:kept.appearance};}
+     if(batches===2&&!copied&&out.people.length){copied=true;const kept=JSON.parse(fs.readFileSync(path.join(data,'.turquill-people','library.json'),'utf8'))[0];out.people[0]={...out.people[0],appearance:kept.appearance};}
      return send(200,out);}
     if(c.mode==='art'){if(quota)return send(200,{status:'failed',key:'k',error:'Image generation reached an API usage limit. Retry later.'});paintings++;return send(200,{status:'ready',key:'k',dataUrl:'data:image/jpeg;base64,'+jpegB64});}
     send(400,{error:'mode'});});});
    const jpegB64=Buffer.from([255,216,255,224,1,2,255,217]).toString('base64');
    await new Promise(res=>fake.listen(0,'127.0.0.1',res));const url='http://127.0.0.1:'+fake.address().port+'/dm';
-   const run=args=>new Promise(res=>{const {spawn}=require('node:child_process');const p=spawn(process.execPath,['make-people-library.cjs','--no-desktop',...args],{env:{...process.env,QUESTBOUND_DATA:data,QB_DM_URL:url},cwd:__dirname});let out='';p.stdout.on('data',d=>out+=d);p.stderr.on('data',d=>out+=d);p.on('close',code=>res({code,out}));});
-   const read=()=>JSON.parse(fs.readFileSync(path.join(data,'.questbound-people','library.json'),'utf8'));
+   const run=args=>new Promise(res=>{const {spawn}=require('node:child_process');const p=spawn(process.execPath,['make-people-library.cjs','--no-desktop',...args],{env:{...process.env,TURQUILL_DATA:data,QB_DM_URL:url},cwd:__dirname});let out='';p.stdout.on('data',d=>out+=d);p.stderr.on('data',d=>out+=d);p.on('close',code=>res({code,out}));});
+   const read=()=>JSON.parse(fs.readFileSync(path.join(data,'.turquill-people','library.json'),'utf8'));
    let a=await run(['--limit','30']);assert.equal(a.code,0,a.out);let library=read();
-   assert.ok(library.length>=27&&library.length<=30,'a limited run writes about that many: '+library.length);assert.ok(fs.existsSync(path.join(data,'.questbound-people','plan.json')));assert.ok(!library.some(p=>/Gandalf/.test(p.name)));
+   assert.ok(library.length>=27&&library.length<=30,'a limited run writes about that many: '+library.length);assert.ok(fs.existsSync(path.join(data,'.turquill-people','plan.json')));assert.ok(!library.some(p=>/Gandalf/.test(p.name)));
    assert.match(a.out,/to ask again: .*appearance/,'the script itself refuses someone too like a person it keeps');
    a=await run(['--limit','15']);library=read();assert.ok(library.length>=40&&library.length<=45,'resumed where it stopped: '+library.length);assert.equal(new Set(library.map(p=>p.id)).size,library.length);
    assert.ok(library.every(lib.validPerson));same(library.map(p=>p.id),[...library.map(p=>p.id)].sort(),'kept in id order');
    assert.equal(new Set(library.flatMap(p=>writer.nameParts(p.name))).size,library.length*2,'no name part twice');assert.ok(library.every(p=>!writer.tooAlike(p,library)),'nobody nearly the same as anyone');
    // Host jobs are not held to the game's spending ceilings: a daily ceiling long passed stops nothing here.
-   fs.writeFileSync(path.join(data,'.questbound-total-budget'),'0');fs.writeFileSync(path.join(data,'.questbound-usage.jsonl'),JSON.stringify({at:new Date().toISOString(),mode:'turn',model:'gpt-6-luna',input:0,output:0,images:100})+'\n');
-   a=await run(['--portraits','--limit','5']);assert.equal(a.code,0,a.out);assert.equal(paintings,5);assert.equal(fs.readdirSync(path.join(data,'.questbound-people')).filter(f=>f.endsWith('.jpg')).length,5);assert.match(a.out,/about \$0\.15/);
+   fs.writeFileSync(path.join(data,'.turquill-total-budget'),'0');fs.writeFileSync(path.join(data,'.turquill-usage.jsonl'),JSON.stringify({at:new Date().toISOString(),mode:'turn',model:'gpt-6-luna',input:0,output:0,images:100})+'\n');
+   a=await run(['--portraits','--limit','5']);assert.equal(a.code,0,a.out);assert.equal(paintings,5);assert.equal(fs.readdirSync(path.join(data,'.turquill-people')).filter(f=>f.endsWith('.jpg')).length,5);assert.match(a.out,/about \$0\.15/);
    a=await run(['--portraits','--limit','3']);assert.equal(paintings,8,'resumed: the painted ones skipped');
    quota=true;a=await run(['--portraits']);assert.equal(a.code,2,'a quota refusal stops cleanly');assert.match(a.out,/Stopped: OpenAI refused the painting for billing, quota or access/);
    a=await run(['--plan']);assert.match(a.out,/Plan written: 300 people/);
    assert.match(a.out,/To write: \d+ people \(text about \$[\d.]+\)\. To paint: \d+ portraits \(about \$[\d.]+ at \$0\.03 a portrait\)/,'the plan says what is left and about what it costs');
    assert.doesNotMatch(readText('make-people-library.cjs'),/total-budget|reserve/,'no pacing to the game\'s ceilings: the host funds these jobs');
    // The second batch, once the first is written: --plan with its cost, then the people with the slots' ages.
-   {const data2=path.join(tmp,'data2'),shelf2=path.join(data2,'.questbound-people');fs.mkdirSync(shelf2,{recursive:true});
+   {const data2=path.join(tmp,'data2'),shelf2=path.join(data2,'.turquill-people');fs.mkdirSync(shelf2,{recursive:true});
     const firstBatch=planPeople().map(s=>person(s.slot,{name:'Fa'+letters(s.slot.slice(2))+' Lo'+letters(s.slot.slice(2)),gender:s.gender,species:s.species,class:s.class,role:'A '+s.roleHint+'.',appearance:'A figure '+own(s.slot,0,20)+'.',hook:own(s.slot,40,8)+'.',placeKinds:s.placeKinds,terrains:[s.terrain]}));
     fs.writeFileSync(path.join(shelf2,'library.json'),JSON.stringify(firstBatch));for(const p of firstBatch)fs.writeFileSync(path.join(shelf2,p.id+'.jpg'),'x');
-    const run2=args=>new Promise(res=>{const {spawn}=require('node:child_process');const p=spawn(process.execPath,['make-people-library.cjs','--no-desktop',...args],{env:{...process.env,QUESTBOUND_DATA:data2,QB_DM_URL:url},cwd:__dirname});let out='';p.stdout.on('data',d=>out+=d);p.stderr.on('data',d=>out+=d);p.on('close',code=>res({code,out}));});
+    const run2=args=>new Promise(res=>{const {spawn}=require('node:child_process');const p=spawn(process.execPath,['make-people-library.cjs','--no-desktop',...args],{env:{...process.env,TURQUILL_DATA:data2,QB_DM_URL:url},cwd:__dirname});let out='';p.stdout.on('data',d=>out+=d);p.stderr.on('data',d=>out+=d);p.on('close',code=>res({code,out}));});
     let b=await run2(['--batch','2','--plan']);assert.equal(b.code,0,b.out);assert.match(b.out,/Plan written: 690 people/);assert.match(b.out,/The second batch: 390 people \(np301…np690\)/);assert.match(b.out,/Human\s+30\s+trained 15, ordinary 15\s+·\s+10\/10\/10\s+·\s+9\/6\/6\/9/);
     assert.match(b.out,/To write: 390 people \(text about \$[\d.]+\)\. To paint: 390 portraits \(about \$11\.70 at \$0\.03 a portrait\)/,'the second batch costs about $0.03 a portrait');
     const before=batches;b=await run2(['--batch','2','--limit','25']);assert.equal(b.code,0,b.out);assert.ok(batches>before);

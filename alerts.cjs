@@ -1,9 +1,9 @@
 // Alerts for the host: spending that passes half or most of the guests' daily allowance, a spending ceiling reached,
 // or one network address refused again and again (someone hammering the game). Each alert is written to the security
 // log (operations.cjs auditTo: the kind only, never who or from where) and, when the host has connected Discord
-// (Connect-Discord.cmd: the webhook is DPAPI-encrypted in .questbound-discord.dpapi), posted to that channel as one
+// (Connect-Discord.cmd: the webhook is DPAPI-encrypted in .turquill-discord.dpapi), posted to that channel as one
 // short line, with mentions disabled. A kind is raised at most once an hour (or once a day for the daily thresholds),
-// remembered in .questbound-alerts.json so a restart or a reload does not repeat it.
+// remembered in .turquill-alerts.json so a restart or a reload does not repeat it.
 // The webhook can only be unlocked by the same Windows user, so a short PowerShell child reads the file, decrypts it
 // and posts; the message reaches it on stdin and the webhook never appears on a command line, in an environment
 // variable or in a log. The child is given a trimmed environment (no API key or token reaches it).
@@ -39,8 +39,8 @@ function postToDiscord(text,{file,spawn=require('node:child_process').spawn,time
   if(detach)child.unref?.();
  });
 }
-function createAlerts({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now,post=null,audit=null}={}){
- const stateFile=path.join(dir,'.questbound-alerts.json'),discordFile=path.join(dir,'.questbound-discord.dpapi');
+function createAlerts({dir=process.env.TURQUILL_DATA||__dirname,now=Date.now,post=null,audit=null}={}){
+ const stateFile=path.join(dir,'.turquill-alerts.json'),discordFile=path.join(dir,'.turquill-discord.dpapi');
  const read=()=>{try{const s=JSON.parse(fs.readFileSync(stateFile,'utf8'));return s&&typeof s==='object'&&!Array.isArray(s)?s:{};}catch{return {};}};
  const record=audit??((event,details)=>require('./operations.cjs').auditTo(dir,event,details,now));
  const send=post??(text=>postToDiscord(text,{file:discordFile}));

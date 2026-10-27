@@ -108,16 +108,16 @@ const body={input:'I swing at the bandit.',context:{choices:[],stage:'combat',..
  await fails(async()=>{throw new TypeError('fetch failed');},'network',/fetch failed/);
  assert.deepEqual(ai.requestFailure(Object.assign(Error('the rules refused the tale'),{kind:'rejected'})),{failure:'rejected'});assert.deepEqual(ai.requestFailure(Error('who knows')),{failure:'other'});
  // The failure is written to the diagnostics with its kind only (live runs; never the words), and dm-report counts it.
- {const fsx=require('node:fs'),os=require('node:os'),path=require('node:path'),dir=fsx.mkdtempSync(path.join(os.tmpdir(),'questbound-stream-')),before=process.env.QUESTBOUND_DATA;
-  process.env.QUESTBOUND_DATA=dir;
+ {const fsx=require('node:fs'),os=require('node:os'),path=require('node:path'),dir=fsx.mkdtempSync(path.join(os.tmpdir(),'turquill-stream-')),before=process.env.TURQUILL_DATA;
+  process.env.TURQUILL_DATA=dir;
   server.recordWriteFailure('library',Object.assign(Error('The adventure generation was incomplete (provider words).'),{kind:'timeout',seconds:308}),true);
   server.recordWriteFailure('story-job',Object.assign(Error('x'),{kind:'http',status:500}),true,'account-0123456789abcdef');
   server.recordWriteFailure('library',Error('not live'),false);
-  const notes=fsx.readFileSync(path.join(dir,'.questbound-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
+  const notes=fsx.readFileSync(path.join(dir,'.turquill-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
   assert.equal(notes.length,2,'only live writes are noted');assert.deepEqual({...notes[0],at:0},{at:0,write:'library',failure:'timeout',seconds:308});assert.deepEqual({...notes[1],at:0},{at:0,guest:'account-0123456789abcdef',write:'story-job',failure:'http',status:500});
-  const report=require('node:child_process').execFileSync(process.execPath,[path.join(__dirname,'dm-report.cjs')],{env:{...process.env,QUESTBOUND_DATA:dir},encoding:'utf8'});
+  const report=require('node:child_process').execFileSync(process.execPath,[path.join(__dirname,'dm-report.cjs')],{env:{...process.env,TURQUILL_DATA:dir},encoding:'utf8'});
   assert.match(report,/Background tales that failed: 2/);assert.match(report,/library: timeout/);assert.match(report,/story-job: http 500/);
-  if(before===undefined)delete process.env.QUESTBOUND_DATA;else process.env.QUESTBOUND_DATA=before;fsx.rmSync(dir,{recursive:true,force:true});}
+  if(before===undefined)delete process.env.TURQUILL_DATA;else process.env.TURQUILL_DATA=before;fsx.rmSync(dir,{recursive:true,force:true});}
  // Node's own fetch honours the patient agent (here with short limits to show it), and a real streamed request through
  // it, with a silence part-way, completes.
  {const limited=await ai.patientDispatcher(fetch,300),patient=await ai.patientDispatcher(fetch);

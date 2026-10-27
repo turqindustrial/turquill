@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The authoring checker for a written tale (WRITTEN-TALES.md; the build specification's 5.3). Deterministic: no AI, no
-// network, no ports. It reads one tale file (.questbound-written/<slug>.json, or a draft anywhere) and the host's
+// network, no ports. It reads one tale file (.turquill-written/<slug>.json, or a draft anywhere) and the host's
 // libraries read-only, seats the tale with the game's own rules (rules-files.cjs, the same rules the campaign server
 // runs) and reports, check by check:
 //   1 Shape and limits   every field the format names, its limits and the written-tale limits; tidying cuts nothing.
@@ -29,8 +29,8 @@
 // Usage (from a checkout or worktree of the build branch, never the live checkout):
 //   node check-written-tale.cjs <tale.json> [--json] [--people <dir>] [--creatures <dir>] [--places <dir>] [--shelf <dir>]
 //                               [--balance <fights a cell, default 40>] [--no-balance]
-// The folders default to the live data folders (.questbound-people, .questbound-creatures, .questbound-place-art,
-// .questbound-written) under QUESTBOUND_DATA, this checkout, or the main checkout of this git repository. They are only
+// The folders default to the live data folders (.turquill-people, .turquill-creatures, .turquill-place-art,
+// .turquill-written) under TURQUILL_DATA, this checkout, or the main checkout of this git repository. They are only
 // read. Exit 0 when the tale passes (warnings allowed), 1 when it fails or cannot be checked.
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{execFileSync}=require('node:child_process');
@@ -108,10 +108,10 @@ function rules(){
 }
 
 // ---------- The libraries (read-only) ----------
-// Where the live data folders are: QUESTBOUND_DATA, this checkout, then the main checkout of this git repository (a
+// Where the live data folders are: TURQUILL_DATA, this checkout, then the main checkout of this git repository (a
 // worktree has none of its own).
 function dataRoots(){
- const roots=[process.env.QUESTBOUND_DATA,__dirname].filter(Boolean);
+ const roots=[process.env.TURQUILL_DATA,__dirname].filter(Boolean);
  try{
   let common=execFileSync('git',['-C',__dirname,'rev-parse','--git-common-dir'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:5000}).trim();
   if(common){if(!path.isAbsolute(common))common=path.resolve(__dirname,common);roots.push(path.dirname(common));}
@@ -168,7 +168,7 @@ function checkTale(file,options={}){
  report.slug=typeof tale.slug==='string'?tale.slug:null;
  const r=rules(),story=plain(tale.story)?tale.story:{},staging=plain(story.staging)?story.staging:{};
  const tier=tiers[tale.length]??tiers.short;
- const libs={people:folder(options.people,'.questbound-people'),creatures:folder(options.creatures,'.questbound-creatures'),places:folder(options.places,'.questbound-place-art'),shelf:folder(options.shelf,'.questbound-written')};
+ const libs={people:folder(options.people,'.turquill-people'),creatures:folder(options.creatures,'.turquill-creatures'),places:folder(options.places,'.turquill-place-art'),shelf:folder(options.shelf,'.turquill-written')};
  for(const [k,f] of Object.entries(libs))report.libraries[k]=f.dir;
 
  // ===== 1. Shape and limits =====
@@ -177,7 +177,7 @@ function checkTale(file,options={}){
   if(tale.format!==1)fail(1,'format','must be 1');
   if(!uuid.test(String(tale.id)))fail(1,'id','must be a fixed lower-case UUID (8-4-4-4-12 hex digits), the same for every edition');
   if(typeof tale.slug!=='string'||!/^[a-z0-9-]{3,28}$/.test(tale.slug))fail(1,'slug','must be 3 to 28 lower-case letters, digits or hyphens');
-  else if(path.basename(file)!==tale.slug+'.json'){const onShelf=path.basename(path.dirname(path.resolve(file)))==='.questbound-written'||(!!libs.shelf.dir&&path.resolve(path.dirname(file))===path.resolve(libs.shelf.dir));(onShelf?fail:warn)(1,'slug','the file is named '+path.basename(file)+': on the shelf it must be '+tale.slug+'.json');}
+  else if(path.basename(file)!==tale.slug+'.json'){const onShelf=path.basename(path.dirname(path.resolve(file)))==='.turquill-written'||(!!libs.shelf.dir&&path.resolve(path.dirname(file))===path.resolve(libs.shelf.dir));(onShelf?fail:warn)(1,'slug','the file is named '+path.basename(file)+': on the shelf it must be '+tale.slug+'.json');}
   if(!Number.isInteger(tale.edition)||tale.edition<1||tale.edition>999)fail(1,'edition','must be a whole number from 1 (raise it for each revision)');
   if(!Number.isInteger(tale.order)||tale.order<0||tale.order>9999)fail(1,'order','must be a whole number from 0 to 9999 (the shelf\'s order)');
   if(typeof tale.listed!=='boolean')fail(1,'listed','must be true or false');

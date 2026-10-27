@@ -1,6 +1,6 @@
 // Wrong campaign invite codes, counted so that guessing one stays impractical (2026-10-21: invites became eight
 // letters and numbers, 36^8, about 2.8e12 codes). Each caller (the visitor address the gateway names in
-// X-Questbound-Client, or this PC) may get a code wrong a few times an hour and a day, and the whole game a few hundred
+// X-Turquill-Client, or this PC) may get a code wrong a few times an hour and a day, and the whole game a few hundred
 // times a day; past that, joins by invite wait. Kept in a file beside the accounts (only hashes of callers, never an
 // address) so a restart forgets nothing. A right code is never counted.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');

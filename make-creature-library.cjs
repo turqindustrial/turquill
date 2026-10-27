@@ -2,11 +2,11 @@
 // do the same thing for all creatures as well", as for places and people), one picture for every entry and variant of
 // creature-catalogue.cjs, so meeting a creature costs nothing to paint. Run by hand on the host's PC, through the host's
 // own running Dungeon Master (loopback, as the desktop game asks; the API key never leaves it):
-//   node make-creature-library.cjs          paints every picture not yet in .questbound-creatures/, one at a time
+//   node make-creature-library.cjs          paints every picture not yet in .turquill-creatures/, one at a time
 //   node make-creature-library.cjs --list   says what is there, what would be copied free and what it would cost; paints nothing
 // Options: --limit N (at most N paintings this run), --budget D (stop before this run spends D dollars),
-// --no-desktop (no copy to the Desktop folder "Questbound creatures"). Resumable: what is in the library is skipped.
-// Everything is under QUESTBOUND_DATA when that is set (a hosted game), else beside this file.
+// --no-desktop (no copy to the Desktop folder "Turquill creatures"). Resumable: what is in the library is skipped.
+// Everything is under TURQUILL_DATA when that is set (a hosted game), else beside this file.
 // A picture that IS one of the game's templates (the Skirmish's own creatures) is copied free from the painting the
 // game already has of it (the shared template picture, or the Skirmish's own), and painted only when neither exists.
 // The host funds this job: its usage is tagged (job 'creature-library', by its campaign) and never counts against the
@@ -29,8 +29,8 @@ function writeAtomic(file,data){
  for(let i=0;;i++){try{fs.renameSync(temporary,file);return;}catch(e){if(i>=5)throw e;const until=Date.now()+200;while(Date.now()<until);}}
 }
 async function main(argv=process.argv){
- const dataDir=process.env.QUESTBOUND_DATA||__dirname,dir=path.join(dataDir,'.questbound-creatures'),artDir=path.join(dataDir,'.questbound-art'),dm=process.env.QB_DM_URL||'http://127.0.0.1:8084/dm';
- const desktop=argv.includes('--no-desktop')?null:path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Questbound creatures');
+ const dataDir=process.env.TURQUILL_DATA||__dirname,dir=path.join(dataDir,'.turquill-creatures'),artDir=path.join(dataDir,'.turquill-art'),dm=process.env.QB_DM_URL||'http://127.0.0.1:8084/dm';
+ const desktop=argv.includes('--no-desktop')?null:path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Turquill creatures');
  const limit=arg('--limit',Infinity),budget=arg('--budget',Infinity),price=require('./spending.cjs').paintingPrice;
  fs.mkdirSync(dir,{recursive:true});if(desktop)fs.mkdirSync(desktop,{recursive:true});
  const has=p=>fs.existsSync(path.join(dir,p.id+'.jpg'));

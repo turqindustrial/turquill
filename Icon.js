@@ -2,7 +2,7 @@ import React from 'react';
 import {Text,Platform} from 'react-native';
 import {iconPaths} from './iconPaths';
 const web=Platform.OS==='web';
-// One of Questbound's line icons, drawn in the current text colour (or `color`). On the web it is an inline SVG;
+// One of Turquill's line icons, drawn in the current text colour (or `color`). On the web it is an inline SVG;
 // elsewhere it falls back to a matching text glyph.
 export default function Icon({name,size=18,color,strokeWidth=1.6,style}){
  const icon=iconPaths[name]??iconPaths.star;

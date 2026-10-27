@@ -236,7 +236,7 @@ export function brawlStep(game,health,hero,action,random,opts,stats,target,activ
  if(!active){
   const participants=npcCombatParticipants(game,target);
   if(!participants.length)return adventureStepCore(game,health,hero,action,random);
-  // Questbound house rule: resolve the initiating attack exactly once, before initiative.
+  // Turquill house rule: resolve the initiating attack exactly once, before initiative.
   const opening=adventureStepCore(game,hp,hero,action,random);
   if(opening.error||opening.waiting)return opening;
   next=opening.game;hp=opening.health??hp;

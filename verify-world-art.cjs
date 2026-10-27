@@ -19,7 +19,7 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,10));
 const guardian=subjectRules.creatureArtSubject({...storyGame,stage:'combat',dungeon:{active:true,room:2}});
 assert.equal(guardian.name,'Stone Sentinel');assert.match(guardian.description,/stone sentinel/i);assert.ok(!guardian.description.includes('crustacean'),'A dungeon guardian must not inherit the unrelated main foe appearance');
 (async()=>{
- const directory=await fs.mkdtemp(path.join(os.tmpdir(),'questbound-art-tests-'));
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'turquill-art-tests-'));
  try{
   let calls=0,releases=[],maximum=0,active=0;
   const store=createArtStore({directory,concurrency:1,fetchImpl:async(url,options)=>{
@@ -64,7 +64,7 @@ assert.equal(guardian.name,'Stone Sentinel');assert.match(guardian.description,/
   for(let i=0;i<330;i++)await many.request({...sample,id:'m'+i,campaignId:'many'},{apiKey:'test-only',model:'test-model',mayPaint:()=>false});
   assert.ok(many.size()<=300,'old jobs are let go: '+many.size());
   console.log('Passed: distinct character/campaign identities, one request per subject, background queue, persistent image reuse, subject validation, secret-safe failures, the guests\' allowance, the guest label sent to OpenAI and bounded memory. No paid calls.');
- }finally{const resolved=path.resolve(directory),temp=path.resolve(os.tmpdir())+path.sep;if(!resolved.startsWith(temp)||!path.basename(resolved).startsWith('questbound-art-tests-'))throw Error('Unsafe temporary path');await fs.rm(resolved,{recursive:true,force:true});}
+ }finally{const resolved=path.resolve(directory),temp=path.resolve(os.tmpdir())+path.sep;if(!resolved.startsWith(temp)||!path.basename(resolved).startsWith('turquill-art-tests-'))throw Error('Unsafe temporary path');await fs.rm(resolved,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
 // ---------- The host's library of ready landscape paintings (place-library.cjs) ----------
 // Every place the player arrives at is shown from the library at no cost: matched on kind and terrain, the same
@@ -106,7 +106,7 @@ const library=require('./place-library.cjs');
  const full=[];for(const t of library.terrains)for(const k of library.placeKinds)full.push(E(k,t,1));
  assert.ok(library.kindTerrainComplete(full)&&!library.kindTerrainComplete(shelf));
  assert.equal(library.choosePicture(full.filter(e=>!(e.terrain==='desert'&&['cave','lair','ruin','mountain'].includes(e.kind))),{kind:'cave',terrain:'desert'},{...at,complete:true}).kind,'cave','once complete, a lost picture is stood in for by the same kind elsewhere');
- const directory=await fs.mkdtemp(path.join(os.tmpdir(),'questbound-art-tests-'));
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'turquill-art-tests-'));
  try{
   const art=path.join(directory,'art'),shelfDir=path.join(directory,'place-art');await fs.mkdir(shelfDir,{recursive:true});
   const jpeg=id=>Buffer.concat([Buffer.from([255,216,255,224]),Buffer.from(id),Buffer.from([255,217])]);
@@ -149,7 +149,7 @@ const library=require('./place-library.cjs');
   await fs.writeFile(path.join(shelfDir,'library.json'),JSON.stringify([{id:'../x',kind:'ruin',terrain:'hills',file:'../x.jpg'},{id:'ruin-hills-2',kind:'ruin',terrain:'hills',file:'../../secret.jpg'},{id:'ruin-lava-1',kind:'ruin',terrain:'lava',file:'ruin-lava-1.jpg'}]));
   const shelfOnly=library.createPlaceLibrary({directory:shelfDir,picksDirectory:path.join(art,'place-picks'),refreshMs:0});await shelfOnly.refresh();assert.equal(shelfOnly.entries().length,0);
   console.log('Passed: the place-art library: subjects carry kind and terrain without changing keys, matching by kind and land, related kinds, keyword matching for old clients, one picture per place kept across restarts, no repeats within a tale while another fits, no painting or usage for library pictures, painting as before when nothing fits yet, paintings made before kept, unreadable or malformed entries passed over. No paid calls.');
- }finally{const resolved=path.resolve(directory),temp=path.resolve(os.tmpdir())+path.sep;if(!resolved.startsWith(temp)||!path.basename(resolved).startsWith('questbound-art-tests-'))throw Error('Unsafe temporary path');await fs.rm(resolved,{recursive:true,force:true});}
+ }finally{const resolved=path.resolve(directory),temp=path.resolve(os.tmpdir())+path.sep;if(!resolved.startsWith(temp)||!path.basename(resolved).startsWith('turquill-art-tests-'))throw Error('Unsafe temporary path');await fs.rm(resolved,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
 // A ready journey's cover is shown only when the place library can answer it for free (artStore.readyMade).
 {const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{createArtStore}=require('./world-art.cjs');

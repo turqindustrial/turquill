@@ -127,7 +127,7 @@ const blank={narration:'The camp is quiet.',dialogue:[],recruitment:[],relations
 let request=null;const fake=reply=>async(url,options)=>{request=JSON.parse(options.body);return {ok:true,json:async()=>({status:'completed',usage:{input_tokens:5000,output_tokens:100},output:[{content:[{type:'output_text',text:JSON.stringify({...blank,...reply})}]}]})};};
 const size=file=>{try{return fs.statSync(file).size;}catch{return 0;}};
 (async()=>{
- const logs=['.questbound-diagnostics.jsonl','.questbound-usage.jsonl'].map(f=>[f,size(f)]);
+ const logs=['.turquill-diagnostics.jsonl','.turquill-usage.jsonl'].map(f=>[f,size(f)]);
  const reply=await generate(body,{apiKey:'k',model:'gpt-6-luna',fetchImpl:fake({})});
  assert.equal(reply.narration,'The camp is quiet.');
  assert.deepEqual(request.reasoning,{effort:'none'},'Turns do not think');assert.equal(request.max_output_tokens,3000,'room for a long telling with four spoken lines');
@@ -159,9 +159,9 @@ const size=file=>{try{return fs.statSync(file).size;}catch{return 0;}};
  // The models the host chose are read on live requests: the play model answers turns, the story writer follows it
  // unless it was set apart, and a malformed file changes nothing. A stand-in provider never reads them.
  {const {liveModels,chosenModel}=require('./dm-server.cjs'),files=f=>n=>f[n]??null;
-  assert.deepEqual(liveModels('gpt-5.6-luna','gpt-5.6-luna',files({'.questbound-model':'gpt-6-luna'})),{model:'gpt-6-luna',storyModel:'gpt-6-luna'});
-  assert.deepEqual(liveModels('gpt-5.6-luna','gpt-5.6-luna',files({'.questbound-model':'gpt-6-luna','.questbound-story-model':'gpt-5.6-luna'})),{model:'gpt-6-luna',storyModel:'gpt-5.6-luna'});
-  assert.deepEqual(liveModels('gpt-6-luna','gpt-6-astra',files({'.questbound-model':'gpt-6-nova'})),{model:'gpt-6-nova',storyModel:'gpt-6-astra'},'A story writer set apart stays');
+  assert.deepEqual(liveModels('gpt-5.6-luna','gpt-5.6-luna',files({'.turquill-model':'gpt-6-luna'})),{model:'gpt-6-luna',storyModel:'gpt-6-luna'});
+  assert.deepEqual(liveModels('gpt-5.6-luna','gpt-5.6-luna',files({'.turquill-model':'gpt-6-luna','.turquill-story-model':'gpt-5.6-luna'})),{model:'gpt-6-luna',storyModel:'gpt-5.6-luna'});
+  assert.deepEqual(liveModels('gpt-6-luna','gpt-6-astra',files({'.turquill-model':'gpt-6-nova'})),{model:'gpt-6-nova',storyModel:'gpt-6-astra'},'A story writer set apart stays');
   assert.deepEqual(liveModels('a-model','a-model',files({})),{model:'a-model',storyModel:'a-model'});
   assert.equal(chosenModel('no-such-file'),null);assert.equal(chosenModel('launch.ps1'),null,'Only a bare model id counts');
   await generate(body,{apiKey:'k',model:'stand-in-model',fetchImpl:async(url,options)=>{request=JSON.parse(options.body);throw Error('stop');}}).catch(()=>{});assert.equal(request.model,'stand-in-model','Tests keep the model they pass');}

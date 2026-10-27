@@ -35,7 +35,7 @@ assert.equal(metrics.METRICS_BODY_LIMIT,2000);assert.ok(JSON.stringify(good).len
 // 2. The device's counts: mechanical only, opt-out forgets the id, nothing before the agreement.
 const store=(()=>{const d={};return {getItem:k=>d[k]??null,setItem:(k,v)=>{d[k]=String(v);},removeItem:k=>{delete d[k];},data:d};})();
 let accepted2=true,subscriber=null;const beacons=[];const tab=(()=>{const d={};return {getItem:k=>d[k]??null,setItem:(k,v)=>{d[k]=String(v);},removeItem:k=>{delete d[k];},data:d};})();
-const ctx={localStorage:store,crypto:require('node:crypto').webcrypto,location:{hostname:'questbound.example'},navigator:{sendBeacon:(url,blob)=>{beacons.push({url,blob});return true;}},Blob:class{constructor(parts,opts){this.text=parts.join('');this.type=opts?.type;}},
+const ctx={localStorage:store,crypto:require('node:crypto').webcrypto,location:{hostname:'turquill.example'},navigator:{sendBeacon:(url,blob)=>{beacons.push({url,blob});return true;}},Blob:class{constructor(parts,opts){this.text=parts.join('');this.type=opts?.type;}},
  sessionStorage:tab,agreementStatus:()=>({accepted:accepted2}),subscribeProblems:fn=>{subscriber=fn;return()=>{};},recentProblems:()=>[],pageBuild:()=>'1a2b3c4d',fetch:async()=>({}),Date:class extends Date{constructor(...a){super(...(a.length?a:[NOW]));}static now(){return NOW;}},Math,JSON,Number,Object,Array,String,Set,Uint8Array,setTimeout,clearTimeout};
 const pm=load('playMetrics.js',['readInsight','setInsight','placeOf','formOf','failureOf','notePlayActivity','sessionSeconds','deviceSeconds','countTurn','notePlace','noteTalking','noteTale','noteStoryWait','sessionSummary','playRecord','sendPlayRecord','startPlayMetrics','noteRatingShown','noteRatingAnswered','noteRatingDismissed','insightKey'],ctx);
 assert.deepEqual(plain(pm.readInsight()),{counts:true,ask:true,device:null,playSeconds:0,rating:{asked:null,answered:null,dismissed:null,dismissals:0}},'on by default, no id until something is sent');
@@ -123,14 +123,14 @@ assert.equal(rr.ratingMomentOf(tale,{...tale,stage:'combat'}),null);
 // 4. Retention: old records are pruned, by the writer too.
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'qb-metrics-'));
 try{
- const file=path.join(dir,'.questbound-metrics.jsonl');
+ const file=path.join(dir,'.turquill-metrics.jsonl');
  fs.writeFileSync(file,[{at:new Date(NOW-200*DAY).toISOString(),session:'x'},{at:new Date(NOW-179*DAY).toISOString(),session:'y'},'not json'].map(r=>typeof r==='string'?r:JSON.stringify(r)).join('\n')+'\n');
  assert.equal(metrics.pruneMetrics(file,{now:NOW}),2,'the old record and the unreadable line go');assert.equal(fs.readFileSync(file,'utf8').trim().split('\n').length,1);
  assert.equal(metrics.pruneMetrics(file,{now:NOW}),0);assert.equal(metrics.pruneMetrics(path.join(dir,'missing.jsonl'),{now:NOW}),0);
  fs.appendFileSync(file,JSON.stringify({at:new Date(NOW-400*DAY).toISOString()})+'\n');
  const write=metrics.metricsWriter(file,{now:()=>NOW});write(kept.record);
  const lines=fs.readFileSync(file,'utf8').trim().split('\n').map(l=>JSON.parse(l));assert.equal(lines.length,2,'the writer prunes before it appends');
- assert.equal(path.basename(metrics.metricsFileIn(dir)),'.questbound-metrics.jsonl');assert.equal(path.basename(metrics.metricsFileIn(dir,true)),'metrics.jsonl');
+ assert.equal(path.basename(metrics.metricsFileIn(dir)),'.turquill-metrics.jsonl');assert.equal(path.basename(metrics.metricsFileIn(dir,true)),'metrics.jsonl');
 }finally{fs.rmSync(dir,{recursive:true,force:true});}
 
 // 5. The report's numbers from fixture records.
@@ -146,10 +146,10 @@ const fixtures=[
  rec(1,0,{device:'d3',session:'s4',active:900,turns:40,ended:'title',tale:'crown',easy:false,form:'desktop'}),
  rec(1,1,{device:'host',session:'s5',from:'desktop',active:7200,turns:300,ended:'explore'}),
 ];
-fs.writeFileSync(path.join(rdir,'.questbound-metrics.jsonl'),fixtures.map(r=>JSON.stringify(r)).join('\n')+'\nnot json\n');
+fs.writeFileSync(path.join(rdir,'.turquill-metrics.jsonl'),fixtures.map(r=>JSON.stringify(r)).join('\n')+'\nnot json\n');
 const rating=(day,o)=>({ref:'fb-'+(1000+day).toString(36)+'abc-00'+day+'a',at:new Date(NOW-day*DAY).toISOString(),guest:null,kind:'session',rating:'good',moment:'chapter',chips:[],text:null,session:{minutes:30,turns:20,failed:1,form:'phone',build:'1a2b3c4d'},follows:null,...o});
 const r1=rating(2,{rating:'great'}),r2=rating(1,{rating:'rough',moment:'death'});
-fs.writeFileSync(path.join(rdir,'.questbound-feedback.jsonl'),[r1,r2,rating(1,{ref:'fb-x-0001',follows:r2.ref,rating:null,session:null,chips:['slow','errors'],text:'Replies took ages'}),rating(1,{rating:'okay',from:'desktop'}),{ref:'fb-n',at:new Date(NOW-DAY).toISOString(),text:'A feedback note',rating:4}].map(r=>JSON.stringify(r)).join('\n')+'\n');
+fs.writeFileSync(path.join(rdir,'.turquill-feedback.jsonl'),[r1,r2,rating(1,{ref:'fb-x-0001',follows:r2.ref,rating:null,session:null,chips:['slow','errors'],text:'Replies took ages'}),rating(1,{rating:'okay',from:'desktop'}),{ref:'fb-n',at:new Date(NOW-DAY).toISOString(),text:'A feedback note',rating:4}].map(r=>JSON.stringify(r)).join('\n')+'\n');
 try{
  const s=report.playSummary({dir:rdir,days:7,now:NOW});
  assert.equal(s.sessions,4,'one per session, the host\'s own left out');assert.equal(s.leftOutFromThisPc,1);
@@ -178,7 +178,7 @@ try{
 const request=(port,method,route,body,{origin,host,cookie='',type='application/json'}={})=>new Promise((resolve,reject)=>{const raw=body==null?'':typeof body==='string'?body:JSON.stringify(body);const req=http.request({hostname:'127.0.0.1',port,path:route,method,headers:{Host:host,...(origin?{Origin:origin}:{}),'Content-Type':type,Cookie:cookie,'Content-Length':Buffer.byteLength(raw)}},res=>{let t='';res.on('data',c=>t+=c);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,text:t}));});req.on('error',reject);req.end(raw);});
 (async()=>{
  const home=fs.mkdtempSync(path.join(os.tmpdir(),'qb-metrics-gate-')),site=path.join(home,'site');fs.mkdirSync(site);fs.writeFileSync(path.join(site,'index.html'),'<h1>game</h1>');
- const metricsFile=path.join(home,'.questbound-metrics.jsonl');let clock=NOW;
+ const metricsFile=path.join(home,'.turquill-metrics.jsonl');let clock=NOW;
  const {createPhoneServer}=require('./phone-server.cjs');
  const gate=createPhoneServer({host:'127.0.0.1',port:0,root:site,code:'13572468',now:()=>clock,fetchImpl:async()=>{throw Error('no backend');},metricsFile});
  const bare=createPhoneServer({host:'127.0.0.1',port:0,root:site,code:'13572468',fetchImpl:async()=>{throw Error('no backend');}});
@@ -206,7 +206,7 @@ const request=(port,method,route,body,{origin,host,cookie='',type='application/j
  // The host's desktop: its own page only, marked as this PC's; the summary for Developer checks.
  const {createDesktopServer}=require('./desktop-server.cjs');
  const probe=createDesktopServer({root:site,port:0});await new Promise(r=>probe.listen(0,'127.0.0.1',r));const dport=probe.address().port;probe.close();
- const deskFile=path.join(home,'desk','.questbound-metrics.jsonl');fs.mkdirSync(path.dirname(deskFile));
+ const deskFile=path.join(home,'desk','.turquill-metrics.jsonl');fs.mkdirSync(path.dirname(deskFile));
  const desk=createDesktopServer({root:site,port:dport,feedbackFile:path.join(home,'desk','playtest-feedback.md'),metricsFile:deskFile});await new Promise(r=>desk.listen(dport,'127.0.0.1',r));
  try{
   const own={host:'localhost:'+dport,origin:'http://localhost:'+dport};
@@ -215,7 +215,7 @@ const request=(port,method,route,body,{origin,host,cookie='',type='application/j
   assert.equal((await request(dport,'POST','/api/metrics',{...good,v:3},own)).status,400);
   assert.equal(JSON.parse(fs.readFileSync(deskFile,'utf8').trim()).from,'desktop');
   const summary=await request(dport,'GET','/api/metrics/summary',null,{host:'localhost:'+dport});assert.equal(summary.status,200);assert.match(JSON.parse(summary.text).line,/^Play, last 7 days: no sessions recorded yet\./,'this PC\'s own sessions are left out of the headline');
-  assert.equal((await request(dport,'GET','/api/metrics/summary',null,{host:'questbound.example:'+dport})).status,403,'the Host check stays');
+  assert.equal((await request(dport,'GET','/api/metrics/summary',null,{host:'turquill.example:'+dport})).status,403,'the Host check stays');
  }finally{desk.close();fs.rmSync(home,{recursive:true,force:true});}
  console.log('Metrics: the schema keeps only numbers, fixed words and random ids (nothing typed or named, '+tries+' tries); the device counts time, turns and failures without words, sends once per change, forgets its id when turned off and waits for the agreement; the gateway and desktop take records from the game\'s own page within sixty an hour; records older than 180 days are pruned; play-report works out sessions, devices, length, where sessions ended, failed turns per 200, story waits and ratings; the session question asks only at a stopping point, once a day at most, never early or after a recent Not now.');
 })().catch(e=>{console.error(e);process.exit(1);});

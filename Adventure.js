@@ -47,7 +47,7 @@ const sideTabs=[['quest','scroll','Quest'],['map','map','Map'],['pack','bag','In
 // On wide screens the side column can be folded to a slim rail so the story and a conversation get the whole width
 // (the host, 2026-10-12: "add a minimizer for the information on the left side of the screen on pc view to help the
 // player engage fully in conversations"). Remembered per device; storage may be missing or refuse, so both are guarded.
-const sideKey='questbound.side.v1';
+const sideKey='turquill.side.v1';
 export function sideFolded(){try{return JSON.parse(globalThis.localStorage?.getItem(sideKey)||'{}').folded===true;}catch{return false;}}
 function rememberSide(folded){try{globalThis.localStorage?.setItem(sideKey,JSON.stringify({folded}));}catch{}}
 // The story log's marks: an icon and a tone for each kind of line.

@@ -6,8 +6,8 @@ const game=r.newAdventure(hero);const fixture={hero,adventure:r.adventureSnapsho
 const script=`
  const fixture=${JSON.stringify(fixture)};
  if(location.pathname==='/fixture'){
- localStorage.setItem('questbound.character.v1',JSON.stringify(fixture.hero));
- localStorage.setItem('questbound.adventure.v1',JSON.stringify(fixture.adventure));
+ localStorage.setItem('turquill.character.v1',JSON.stringify(fixture.hero));
+ localStorage.setItem('turquill.adventure.v1',JSON.stringify(fixture.adventure));
  history.replaceState(null,'','/');
  }
  const originalFetch=window.fetch.bind(window);
@@ -28,7 +28,7 @@ const script=`
  };
  `;
 http.createServer((req,res)=>{
- if(req.url.startsWith('/qa-art/')){const name=req.url.includes('/landscape/')?'The Siltcup House':req.url.endsWith('/mara')?'Ilyan Reed':'Sella Vorn';const directory=path.resolve('.questbound-art');const file=fs.readdirSync(directory).filter(n=>n.endsWith('.json')).find(n=>JSON.parse(fs.readFileSync(path.join(directory,n),'utf8')).subject.name===name);res.setHeader('Content-Type','application/json');res.end(JSON.stringify({status:'ready',key:name,dataUrl:'data:image/jpeg;base64,'+fs.readFileSync(path.join(directory,file.replace('.json','.jpg'))).toString('base64')}));return;}
+ if(req.url.startsWith('/qa-art/')){const name=req.url.includes('/landscape/')?'The Siltcup House':req.url.endsWith('/mara')?'Ilyan Reed':'Sella Vorn';const directory=path.resolve('.turquill-art');const file=fs.readdirSync(directory).filter(n=>n.endsWith('.json')).find(n=>JSON.parse(fs.readFileSync(path.join(directory,n),'utf8')).subject.name===name);res.setHeader('Content-Type','application/json');res.end(JSON.stringify({status:'ready',key:name,dataUrl:'data:image/jpeg;base64,'+fs.readFileSync(path.join(directory,file.replace('.json','.jpg'))).toString('base64')}));return;}
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),candidate=path.resolve(root,'.'+pathname);
  if(candidate!==root&&!candidate.startsWith(root+path.sep)){res.writeHead(403).end();return;}
  const file=fs.existsSync(candidate)&&fs.statSync(candidate).isFile()?candidate:path.join(root,'index.html');

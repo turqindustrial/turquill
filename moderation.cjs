@@ -42,7 +42,7 @@ function moderationLine(verdict,purpose='turn'){
 const pauseLine=ms=>'Your messages to the Dungeon Master are paused for about '+Math.max(1,Math.ceil(ms/60000))+' minute'+(Math.ceil(ms/60000)>1?'s':'')+', because several were held back by the content check. Your adventure is unchanged.';
 // The player behind a request: the label the gateway or account service gave it ('account-<id>' or a browser hash).
 const labelOf=guest=>typeof guest==='string'&&guest?moderationLabel(guest.startsWith('account-')?guest.slice(8):guest):'host';
-function createModeration({fetchImpl=fetch,now=Date.now,timeout=2500,logFile=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-security.jsonl'),cacheMs=600000,window=3600000,strikesToPause=3,pauseMs=1200000}={}){
+function createModeration({fetchImpl=fetch,now=Date.now,timeout=2500,logFile=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-security.jsonl'),cacheMs=600000,window=3600000,strikesToPause=3,pauseMs=1200000}={}){
  const cache=new Map(),strikes=new Map(),pauses=new Map(),lastStrike=new Map();let quietUntil=0;
  // The same shape as operations.cjs audit rows: mechanical labels only.
  const note=(event,account,route)=>{if(!logFile)return;try{fs.mkdirSync(path.dirname(logFile),{recursive:true});if(fs.existsSync(logFile)&&fs.statSync(logFile).size>1048576){fs.rmSync(logFile+'.old',{force:true});fs.renameSync(logFile,logFile+'.old');}fs.appendFileSync(logFile,JSON.stringify({at:new Date(now()).toISOString(),event,account,...(route?{route:String(route).replace(/\//g,':').replace(/[^a-zA-Z0-9:_+-]/g,'').slice(0,100)}:{})})+'\n',{mode:0o600});}catch{}};

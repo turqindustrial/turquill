@@ -13,8 +13,8 @@ const askDm=vm.runInNewContext(fs.readFileSync('dmConnection.js','utf8').replace
 assert.equal(endpoints({hostname:'localhost',port:'8081'})[0],'http://localhost:8084');
 assert.equal(endpoints({hostname:'10.0.0.169',port:'8085'})[0],'/api');
 assert.equal(endpoints({hostname:'example.test',port:''})[0],'/api');
-const root=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-phone-')),index=path.join(root,'index.html');fs.writeFileSync(index,'<h1>Test game</h1>');
-fs.writeFileSync(path.join(root,'manifest.json'),'{"name":"Questbound"}');fs.mkdirSync(path.join(root,'icons'));fs.writeFileSync(path.join(root,'icons','icon-192.png'),'png');fs.mkdirSync(path.join(root,'_expo'));fs.writeFileSync(path.join(root,'_expo','app.js'),'secret-ish');
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-phone-')),index=path.join(root,'index.html');fs.writeFileSync(index,'<h1>Test game</h1>');
+fs.writeFileSync(path.join(root,'manifest.json'),'{"name":"Turquill"}');fs.mkdirSync(path.join(root,'icons'));fs.writeFileSync(path.join(root,'icons','icon-192.png'),'png');fs.mkdirSync(path.join(root,'_expo'));fs.writeFileSync(path.join(root,'_expo','app.js'),'secret-ish');
 let clock=Date.now(),online=true,calls=[];
 const fetchImpl=async(url,options={})=>{calls.push({url,options});if(!online)throw Error('Offline');if(url.endsWith('/usage'))return {ok:true,status:200,json:async()=>({allowed:true,id:'a'.repeat(64)})};return {ok:true,status:200,headers:{get:()=>null},json:async()=>url.endsWith('/health')?{ready:true,actionProtocol:3}:{narration:'A phone reply.',input:JSON.parse(options.body).input}};};
 const {server}=createPhoneServer({host:'127.0.0.1',port:0,root,code:'12345678',now:()=>clock,fetchImpl});
@@ -93,7 +93,7 @@ async function sharedLink(){
  // Paired browsers survive a gateway restart (only cookie hashes are stored), built files are cached and compressed,
  // and feedback notes land in the host's file.
  const store=path.join(root,'sessions.json'),notes=path.join(root,'feedback.md'),zlib=require('node:zlib');
- fs.mkdirSync(path.join(root,'_expo','static'),{recursive:true});const bundle='console.log("questbound");'.repeat(200);fs.writeFileSync(path.join(root,'_expo','static','index-0123456789abcdef0123.js'),bundle);
+ fs.mkdirSync(path.join(root,'_expo','static'),{recursive:true});const bundle='console.log("turquill");'.repeat(200);fs.writeFileSync(path.join(root,'_expo','static','index-0123456789abcdef0123.js'),bundle);
  const open=options=>{const s=createPhoneServer({host:'127.0.0.1',port:0,root,publicOrigin:'https://quest.example.com',code:'24681357',sessionStore:store,feedbackFile:notes,fetchImpl,...options});return new Promise(resolve=>s.server.listen(0,'127.0.0.1',()=>resolve(s)));};
  const via=(s,route,opts={})=>new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port:s.server.address().port,path:route,method:opts.method??'GET',headers:{Host:new URL(opts.origin??'https://quest.example.com').host,...opts.headers}},res=>{const chunks=[];res.on('data',c=>chunks.push(c));res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,raw:Buffer.concat(chunks)}));});req.on('error',reject);req.end(opts.body);});
  const mailed=[];let first=await open({mailer:{feedback:async text=>{mailed.push(text);}}});let cookieJar;
@@ -118,7 +118,7 @@ async function sharedLink(){
   const records=fs.readFileSync(path.join(root,'feedback.jsonl'),'utf8').trim().split('\n').map(line=>JSON.parse(line));
   assert.equal(records.length,2);assert.equal(records[1].guest,'account-'+'a'.repeat(64),'the record names a signed-in player by the account label their Dungeon Master turns carry');
   const cookieToken=cookieJar.split('=')[1];assert.ok(!fs.readFileSync(path.join(root,'feedback.jsonl'),'utf8').includes(cookieToken),'never the cookie');
-  assert.equal((await send({text:''})).status,400);assert.equal((await send({text:'hi'},'questbound_phone='+'0'.repeat(64))).status,401,'Unpaired browsers cannot send notes');
+  assert.equal((await send({text:''})).status,400);assert.equal((await send({text:'hi'},'turquill_phone='+'0'.repeat(64))).status,401,'Unpaired browsers cannot send notes');
   for(let i=0;i<8;i++)await send({text:'note '+i});assert.equal((await send({text:'one too many'})).status,429);
  }finally{await new Promise(resolve=>first.server.close(resolve));}
  const second=await open();
@@ -131,7 +131,7 @@ async function sharedLink(){
 // requests the game never sends refused before anything else, the host's pause switch (no restart), and an alert when
 // one address is refused again and again.
 async function guardedGateway(){
- const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-guarded-')),raised=[];let now=Date.now();const asked=[];
+ const dataDir=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-guarded-')),raised=[];let now=Date.now();const asked=[];
  const fake=async(url,options={})=>{asked.push(url);if(url.endsWith('/usage'))return {ok:true,status:200,headers:{get:()=>null},json:async()=>({allowed:true,id:'b'.repeat(64)})};if(url.endsWith('/health'))return {ok:true,status:200,json:async()=>({ready:true,actionProtocol:3})};return {ok:true,status:200,headers:{get:()=>null},json:async()=>({done:true})};};
  const gate=createPhoneServer({host:'127.0.0.1',port:0,root,publicOrigin:'https://quest.example.com',code:'31415926',dmLimit:50,addressTurns:4,taleLimit:2,taleAddress:3,heroLimit:1,heroAddress:5,pairsPerAddress:3,guestsPerBrowser:2,guestsPerAddress:5,floodAlert:6,dataDir,alerts:{raise:(kind,text,o)=>{raised.push({kind,text,event:o?.event});return true;}},now:()=>now,fetchImpl:fake});
  await new Promise(resolve=>gate.server.listen(0,'127.0.0.1',resolve));
@@ -173,12 +173,12 @@ async function guardedGateway(){
   const third=as(cookies[2],'203.0.113.9');assert.equal((await guest(third)).status,200);assert.equal((await guest(third)).status,429,'five a day per address');
   // The pause switch: a file the launcher writes; no restart. Pictures and finished tales are still handed over.
   now+=3601000;
-  fs.writeFileSync(path.join(dataDir,'.questbound-guests-paused'),'Paused by the host');
+  fs.writeFileSync(path.join(dataDir,'.turquill-guests-paused'),'Paused by the host');
   r=await dm(c);assert.equal(r.status,503);assert.match(error(r),/paused by the host/);assert.doesNotMatch(error(r),/Please wait before asking|busy with other players/);
   assert.equal((await dm(c,{mode:'adventure',introId:'crown'})).status,503);
   assert.equal((await dm(c,{mode:'art',storyJob:'abcdefghijklmnop'})).status,200,'a tale already written can still be collected');
   assert.equal((await call('/api/sync/campaign-turn',{method:'POST',headers:c,body:'{}'})).status,503,'and no shared-table turn');
-  fs.rmSync(path.join(dataDir,'.questbound-guests-paused'));assert.equal((await dm(c)).status,200,'resumed at once');
+  fs.rmSync(path.join(dataDir,'.turquill-guests-paused'));assert.equal((await dm(c)).status,200,'resumed at once');
   // One address refused again and again: the host is told once, without the address.
   for(let i=0;i<8;i++)await dm(b,{mode:'adventure',introId:'crown'});
   const flood=raised.filter(x=>x.kind==='address-flood');assert.ok(flood.length>=1);assert.equal(flood[0].event,'flood-alert');assert.ok(!flood.some(x=>x.text.includes('203.0.113')),'never the address itself');
@@ -190,7 +190,7 @@ async function guardedGateway(){
  try{
   let r=await request('/');assert.equal(r.status,200);assert.ok(r.text.includes('Pairing code'));assert.ok(!r.text.includes('12345678'));assert.ok(r.text.includes('rel="manifest"'));
   // Install files are public so browsers can install the game; everything else still needs pairing.
-  assert.equal((await request('/manifest.json')).text,'{"name":"Questbound"}');assert.equal((await request('/icons/icon-192.png')).status,200);assert.equal((await request('/favicon.ico')).status,404,'the tab icon is public too (not built in this test folder)');
+  assert.equal((await request('/manifest.json')).text,'{"name":"Turquill"}');assert.equal((await request('/icons/icon-192.png')).status,200);assert.equal((await request('/favicon.ico')).status,404,'the tab icon is public too (not built in this test folder)');
   assert.equal((await request('/_expo/app.js')).status,401);assert.equal((await request('/icons/../_expo/app.js')).status,401);assert.equal((await request('/manifest.json',{method:'POST'})).status,401);
   assert.equal((await request('/api/health')).status,401);assert.equal(calls.length,0);
   assert.equal((await request('/',{headers:{Host:'evil.test:0'}})).status,403);
@@ -204,7 +204,7 @@ async function guardedGateway(){
   assert.equal(calls.at(-1).options.headers.Origin,'http://localhost:8081');assert.equal(calls.at(-1).options.headers.Cookie,undefined);
   assert.equal((await request('/api/dm',{method:'POST',headers:{...headers,Origin:'http://evil.test'},body:'{}'})).status,403);
   assert.equal((await request('/api/dm',{method:'POST',headers,body:'x'.repeat(65000)})).status,413);
-  for(const route of ['/.questbound-phone-session.json','/start-dm.ps1','/../phone-server.cjs','/%2e%2e%5cphone-server.cjs'])assert.ok([400,403,404].includes((await request(route,{headers})).status));
+  for(const route of ['/.turquill-phone-session.json','/start-dm.ps1','/../phone-server.cjs','/%2e%2e%5cphone-server.cjs'])assert.ok([400,403,404].includes((await request(route,{headers})).status));
   online=false;assert.equal((await request('/api/health',{headers})).status,503);online=true;
   clock+=61000;for(let i=0;i<5;i++)assert.equal((await pair('00000000')).status,401);assert.equal((await pair('12345678')).status,429);
   clock+=86400000;assert.equal((await request('/api/health',{headers})).status,401);assert.equal((await pair('12345678')).status,401);

@@ -5,11 +5,11 @@ import Icon from './Icon';
 import {readTesterName,saveTesterName} from './feedbackRules';
 import {subscribeProfile} from './playerStorage';
 import {fonts,colors,type,tint} from './theme';
-// Playtest feedback from inside the game. Every note goes to the host's PC: playtest-feedback.md in the Questbound
-// folder, with the full details in .questbound-feedback.jsonl beside it (feedback-notes.cjs), read with
+// Playtest feedback from inside the game. Every note goes to the host's PC: playtest-feedback.md in the Turquill
+// folder, with the full details in .turquill-feedback.jsonl beside it (feedback-notes.cjs), read with
 // node feedback-report.cjs. The phone and tester links send it through the gateway, the host's own desktop through
 // desktop-server.cjs. GitHub issues stay as a second way.
-const ISSUES='https://github.com/turqindustrial/questbound/issues/new/choose';
+const ISSUES='https://github.com/turqindustrial/turquill/issues/new/choose';
 export const hostDesktop=(location=globalThis.location)=>!!location&&['localhost','127.0.0.1','[::1]'].includes(location.hostname)&&['8081','8082'].includes(location.port);
 export function feedbackEndpoint(location=globalThis.location){return location?'/api/feedback':null;}
 // A small hub so anything in play (the Report chip beside an error, the Dungeon Master's admission of a fault) can open

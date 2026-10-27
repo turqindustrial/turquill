@@ -125,17 +125,17 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-creatures-'));
   // ---------- Host jobs ----------
   {const {hostJobOf,recordCreatureMiss}=require('./dm-server.cjs'),{hostJobs,jobOfCampaign,createSpending}=require('./spending.cjs');
    assert.equal(hostJobOf({campaignId:L.libraryCampaign},null),'creature-library');assert.equal(hostJobOf({campaignId:L.libraryCampaign},'a'.repeat(32)),null,'never for a guest');assert.ok(hostJobs.includes('creature-library'));assert.equal(jobOfCampaign(L.libraryCampaign),'creature-library');
-   const dir=path.join(tmp,'spend');fs.mkdirSync(dir);fs.writeFileSync(path.join(dir,'.questbound-usage.jsonl'),JSON.stringify({at:new Date().toISOString(),mode:'art',model:'gpt-6-luna',input:0,cached:0,output:0,images:100,job:'creature-library'})+'\n');
+   const dir=path.join(tmp,'spend');fs.mkdirSync(dir);fs.writeFileSync(path.join(dir,'.turquill-usage.jsonl'),JSON.stringify({at:new Date().toISOString(),mode:'art',model:'gpt-6-luna',input:0,cached:0,output:0,images:100,job:'creature-library'})+'\n');
    const sum=createSpending({dir,alerts:{raise:()=>false}}).summary();assert.equal(sum.all,0,'the library\'s paintings never count against a ceiling');assert.ok(sum.hostJobs>2.9);
-   const saved=process.env.QUESTBOUND_DATA;process.env.QUESTBOUND_DATA=dir;try{recordCreatureMiss({name:'Sovel Aru',creatureKind:'hornkin',terrain:'hills',closest:{id:'troll-1',score:2}},true,null);recordCreatureMiss({name:'Not live'},false,null);}finally{if(saved===undefined)delete process.env.QUESTBOUND_DATA;else process.env.QUESTBOUND_DATA=saved;}
-   const lines=fs.readFileSync(path.join(dir,'.questbound-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));assert.equal(lines.length,1,'live runs only');same(Object.keys(lines[0]).sort(),['art','at','closest','creatureKind','name','terrain']);assert.equal(lines[0].art,'creature-unmatched');
+   const saved=process.env.TURQUILL_DATA;process.env.TURQUILL_DATA=dir;try{recordCreatureMiss({name:'Sovel Aru',creatureKind:'hornkin',terrain:'hills',closest:{id:'troll-1',score:2}},true,null);recordCreatureMiss({name:'Not live'},false,null);}finally{if(saved===undefined)delete process.env.TURQUILL_DATA;else process.env.TURQUILL_DATA=saved;}
+   const lines=fs.readFileSync(path.join(dir,'.turquill-diagnostics.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));assert.equal(lines.length,1,'live runs only');same(Object.keys(lines[0]).sort(),['art','at','closest','creatureKind','name','terrain']);assert.equal(lines[0].art,'creature-unmatched');
    const report=require('node:child_process').spawnSync(process.execPath,['dm-report.cjs','--dir',dir],{cwd:__dirname,encoding:'utf8'});assert.match(report.stdout,/Creatures painted for want of a library picture: 1/,report.stdout+report.stderr);assert.match(report.stdout,/Sovel Aru/);}
   console.log('Host jobs: the library\'s paintings are tagged creature-library and never count against a ceiling; creatures painted for want of a picture are noted (live, mechanical) and listed by dm-report.');
   // ---------- make-creature-library.cjs against a stand-in Dungeon Master ----------
-  {const data=path.join(tmp,'data'),home=path.join(tmp,'home');fs.mkdirSync(path.join(data,'.questbound-art'),{recursive:true});fs.mkdirSync(home);
+  {const data=path.join(tmp,'data'),home=path.join(tmp,'home');fs.mkdirSync(path.join(data,'.turquill-art'),{recursive:true});fs.mkdirSync(home);
    const {templateKeys}=require('./make-creature-library.cjs');
    // The game already has two template paintings: the Skirmish's wolf and the shared bandit.
-   fs.writeFileSync(path.join(data,'.questbound-art',templateKeys('wolf')[1]+'.jpg'),jpeg('skirmish-wolf'));fs.writeFileSync(path.join(data,'.questbound-art',templateKeys('bandit')[0]+'.jpg'),jpeg('shared-bandit'));
+   fs.writeFileSync(path.join(data,'.turquill-art',templateKeys('wolf')[1]+'.jpg'),jpeg('skirmish-wolf'));fs.writeFileSync(path.join(data,'.turquill-art',templateKeys('bandit')[0]+'.jpg'),jpeg('shared-bandit'));
    let mode='ok',asked=0;const pending=new Set(),seen=[];
    const server=http.createServer((req,res)=>{let body='';req.on('data',c=>body+=c);req.on('end',()=>{const b=JSON.parse(body),s=b.context.subject;seen.push({origin:req.headers.origin,campaign:s.campaignId,kind:s.kind,mode:b.context.mode});
     res.setHeader('Content-Type','application/json');
@@ -143,16 +143,16 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-creatures-'));
     if(!pending.has(s.id)){pending.add(s.id);asked++;res.end(JSON.stringify({status:'pending',key:'k'}));return;}
     res.end(JSON.stringify({status:'ready',key:'k',dataUrl:'data:image/jpeg;base64,'+jpeg('painted-'+s.id).toString('base64')}));});});
    await new Promise(res=>server.listen(0,'127.0.0.1',res));
-   const run=args=>new Promise(res=>{const child=require('node:child_process').spawn(process.execPath,['make-creature-library.cjs',...args],{cwd:__dirname,env:{...process.env,QUESTBOUND_DATA:data,USERPROFILE:home,HOME:home,QB_DM_URL:'http://127.0.0.1:'+server.address().port+'/dm',QB_POLL_MS:'5',QB_RETRY_MS:'5'}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>res({code,out}));});
-   const dir=path.join(data,'.questbound-creatures'),listed=()=>JSON.parse(fs.readFileSync(path.join(dir,'library.json'),'utf8'));
+   const run=args=>new Promise(res=>{const child=require('node:child_process').spawn(process.execPath,['make-creature-library.cjs',...args],{cwd:__dirname,env:{...process.env,TURQUILL_DATA:data,USERPROFILE:home,HOME:home,QB_DM_URL:'http://127.0.0.1:'+server.address().port+'/dm',QB_POLL_MS:'5',QB_RETRY_MS:'5'}});let out='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>out+=d);child.on('close',code=>res({code,out}));});
+   const dir=path.join(data,'.turquill-creatures'),listed=()=>JSON.parse(fs.readFileSync(path.join(dir,'library.json'),'utf8'));
    let out=await run(['--list']);assert.equal(out.code,0,out.out);assert.match(out.out,new RegExp(pictures.length+' pictures in the catalogue'));assert.match(out.out,/2 to copy free/);assert.match(out.out,new RegExp((pictures.length-2)+' to paint \\(about \\$'+((pictures.length-2)*0.03).toFixed(2)));assert.equal(seen.length,0,'--list paints nothing');
    out=await run(['--limit','3']);assert.equal(out.code,0,out.out);let lib1=listed();assert.equal(lib1.length,5,'two copied free and three painted');
    assert.ok(fs.readFileSync(path.join(dir,'wolf-dire-1.jpg')).toString('latin1').includes('skirmish-wolf'),'the Skirmish\'s wolf copied free');assert.ok(fs.readFileSync(path.join(dir,'outlaw-cutthroat-1.jpg')).toString('latin1').includes('shared-bandit'));
    assert.ok(seen.every(s=>s.origin==='http://localhost:8081'&&s.campaign===L.libraryCampaign&&s.kind==='creature'&&s.mode==='art'),'through the host\'s own Dungeon Master, under the library\'s campaign');
-   assert.ok(lib1.every(e=>e.file===e.id+'.jpg'&&fs.existsSync(path.join(dir,e.file))));assert.ok(fs.existsSync(path.join(home,'Desktop','Questbound creatures','wolf-dire-1.jpg')),'a copy on the Desktop');
+   assert.ok(lib1.every(e=>e.file===e.id+'.jpg'&&fs.existsSync(path.join(dir,e.file))));assert.ok(fs.existsSync(path.join(home,'Desktop','Turquill creatures','wolf-dire-1.jpg')),'a copy on the Desktop');
    mode='quota';out=await run([]);assert.equal(out.code,2,'stops cleanly on a quota refusal: '+out.out);assert.match(out.out,/Nothing is lost/);assert.equal(listed().length,5);
    mode='ok';out=await run([]);assert.equal(out.code,0,out.out);assert.equal(listed().length,pictures.length,'resumed to the whole library');assert.equal(asked,pictures.length-2,'each picture painted once, the copied ones never');
-   assert.ok(fs.existsSync(path.join(home,'Desktop','Questbound creatures','library.json')));
+   assert.ok(fs.existsSync(path.join(home,'Desktop','Turquill creatures','library.json')));
    // What it made is a library the painter reads.
    const made=L.createCreatureLibrary({directory:dir,refreshMs:0,picksDirectory:path.join(tmp,'made-picks')});await made.refresh();assert.equal(made.entries().length,pictures.length);
    server.close();}

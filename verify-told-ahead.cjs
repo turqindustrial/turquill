@@ -155,12 +155,12 @@ const outcomes={success:{narration:'Halfway down, a name leaps out: Edda Marsh, 
   await run('gpt-6-luna','12h',async(u,o)=>{const b=JSON.parse(o.body);tries.push(b);if(tries.length===1)return refuse(b,'input[0].content[0].prompt_cache_breakpoint');if(tries.length===2)return refuse(b,'prompt_cache_retention');return answer({});});
   assert.equal(tries.length,3);assert.ok(tries[1].input.every(m=>typeof m.content==='string')&&tries[1].prompt_cache_retention==='24h','breakpoints refused: retention');
   assert.ok(!('prompt_cache_retention' in tries[2])&&tries[2].input.every(m=>typeof m.content==='string'),'retention refused: nothing');
-  assert.equal(globalThis.__questboundNoCacheBreakpoints,true);assert.equal(globalThis.__questboundNoCacheRetention,true);
+  assert.equal(globalThis.__turquillNoCacheBreakpoints,true);assert.equal(globalThis.__turquillNoCacheRetention,true);
   await run('gpt-6-luna','12h');assert.ok(sent.at(-1).input.every(m=>typeof m.content==='string')&&!('prompt_cache_retention' in sent.at(-1)),'held off for the rest of the process');
-  delete globalThis.__questboundNoCacheBreakpoints;delete globalThis.__questboundNoCacheRetention;
+  delete globalThis.__turquillNoCacheBreakpoints;delete globalThis.__turquillNoCacheRetention;
   // A 12-hour ttl refused: the breakpoints stay, for the request's own 30 minutes.
   const ttlTries=[];await run('gpt-6-luna','12h',async(u,o)=>{const b=JSON.parse(o.body);ttlTries.push(b);if(ttlTries.length===1)return {ok:false,status:400,headers:{get:()=>null},json:async()=>({error:{message:"Invalid value for 'ttl': '12h'."}})};return answer({});});
-  assert.equal(ttlTries.length,2);assert.deepEqual(ttlTries[1].input[0].content[0].prompt_cache_breakpoint,{mode:'explicit'});assert.equal(globalThis.__questboundNoLongTtl,true);delete globalThis.__questboundNoLongTtl;
+  assert.equal(ttlTries.length,2);assert.deepEqual(ttlTries[1].input[0].content[0].prompt_cache_breakpoint,{mode:'explicit'});assert.equal(globalThis.__turquillNoLongTtl,true);delete globalThis.__turquillNoLongTtl;
   await run('gpt-6-luna','12h');assert.ok(!('prompt_cache_retention' in sent.at(-1)),'a newer model is never sent retention beside its breakpoints');
   // Cache writes are priced at their own rates (spending.cjs).
   const {costOf,writeRate}=require('./spending.cjs');assert.deepEqual(writeRate,{short:1.25,long:2.5});

@@ -1,19 +1,19 @@
-// What the AI has cost, and the host's ceilings on it. Worked out from the usage log (.questbound-usage.jsonl), read as
+// What the AI has cost, and the host's ceilings on it. Worked out from the usage log (.turquill-usage.jsonl), read as
 // it grows: every live request appends a line with its tokens, any painting and, for a guest, the guest's label (the
 // account or guest identity the gateway named; never a name). Three kinds of spending are told apart: guests (players on
 // the shared link and at shared tables), background work (tales written ahead for the stock, `adventure-ahead` with no
 // label) and the host's own play on this PC (everything else).
 // The host's ceilings, each read on every request (a change needs no restart), in US dollars or "off":
-//  .questbound-guest-budget   all guests together, a day (5 unless set)
-//  .questbound-player-budget  each guest, a day (40% of the guests' total unless set)
-//  .questbound-total-budget   ALL spending, a day: guests, background work and the host's own play (8 unless set)
-//  .questbound-month-budget   guests and background work together, a calendar month (30 unless set)
+//  .turquill-guest-budget   all guests together, a day (5 unless set)
+//  .turquill-player-budget  each guest, a day (40% of the guests' total unless set)
+//  .turquill-total-budget   ALL spending, a day: guests, background work and the host's own play (8 unless set)
+//  .turquill-month-budget   guests and background work together, a calendar month (30 unless set)
 // Past a ceiling, guests are refused (their turns, new tales and new paintings) and background writing stops; the
-// host's own play on this PC (no label) is never stopped. The file .questbound-guests-paused (any content; made by
-// Questbound.cmd -PauseGuests) refuses all guest AI and background writing at once.
+// host's own play on this PC (no label) is never stopped. The file .turquill-guests-paused (any content; made by
+// Turquill.cmd -PauseGuests) refuses all guest AI and background writing at once.
 // Expensive requests also have counts of their own per guest (new tales, drafted heroes and paintings), so one guest
 // identity cannot write tales or paintings in a loop even while the money lasts.
-// Each day's totals are also kept in .questbound-spending.json (sums only, never who), so a month survives the usage
+// Each day's totals are also kept in .turquill-spending.json (sums only, never who), so a month survives the usage
 // log being rotated. Alerts (alerts.cjs) tell the host when guests pass half and nine tenths of their day, and when a
 // ceiling is reached. `node dm-report.cjs` shows where today and the month stand.
 // Host jobs never count (2026-10-16, the host's words: "don't include the functions that I ask you to do in the
@@ -22,7 +22,7 @@
 // the creature library's paintings) is tagged in the usage log (job 'people-library', 'place-library' or
 // 'creature-library', never with a guest label) and left
 // out of every ceiling, allowance and alert; dm-report.cjs shows it on a line of its own. Paintings logged before the
-// tag existed are recognised by the library painting that made them (.questbound-art/<key>.json names the library's
+// tag existed are recognised by the library painting that made them (.turquill-art/<key>.json names the library's
 // campaign and when it was made; the usage line follows within seconds), so they drop out of the sums too.
 // The running Dungeon Master keeps this module loaded between requests (it is not reloaded with dm-server.cjs);
 // bump `revision` when it changes (and the literal in dm-server.cjs loadSpending) and the server loads it afresh.
@@ -36,7 +36,7 @@ const prices={'gpt-6-luna':[0.10,0.01,0.50],'gpt-5.6-luna':[0.20,0.02,1.20]},unk
 const defaultBudget=5,guestShare=0.4,defaultTotal=8,defaultMonth=30;
 // Counts per guest identity, apart from money: [how many, within how long].
 const guestCounts={tale:[[6,3600000],[20,86400000]],hero:[[10,3600000],[30,86400000]],painting:[[40,3600000],[80,86400000]]};
-const pausedFile='.questbound-guests-paused';
+const pausedFile='.turquill-guests-paused';
 // None of these may match the game's busy-retry test (dmConnection.js), or the game would keep asking.
 const words={
  paused:'The game is paused by the host. Your adventure is unchanged; try again later.',
@@ -72,13 +72,13 @@ function readBudget(file,fallback=defaultBudget){
  const n=Number(raw.replace(/^\$/,''));return Number.isFinite(n)&&n>=0?n:fallback;
 }
 const money=n=>'$'+n.toFixed(2);
-function createSpending({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now,alerts=null}={}){
- const file=path.join(dir,'.questbound-usage.jsonl'),ledgerFile=path.join(dir,'.questbound-spending.json');
+function createSpending({dir=process.env.TURQUILL_DATA||__dirname,now=Date.now,alerts=null}={}){
+ const file=path.join(dir,'.turquill-usage.jsonl'),ledgerFile=path.join(dir,'.turquill-spending.json');
  const at=name=>path.join(dir,name),alert=alerts??createAlerts({dir,now});
- const guestLimit=()=>readBudget(at('.questbound-guest-budget')),totalLimit=()=>readBudget(at('.questbound-total-budget'),defaultTotal),monthLimit=()=>readBudget(at('.questbound-month-budget'),defaultMonth);
+ const guestLimit=()=>readBudget(at('.turquill-guest-budget')),totalLimit=()=>readBudget(at('.turquill-total-budget'),defaultTotal),monthLimit=()=>readBudget(at('.turquill-month-budget'),defaultMonth);
  const paused=()=>fs.existsSync(at(pausedFile));
  // Each player's limit: the host's own figure, else 40% of the guests' total (at least 50 cents); null for none.
- const eachLimit=limit=>{const own=readBudget(at('.questbound-player-budget'),'unset');return own!=='unset'?own:limit===null?null:Math.max(0.5,limit*guestShare);};
+ const eachLimit=limit=>{const own=readBudget(at('.turquill-player-budget'),'unset');return own!=='unset'?own:limit===null?null:Math.max(0.5,limit*guestShare);};
  let offset=0,rest='',identity=null,days=new Map(),saved={},savedAt=-Infinity,dirty=false;
  // Day sums noted before host jobs were left out (no v:4) may hold them in 'all': only their guest and background sums
  // are kept, and 'all' is worked out from the log again.
@@ -87,7 +87,7 @@ function createSpending({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now
  let legacy=null;
  const legacyTimes=()=>{
   if(legacy)return legacy;legacy=[];
-  try{const art=path.join(dir,'.questbound-art'),cutoff=now()-62*86400000;
+  try{const art=path.join(dir,'.turquill-art'),cutoff=now()-62*86400000;
    for(const f of fs.readdirSync(art).filter(f=>f.endsWith('.json')).slice(0,50000)){
     try{const p=path.join(art,f);if(fs.statSync(p).mtimeMs<cutoff)continue;const j=JSON.parse(fs.readFileSync(p,'utf8')),t=Date.parse(j?.createdAt);if(jobOfCampaign(j?.subject?.campaignId)&&Number.isFinite(t))legacy.push(t);}catch{}
    }}catch{}
@@ -143,7 +143,7 @@ function createSpending({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now
  function ceiling(){
   const {day,t,monthly}=look(),total=totalLimit(),month=monthLimit();
   if(total!==null&&t.all>=total){alert.raise('total-ceiling','today\'s AI spending reached the '+money(total)+' ceiling ('+money(t.all)+'). Guests and background writing are stopped until tomorrow; your own play continues.',{key:'total-ceiling:'+day,every:86400000});return 'total';}
-  if(month!==null&&monthly>=month){alert.raise('month-ceiling','this month\'s guest and background spending reached the '+money(month)+' ceiling ('+money(monthly)+'). Guests are stopped; raise .questbound-month-budget to reopen.',{key:'month-ceiling:'+monthOf(now()),every:86400000});return 'month';}
+  if(month!==null&&monthly>=month){alert.raise('month-ceiling','this month\'s guest and background spending reached the '+money(month)+' ceiling ('+money(monthly)+'). Guests are stopped; raise .turquill-month-budget to reopen.',{key:'month-ceiling:'+monthOf(now()),every:86400000});return 'month';}
   return null;
  }
  // May this guest ask for more today? The host (no guest label) always may.

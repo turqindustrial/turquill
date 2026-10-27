@@ -1,5 +1,5 @@
-// The host's view of how the game is played: anonymous play counts (play-metrics.cjs, .questbound-metrics.jsonl) and
-// session ratings (the "How was that session?" card, kept with the feedback notes in .questbound-feedback.jsonl).
+// The host's view of how the game is played: anonymous play counts (play-metrics.cjs, .turquill-metrics.jsonl) and
+// session ratings (the "How was that session?" card, kept with the feedback notes in .turquill-feedback.jsonl).
 // Usage: node play-report.cjs [--days N] [--json] [--brief] [--host] [--dir <folder>]
 //   --days N   the last N days (default 14)
 //   --brief    one headline line (the launcher prints it; Settings → Developer checks shows it on the host's desktop)
@@ -31,7 +31,7 @@ function sessionRatings(records){
 function playSummary({dir=__dirname,days=14,now=Date.now(),host=false}={}){
  const since=new Date(now-days*DAY).toISOString();
  const mine=r=>host||r.from!=='desktop';
- const everything=[...readRecords(path.join(dir,'.questbound-metrics.jsonl')),...readRecords(path.join(dir,'metrics.jsonl'))].filter(r=>typeof r.device==='string');
+ const everything=[...readRecords(path.join(dir,'.turquill-metrics.jsonl')),...readRecords(path.join(dir,'metrics.jsonl'))].filter(r=>typeof r.device==='string');
  const all=lastPerSession(everything.filter(mine));
  const sessions=all.filter(r=>r.at>=since).sort((a,b)=>a.at.localeCompare(b.at));
  const leftOut=host?0:lastPerSession(everything.filter(r=>r.from==='desktop'&&r.at>=since)).length;
@@ -48,7 +48,7 @@ function playSummary({dir=__dirname,days=14,now=Date.now(),host=false}={}){
  const waits={started:sum(sessions,r=>r.wait?.started),done:sum(sessions,r=>r.wait?.done),failed:sum(sessions,r=>r.wait?.failed),abandoned:sessions.filter(r=>(r.wait?.pending??0)>0).length};
  waits.averageDoneSeconds=waits.done?Math.round(sum(sessions,r=>r.wait?.waited)/waits.done):null;
  waits.medianAbandonedSeconds=median(sessions.filter(r=>(r.wait?.pending??0)>0).map(r=>r.wait.pending));
- const ratingRecords=[...readRecords(path.join(dir,'.questbound-feedback.jsonl')),...readRecords(path.join(dir,'feedback.jsonl'))].filter(r=>host||r.from!=='desktop');
+ const ratingRecords=[...readRecords(path.join(dir,'.turquill-feedback.jsonl')),...readRecords(path.join(dir,'feedback.jsonl'))].filter(r=>host||r.from!=='desktop');
  const ratings=sessionRatings(ratingRecords).filter(r=>r.at>=since);
  const chipCounts={};for(const r of ratings)for(const c of r.chips)chipCounts[c]=(chipCounts[c]??0)+1;
  const dayKeys=[];for(let t=Date.parse(since.slice(0,10)+'T00:00:00Z');t<=now;t+=DAY)dayKeys.push(new Date(t).toISOString().slice(0,10));

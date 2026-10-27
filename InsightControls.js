@@ -3,7 +3,7 @@ import {View,Text,StyleSheet} from 'react-native';
 import {Section,Toggle} from './ui';
 import {readInsight,setInsight,subscribeInsight} from './playMetrics';
 import {fonts,colors} from './theme';
-// Settings → Help improve Questbound (per device): the anonymous play counts (playMetrics.js) and the "How was that
+// Settings → Help improve Turquill (per device): the anonymous play counts (playMetrics.js) and the "How was that
 // session?" question (SessionRating.js). Both are on unless turned off here; the privacy policy says what they carry.
 export function InsightSettings(){
  const [prefs,setPrefs]=useState(readInsight);

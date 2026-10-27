@@ -21,7 +21,7 @@ import {combatBasics} from './combatRules';
 import {currentSaveVersion} from './saveVersion';
 import {upgradeAdventure,sameHeroText} from './saveMigrations';
 
-const ADVENTURE_KEY = 'questbound.adventure.v1';
+const ADVENTURE_KEY = 'turquill.adventure.v1';
 const integerBetween = (n,min,max) => Number.isInteger(n) && n>=min && n<=max;
 // Anyone who can speak in a recorded turn: the two residents or someone met later (n1…n48).
 const someone = id => /^(?:keeper|mara|n(?:[1-9]|[1-8]\d|9[0-6]))$/.test(String(id));

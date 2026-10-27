@@ -18,7 +18,7 @@ It rebuilds the game when the source is newer than the last build, and it issues
 - `Turquill.cmd -Stop` stops everything the launcher started.
 - `Turquill.cmd -ForgetKey` deletes the remembered key.
 - `Turquill.cmd -InstallStartup` starts Turquill in the background when you sign in to Windows (needs a remembered key). Undo it with `-RemoveStartup`.
-- Logs are in `.questbound-logs\`.
+- Logs are in `.turquill-logs\`.
 
 ## Share with playtesters over the internet
 

@@ -8,8 +8,8 @@ begin; the engine that plays the staging (`seatStaging`, `withBeats`, the same f
 (`written-shelf.cjs`, with the New Adventure screen's Written tales) have landed since (section 17).
 
 - **Format version:** `"format": 1`, staging `"v": 1`.
-- **Where tales live:** one file per tale, `.questbound-written/<slug>.json` (git-ignored; under `QUESTBOUND_DATA` when
-  hosted; a copy in the host's Desktop folder "Questbound written tales"). Drafts live anywhere (the build workflow uses
+- **Where tales live:** one file per tale, `.turquill-written/<slug>.json` (git-ignored; under `TURQUILL_DATA` when
+  hosted; a copy in the host's Desktop folder "Turquill written tales"). Drafts live anywhere (the build workflow uses
   `C:/Users/itsbr/qb-work/tales/drafts/<slug>.json`).
 - **In the repository:** only this document, `stagingRules.js` (the validators and vocabularies), `check-written-tale.cjs`
   (the checker), `verify-written-format.cjs` (its test) and `written-fixture.json` (a small example tale that never goes on
@@ -212,7 +212,7 @@ it with `{"foe": ...}`.
 
 ### 3.4 People from the library
 
-A person may be cast from the host's people library (`.questbound-people/library.json`): give them `pool` (the id) and
+A person may be cast from the host's people library (`.turquill-people/library.json`): give them `pool` (the id) and
 write the library's **exact name, species and gender** (errors otherwise), its class (or `null` when it has none) and its
 appearance word for word (warnings otherwise: the portrait shows the library's look). Their role, motive, personality,
 ties and home are the tale's own. A library person is cast once in a tale and once on the shelf.
@@ -705,8 +705,8 @@ reads the libraries:
 node check-written-tale.cjs <tale.json> [--json] [--people <dir>] [--creatures <dir>] [--places <dir>] [--shelf <dir>]
 ```
 
-The folders default to the live data folders (`.questbound-people`, `.questbound-creatures`, `.questbound-place-art`,
-`.questbound-written`) under `QUESTBOUND_DATA`, the checkout, or the main checkout of its git repository (so a worktree
+The folders default to the live data folders (`.turquill-people`, `.turquill-creatures`, `.turquill-place-art`,
+`.turquill-written`) under `TURQUILL_DATA`, the checkout, or the main checkout of its git repository (so a worktree
 finds them). A missing people, creature or place library fails the check; a missing shelf is a warning (names are then
 checked within the tale only). `--json` prints the report as JSON (`ok`, `errors`, `warnings`, `todo`, `checks`,
 `seated`, `readingLoad`, `stagingSize`, `pools`, `libraries`). **Exit 0 when the tale passes** (warnings allowed: read them), **1 when it

@@ -1,4 +1,6 @@
 @echo off
-rem Turquill-Share.cmd is the same launcher as Questbound-Share.cmd under the game's new name (2026-10-25): it
-rem runs Questbound-Share.cmd with the same arguments, starting the game and the secure internet link for testers.
-call "%~dp0Questbound-Share.cmd" %*
+rem Double-click to host a playtest: starts Turquill (Questbound-Share.cmd, its old name, runs this same file) and a secure internet link, then shows the link and invite code for your testers.
+cd /d "%~dp0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0launch.ps1" -Share %*
+echo.
+pause

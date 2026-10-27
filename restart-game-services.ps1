@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 $questRoot = $PSScriptRoot
 . (Join-Path $questRoot 'restart-service-rules.ps1')
 $questNode = (Get-Command node -ErrorAction Stop).Source
-$questPidFile = Join-Path $questRoot '.questbound-logs\pids.json'
+$questPidFile = Join-Path $questRoot '.turquill-logs\pids.json'
 $questPids = Get-Content -LiteralPath $questPidFile -Raw | ConvertFrom-Json
 $questPlan = @()
 $questTargets = @(
@@ -26,13 +26,13 @@ foreach ($questTarget in $questTargets) {
     $questSession = $null
     $questSessionWritten = [datetime]::MinValue
     if ($questTarget.Name -in @('share','phone')) {
-        $questSessionFile = Join-Path $questRoot ('.questbound-' + $questTarget.Name + '-session.json')
+        $questSessionFile = Join-Path $questRoot ('.turquill-' + $questTarget.Name + '-session.json')
         if (Test-Path -LiteralPath $questSessionFile) {
             $questSession = Get-Content -LiteralPath $questSessionFile -Raw | ConvertFrom-Json
             $questSessionWritten = (Get-Item -LiteralPath $questSessionFile).LastWriteTimeUtc
         }
     }
-    if (-not (Test-QuestboundServiceOwner -Process $questProcess -Root $questRoot -NodePath $questNode -Role $questTarget.Name -Script $questTarget.Script -LauncherPid $questPids.($questTarget.Name) -Session $questSession -SessionWrittenAt $questSessionWritten)) {
+    if (-not (Test-TurquillServiceOwner -Process $questProcess -Root $questRoot -NodePath $questNode -Role $questTarget.Name -Script $questTarget.Script -LauncherPid $questPids.($questTarget.Name) -Session $questSession -SessionWrittenAt $questSessionWritten)) {
         throw "Cannot verify $($questTarget.Name) belongs to this game's folder. Nothing was stopped."
     }
     $questArguments = @(('"' + $questScript + '"'))
@@ -47,7 +47,7 @@ foreach ($questTask in $questPlan) {
     if ($questCurrent.CreationDate -ne $questTask.Created) { throw 'A service changed while preparing the update. Restart cancelled.' }
     Stop-Process -Id $questTask.Id -ErrorAction Stop
     if ($questTask.Name -eq 'phone') { Write-Output 'Stopped the retired HTTP phone gateway. Use the HTTPS link.'; continue }
-    $questStarted = Start-Process -FilePath $questNode -ArgumentList $questTask.Arguments -WorkingDirectory $questRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $questRoot ".questbound-logs\$($questTask.Name)-security.log") -RedirectStandardError (Join-Path $questRoot ".questbound-logs\$($questTask.Name)-security.err.log") -PassThru
+    $questStarted = Start-Process -FilePath $questNode -ArgumentList $questTask.Arguments -WorkingDirectory $questRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $questRoot ".turquill-logs\$($questTask.Name)-security.log") -RedirectStandardError (Join-Path $questRoot ".turquill-logs\$($questTask.Name)-security.err.log") -PassThru
     $questPids | Add-Member -NotePropertyName $questTask.Name -NotePropertyValue $questStarted.Id -Force
     $questPids | ConvertTo-Json | Set-Content -LiteralPath $questPidFile -Encoding ASCII
     $questReady = $false
@@ -57,7 +57,7 @@ foreach ($questTask in $questPlan) {
         if ($questListening.Count) { $questReady = $true; break }
         if ($questStarted.HasExited) { break }
     }
-    if (-not $questReady) { throw "$($questTask.Name) did not restart. Check .questbound-logs\$($questTask.Name)-security.err.log." }
+    if (-not $questReady) { throw "$($questTask.Name) did not restart. Check .turquill-logs\$($questTask.Name)-security.err.log." }
     Write-Output "Updated $($questTask.Name)."
 }
 if ($questPlan.Count) { Write-Output 'Server updates applied. Refresh Turquill. Your Dungeon Master and tunnel were left running.' }

@@ -1,7 +1,7 @@
 # Synthetic identities only. This check never starts or stops a service.
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'restart-service-rules.ps1')
-$testRoot = 'C:\Test Space\Questbound'
+$testRoot = 'C:\Test Space\Turquill'
 $testNode = 'C:\Program Files\nodejs\node.exe'
 $testStarted = [datetime]'2026-10-08T00:00:00Z'
 $testSession = [pscustomobject]@{pid=1234; link='https://game.example/'; phone='http://10.0.0.5:8085/'}
@@ -13,7 +13,7 @@ function Assert-Owner {
         if ($testChange.Key -in @('Name','ExecutablePath','ProcessId','ParentProcessId','CreationDate')) { $testProcess.($testChange.Key) = $testChange.Value }
         else { $testOptions[$testChange.Key] = $testChange.Value }
     }
-    $testActual = Test-QuestboundServiceOwner @testOptions
+    $testActual = Test-TurquillServiceOwner @testOptions
     if ($testActual -ne $Expected) { throw "$Label failed: expected $Expected; got $testActual" }
     Write-Output "PASS $Label"
 }
@@ -21,8 +21,8 @@ $testRelative = '"C:\Program Files\nodejs\node.exe" phone-server.cjs --public "h
 Assert-Owner 'manual sharing server with matching session' $true $testRelative
 Assert-Owner 'optional URL trailing slash' $true 'node phone-server.cjs --public https://game.example'
 Assert-Owner 'explicit relative script' $true 'node .\phone-server.cjs --public https://game.example/'
-Assert-Owner 'absolute script' $true 'node "C:\Test Space\Questbound\phone-server.cjs" --public https://game.example/' @{SessionWrittenAt=$testStarted.AddDays(-2)}
-Assert-Owner 'forward slash absolute script' $true 'node "C:/Test Space/Questbound/phone-server.cjs" --public https://game.example/'
+Assert-Owner 'absolute script' $true 'node "C:\Test Space\Turquill\phone-server.cjs" --public https://game.example/' @{SessionWrittenAt=$testStarted.AddDays(-2)}
+Assert-Owner 'forward slash absolute script' $true 'node "C:/Test Space/Turquill/phone-server.cjs" --public https://game.example/'
 Assert-Owner 'launcher parent' $true $testRelative @{ParentProcessId=9999;SessionWrittenAt=$testStarted.AddDays(-2)}
 Assert-Owner 'stale session PID' $false $testRelative @{ProcessId=4321}
 Assert-Owner 'reused PID' $false $testRelative @{CreationDate=$testStarted.AddHours(1)}
@@ -35,7 +35,7 @@ Assert-Owner 'URL credentials rejected' $false 'node phone-server.cjs --public h
 Assert-Owner 'URL paths rejected' $false 'node phone-server.cjs --public https://game.example/other'
 Assert-Owner 'wrong workspace' $false 'node "C:\Other\phone-server.cjs" --public https://game.example/'
 Assert-Owner 'relative parent path rejected' $false 'node ..\phone-server.cjs --public https://game.example/'
-Assert-Owner 'script path supplied as data' $false 'node other.cjs "C:\Test Space\Questbound\phone-server.cjs" --public https://game.example/'
+Assert-Owner 'script path supplied as data' $false 'node other.cjs "C:\Test Space\Turquill\phone-server.cjs" --public https://game.example/'
 Assert-Owner 'unexpected node options' $false 'node --eval code phone-server.cjs --public https://game.example/'
 Assert-Owner 'extra arguments' $false ($testRelative+' extra')
 Assert-Owner 'broken quotes' $false 'node "phone-server.cjs --public https://game.example/'

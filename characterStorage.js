@@ -5,7 +5,7 @@ import { buildError, finalScores, backgrounds, validPortraitChoice } from './cha
 import AsyncStorage from './playerStorage';
 import {upgradeCharacter} from './saveMigrations';
 
-const KEY = 'questbound.character.v1';
+const KEY = 'turquill.character.v1';
 export function isValidCharacter(value) {
   if(value && !validPlannedSubclass(value)) return false;
   if(value && spellSelectionError(value,false)) return false;

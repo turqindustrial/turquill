@@ -135,9 +135,9 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-hero-face-'));
 
   // ---------- Carried with the hero: save codes, the roster, the shared table ----------
   {const hero={...fighter,portrait:{library:'np012'}},adventure=r.adventureSnapshot(hero,r.newAdventure(hero),null,true);
-   const storage=(map=>({getItem:k=>map[k]??null,setItem:(k,v)=>{map[k]=v;},removeItem:k=>{delete map[k];}}))({'questbound.character.v1':JSON.stringify(hero),'questbound.adventure.v1':JSON.stringify(adventure)});
+   const storage=(map=>({getItem:k=>map[k]??null,setItem:(k,v)=>{map[k]=v;},removeItem:k=>{delete map[k];}}))({'turquill.character.v1':JSON.stringify(hero),'turquill.adventure.v1':JSON.stringify(adventure)});
    const read=await r.readSave(await r.exportSave(storage));same(read.hero.portrait,{library:'np012'},'a save code carries the portrait');
-   storage.setItem('questbound.character.v1',JSON.stringify({...hero,portrait:{library:'bad'}}));storage.removeItem('questbound.adventure.v1');
+   storage.setItem('turquill.character.v1',JSON.stringify({...hero,portrait:{library:'bad'}}));storage.removeItem('turquill.adventure.v1');
    await assert.rejects(r.exportSave(storage).then(r.readSave),/did not pass the save checks/,'a code with a bad portrait is refused');
    const aside=r.setAside([],[],hero,r.newAdventure(hero),null,true);assert.ok(r.validRosterEntry(aside.roster[0]));same(r.restoreEntry(aside.roster[0]).hero.portrait,{library:'np012'},'the roster keeps it');}
   {const dirC=fs.mkdtempSync(path.join(os.tmpdir(),'qb-face-table-')),seq=(s=11)=>()=>(s=(s*16807)%2147483647)/2147483647;

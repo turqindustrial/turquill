@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {createDesktopServer}=require('./desktop-server.cjs');
-const root=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-desktop-'));fs.mkdirSync(path.join(root,'_expo'));
+const root=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-desktop-'));fs.mkdirSync(path.join(root,'_expo'));
 fs.writeFileSync(path.join(root,'index.html'),'<h1>game</h1>');fs.writeFileSync(path.join(root,'_expo','app.js'),'app');fs.writeFileSync(path.join(root,'_expo','index-0123456789abcdef0123.js'),'hashed');
 const get=(port,route,host)=>new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port,path:route,headers:{Host:host??'localhost:'+port}},res=>{let t='';res.on('data',c=>t+=c);res.on('end',()=>resolve({status:res.statusCode,text:t,headers:res.headers}));});req.on('error',reject);req.end();});
 (async()=>{
@@ -22,7 +22,7 @@ const get=(port,route,host)=>new Promise((resolve,reject)=>{const req=http.reque
   // "remember this key" never worked and the launcher asked for the key every time (found 2026-10-03). The same for the tunnel token.
   assert.ok(ps1.includes('(Get-Content $keyFile -Raw).Trim() | ConvertTo-SecureString')&&ps1.includes('(Get-Content $tunnelTokenFile -Raw).Trim() | ConvertTo-SecureString'),'saved secrets are trimmed before unlocking');
   if(process.platform==='win32'){const r=require('node:child_process').spawnSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',"$f=Join-Path $env:TEMP ('qb-dpapi-'+[guid]::NewGuid()+'.txt'); ConvertTo-SecureString 'not-a-real-key' -AsPlainText -Force | ConvertFrom-SecureString | Set-Content $f -Encoding ASCII; try { $s=(Get-Content $f -Raw).Trim() | ConvertTo-SecureString; 'unlocked' } finally { [IO.File]::Delete($f) }"],{encoding:'utf8'});assert.match(r.stdout,/unlocked/,'a remembered value unlocks again: '+r.stderr);}
-  const ignore=fs.readFileSync('.gitignore','utf8');for(const entry of ['.questbound-key.dpapi','.questbound-table/','.questbound-logs/','.questbound-diagnostics.jsonl*'])assert.ok(ignore.includes(entry),entry);
+  const ignore=fs.readFileSync('.gitignore','utf8');for(const entry of ['.turquill-key.dpapi','.turquill-table/','.turquill-logs/','.turquill-diagnostics.jsonl*'])assert.ok(ignore.includes(entry),entry);
   console.log('Passed: desktop build server (index, assets, route fallback, traversal and host guards) and launcher safety (ASCII, DPAPI-only key storage, private files ignored).');
  }finally{await new Promise(r=>real.close(r));fs.rmSync(root,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});

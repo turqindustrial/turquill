@@ -1,6 +1,6 @@
 // Faces painted in play join the people library (2026-10-22, the host's words: "make sure all unique faces painted are
 // added to the library of potential faces in the game"). Checks import-painted-faces.cjs on a stand-in data folder:
-// a dry run writes nothing; --write copies each unique painted face into .questbound-people/ as a face only (nf001…,
+// a dry run writes nothing; --write copies each unique painted face into .turquill-people/ as a face only (nf001…,
 // faces.json) with its species (the nearest common people for an invented people, its name kept as kin; none for
 // features no common people has), gender, age, training, role and look and the tale it was painted for, never moving
 // or changing the paintings; players' own heroes, the library's own portraits, children and ghosts, women painted
@@ -17,7 +17,7 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const W='A woman, with a woman\'s face: smooth cheeks and chin, no beard, no moustache, no stubble or facial hair of any kind. ';
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-face-import-'));
 try{
- const data=path.join(tmp,'data'),art=path.join(data,'.questbound-art'),people=path.join(data,'.questbound-people'),desktop=path.join(tmp,'Desktop','Questbound people');
+ const data=path.join(tmp,'data'),art=path.join(data,'.turquill-art'),people=path.join(data,'.turquill-people'),desktop=path.join(tmp,'Desktop','Turquill people');
  fs.mkdirSync(art,{recursive:true});fs.mkdirSync(people,{recursive:true});fs.mkdirSync(desktop,{recursive:true});
  // The library as it stands: one person with a portrait; the Desktop copy holds a file of its own.
  fs.writeFileSync(path.join(people,'np001.jpg'),jpeg('np001'));fs.writeFileSync(path.join(people,'library.json'),'[]');fs.writeFileSync(path.join(desktop,'keep-me.txt'),'mine');
@@ -62,7 +62,7 @@ try{
  same(fs.readdirSync(people).sort(),['library.json','np001.jpg'],'a dry run writes nothing');
  assert.ok(Object.values(reasons).length>=9);
  // ---------- --write, from the command line ----------
- const cli=args=>spawnSync(process.execPath,['import-painted-faces.cjs',...args],{cwd:__dirname,encoding:'utf8',env:{...process.env,QUESTBOUND_DATA:''}});
+ const cli=args=>spawnSync(process.execPath,['import-painted-faces.cjs',...args],{cwd:__dirname,encoding:'utf8',env:{...process.env,TURQUILL_DATA:''}});
  let out=cli(['--dir',data]);assert.equal(out.status,0,out.stderr);assert.match(out.stdout,/Would add 8 faces to the library \(nothing written; add --write to add them\)\./);assert.match(out.stdout,/Left out 9: /);assert.match(out.stdout,/2 a child, a ghost, the dead or a creature/);
  assert.match(out.stdout,/By gender: woman \d+, man \d+, other \d+\. By age: young \d+, adult \d+, middle-aged \d+, old \d+\./);
  out=cli([data,'--write','--desktop',desktop]);assert.equal(out.status,0,out.stderr);assert.match(out.stdout,/Added 8 faces/);

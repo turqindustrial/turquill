@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),http=require('node:http'),vm=require('node:vm');
 const {createAccounts}=require('./accounts.cjs'),{createLimiter}=require('./rate-limit.cjs');
 const {createSyncServer}=require('./sync-server.cjs'),{createPhoneServer}=require('./phone-server.cjs'),{createDesktopServer}=require('./desktop-server.cjs');
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-hardening-')),servers=[];
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-hardening-')),servers=[];
 const listen=async server=>{servers.push(server);return new Promise(r=>server.listen(0,'127.0.0.1',()=>r(server.address().port)));};
 const call=(port,route,{method='POST',body={},headers={}}={})=>new Promise((resolve,reject)=>{
  const req=http.request({hostname:'127.0.0.1',port,path:route,method,headers:{'Content-Type':'application/json',Origin:'http://localhost:8081',...headers}},res=>{
@@ -69,7 +69,7 @@ const snapshot={version:1,character:'{"name":"Test hero"}',game:{stage:'inn'},ch
  // turns count per account, illustration and story checks not at all, and only requests without a sign-in are braked
  // per address (bug: one 300-per-10-minutes bucket per address, paintings included, locked a household out of turns).
  {const fx=require('./test-fixtures.cjs').fixtures(path.join(tmp,'usage'));const svc=createSyncServer({...fx.options,limits:{usage:[3,600000],unauthenticated:[2,600000],other:[5,600000]}});const up=await listen(svc.server);
-  const a='questbound_account='+(await fx.user(svc.accounts,'a@example.test')).token,b='questbound_account='+(await fx.user(svc.accounts,'b@example.test')).token,home={'X-Questbound-Client':'203.0.113.7'};
+  const a='turquill_account='+(await fx.user(svc.accounts,'a@example.test')).token,b='turquill_account='+(await fx.user(svc.accounts,'b@example.test')).token,home={'X-Turquill-Client':'203.0.113.7'};
   const usage=(cookie,kind)=>call(up,'/usage',{body:{kind},headers:{...home,Cookie:cookie}});
   for(let i=0;i<40;i++)assert.equal((await usage(i%2?a:b,'art')).status,200,'painting and story checks are not counted');
   for(let i=0;i<3;i++)assert.equal((await usage(a,'dm')).status,200);
@@ -83,7 +83,7 @@ const snapshot={version:1,character:'{"name":"Test hero"}',game:{stage:'inn'},ch
   // diagnostics list them among the recent alerts; whatever else is passed (an address, words) is never written.
   const {auditTo}=require('./operations.cjs'),opsDir=path.dirname(fx.options.accountsDir);
   auditTo(opsDir,'flood-alert',{route:'address-flood',address:'203.0.113.9',text:'one connection was refused'});
-  const logged=fs.readFileSync(path.join(opsDir,'.questbound-security.jsonl'),'utf8').trim().split('\n').pop();
+  const logged=fs.readFileSync(path.join(opsDir,'.turquill-security.jsonl'),'utf8').trim().split('\n').pop();
   assert.ok(!logged.includes('203.0.113')&&!logged.includes('refused'),'mechanical labels only');
   assert.ok(fx.operations.status().alerts.some(e=>e.event==='flood-alert'&&e.route==='address-flood'),'shown with the host\'s recent alerts');}
  // The Discord poster's child never inherits the API key (alerts.cjs childEnv), and the webhook never reaches a command line.
@@ -92,7 +92,7 @@ const snapshot={version:1,character:'{"name":"Test hero"}',game:{stage:'inn'},ch
   assert.ok(!/\$args|param\(/i.test(discordScript),'the script takes no arguments: the message comes on stdin and the webhook from the encrypted file');}
  // Files accidentally placed inside the web export still must not expose host data.
  const root=path.join(tmp,'public'),outside=path.join(tmp,'private');fs.mkdirSync(root);fs.mkdirSync(outside);
- fs.writeFileSync(path.join(root,'index.html'),'<h1>Questbound</h1>');fs.writeFileSync(path.join(root,'game.js'),'window.game=true;');
+ fs.writeFileSync(path.join(root,'index.html'),'<h1>Turquill</h1>');fs.writeFileSync(path.join(root,'game.js'),'window.game=true;');
  fs.writeFileSync(path.join(root,'.env'),'PRIVATE-SECRET');fs.mkdirSync(path.join(root,'.git'));fs.writeFileSync(path.join(root,'.git','config'),'PRIVATE-SECRET');
  fs.writeFileSync(path.join(root,'game.js.map'),'PRIVATE-SECRET');fs.writeFileSync(path.join(outside,'secret.txt'),'PRIVATE-SECRET');
  fs.symlinkSync(outside,path.join(root,'linked'),'junction');

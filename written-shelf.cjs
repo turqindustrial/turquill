@@ -1,6 +1,6 @@
 // The Written tales shelf (the stories spec, sections 1 and 2.8; WRITTEN-TALES.md): tales written by hand, checked, and
-// kept for good in the host's data folder `.questbound-written/` (git-ignored, under QUESTBOUND_DATA when hosted, with a
-// copy in the host's Desktop folder "Questbound written tales"), one `<slug>.json` a tale. The Dungeon Master serves
+// kept for good in the host's data folder `.turquill-written/` (git-ignored, under TURQUILL_DATA when hosted, with a
+// copy in the host's Desktop folder "Turquill written tales"), one `<slug>.json` a tale. The Dungeon Master serves
 // them: the listing carries each tale's card (its pitch and the card's fields, never a secret, a chapter title, the
 // staging or the walkthrough) and a start hands over a player's own copy of the story at once, costing no AI and no
 // allowance (dm-server.cjs). Tales are never retired; `plays.json` counts starts for measurement only.
@@ -76,9 +76,9 @@ function publicTale(entry,{cover=null}={}){
 // A refused file, noted in the diagnostics (live only): the file's name, the kind of refusal and how many problems,
 // never the tale's words.
 function diagnosticsNote(note){
- try{fs.appendFileSync(path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl'),JSON.stringify({at:new Date().toISOString(),written:'refused',...note})+'\n');}catch{}
+ try{fs.appendFileSync(path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl'),JSON.stringify({at:new Date().toISOString(),written:'refused',...note})+'\n');}catch{}
 }
-function createShelf({dir=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-written'),check=defaultCheck,onRefused=null,now=Date.now,random=Math.random,fresh=30000}={}){
+function createShelf({dir=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-written'),check=defaultCheck,onRefused=null,now=Date.now,random=Math.random,fresh=30000}={}){
  const verdicts=new Map(),dupNoted=new Set();let scanned=-Infinity,current=[];
  const playsFile=path.join(dir,'plays.json');
  const refuse=(name,stamp,reason,problems=0)=>{verdicts.set(name,{stamp,entry:null});try{onRefused?.({file:String(name).replace(/[^a-z0-9._-]/gi,'').slice(0,40),reason,problems});}catch{}};

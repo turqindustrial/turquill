@@ -6,7 +6,7 @@
 // - `face:'own'`: the hero's own painting, made earlier through Paint my own; shown from disk, never painted again;
 // - `face:'default'` (every hero without a choice, heroes from before included): the hero's own painting when one was
 //   made at this identity (so nobody's painted portrait changes), else the library face that fits them best, kept for
-//   that hero (.questbound-art/hero-faces/), so the face never changes. Fit: the same species (an old "Elf" may be a
+//   that hero (.turquill-art/hero-faces/), so the face never changes. Fit: the same species (an old "Elf" may be a
 //   High or Wood Elf) and gender (any gender when the hero's words do not say), the hero's own class first (unless the
 //   face is far from the hero's age), then look words, then a hash of the hero (repeatable). Taken, and so offered only when nothing else fits: the
 //   library people of the hero's game and the other heroes' faces at the table (`avoid`), and the faces already given

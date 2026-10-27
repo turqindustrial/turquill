@@ -1,4 +1,4 @@
-// Questbound audio engine: a live-synthesized adaptive score, location ambience and layered effects, mixed like a game.
+// Turquill audio engine: a live-synthesized adaptive score, location ambience and layered effects, mixed like a game.
 // The score is soft by design: string and choir pads, a bowed bass, felted keys and a flute or horn that sings
 // composed phrases. Nothing in it is plucked, struck with sticks or ticked out.
 // Signal flow:
@@ -10,7 +10,7 @@
 // loading, a painting decoding) never reaches the speakers; beats the page missed altogether are skipped, never
 // played late in a clump. A change of scene crossfades one mood into the next with no silence between them.
 const web=typeof window!=='undefined'&&typeof window.AudioContext!=='undefined';
-const KEY='questbound.audio.v1';
+const KEY='turquill.audio.v1';
 // On a computer the music goes on while another window is in front (Settings, Sound); a phone falls silent.
 const desktopLike=()=>{try{return !!window.matchMedia?.('(hover:hover) and (pointer:fine)').matches;}catch{return false;}};
 const defaults={master:0.85,music:0.6,ambience:0.6,effects:1,muted:false,night:false,narrator:false,voice:null};

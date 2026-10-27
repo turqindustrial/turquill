@@ -1,5 +1,6 @@
 @echo off
-rem Turquill.cmd is the same launcher as Questbound.cmd under the game's new name (2026-10-25): it runs
-rem Questbound.cmd with the same arguments (for example Turquill.cmd -Stop). The files, services and saves keep
-rem their Questbound names on purpose, so nothing running or saved changes.
-call "%~dp0Questbound.cmd" %*
+rem Double-click to start Turquill (Questbound.cmd, its old name, runs this same file): the Dungeon Master, shared table, desktop game and phone access.
+cd /d "%~dp0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0launch.ps1" %*
+echo.
+pause

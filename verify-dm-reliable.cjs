@@ -137,7 +137,7 @@ const zero={damage:0,selfDamage:0,healing:0,temporaryHP:0};
   notes.push({at:at(9),guest,error:'The recruitment decision was invalid. Nothing was applied.'},{at:at(9),guest,secondLook:'unusable reply',outcome:'asked again'},{at:at(9),guest,turn:'asked again',reasons:['recruitment'],asks:2,phase:'ordinary'});
   notes.push({at:at(8),guest:null,turn:'rescued',reasons:['unreadable','unreadable','unreadable'],asks:3,phase:'ordinary'},{at:at(7),guest:null,turn:'failed',reasons:['cut short','cut short','cut short'],asks:3,phase:'ordinary'});
   notes.push({at:at(6),guest,secondLook:'ruling without a spell',outcome:'dropped'},{at:at(6),guest:null,error:'unparseable reply',aside:true});
-  fs.writeFileSync(path.join(dir,'.questbound-usage.jsonl'),usage.map(u=>JSON.stringify(u)).join('\n')+'\n');fs.writeFileSync(path.join(dir,'.questbound-diagnostics.jsonl'),notes.map(u=>JSON.stringify(u)).join('\n')+'\n');
+  fs.writeFileSync(path.join(dir,'.turquill-usage.jsonl'),usage.map(u=>JSON.stringify(u)).join('\n')+'\n');fs.writeFileSync(path.join(dir,'.turquill-diagnostics.jsonl'),notes.map(u=>JSON.stringify(u)).join('\n')+'\n');
   const run=spawnSync(process.execPath,['dm-report.cjs','--dir',dir,'--days','14'],{cwd:__dirname,encoding:'utf8'});fs.rmSync(dir,{recursive:true,force:true});
   assert.equal(run.status,0,run.stderr);const text=run.stdout;
   assert.match(text,/Reliability, last 14 days: 300 turns/);

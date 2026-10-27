@@ -15,7 +15,7 @@ const same=(a,b,why)=>assert.equal(JSON.stringify(a),JSON.stringify(b),why);
 const store=new Map(),AsyncStorage={getItem:async k=>store.get(k)??null,setItem:async(k,v)=>{store.set(k,v);},removeItem:async k=>{store.delete(k);}};
 const r=vm.runInNewContext(rulesSource({extra:['rosterRules.js','saveCodes.js']})+'\n;({currentSaveVersion,saveFormats,upgradeCharacter,upgradeAdventure,sameHeroText,isValidCharacter,validAdventure,loadCharacter,loadAdventure,saveCharacter,heroXp,levelUpReady,withMemory,memoryOf,quickActions,settleTurn,adventureSnapshot,makeCharacter,readyHero,validRosterEntry,restoreEntry,readSave,applySave,partyView,isPartyGame,currentSubclass,heroSpecies})',{AsyncStorage,console,TextEncoder,TextDecoder,atob,btoa,Blob,Response});
 const dir=path.join(__dirname,'save-fixtures'),builds=fs.readdirSync(dir).filter(f=>/^\d{4}-\d\d-\d\d-[0-9a-f]{7}\.json$/.test(f)).sort().map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
-const KEYS={character:'questbound.character.v1',adventure:'questbound.adventure.v1'};
+const KEYS={character:'turquill.character.v1',adventure:'turquill.adventure.v1'};
 const now=r.currentSaveVersion;
 assert.ok(Number.isInteger(now)&&now>=1&&r.saveFormats.at(-1).version===now,'the formats are listed up to the current one');
 assert.equal(builds[0].commit,'235726f','the oldest fixtures come from the first playtest build, the first that reached testers');

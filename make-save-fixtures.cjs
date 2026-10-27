@@ -97,7 +97,7 @@ function fixturesAt({commit,note}){
  // A hero set aside in the roster (rosterRules.js), as the Heroes screen kept it.
  if(r.setAside&&first){const hero=JSON.parse(first.character),a=first.adventure;try{const next=r.setAside([],[],hero,a.game,a.health,a.chosen);if(!next.error)out.roster=next.roster;}catch(e){console.log('  ('+commit+' roster: '+e.message+')');}}
  // A save code (saveCodes.js, Settings → Move your hero), made from that build's storage keys, uncompressed.
- if(r.exportSave&&first){const storage={getItem:k=>({'questbound.character.v1':first.character,'questbound.adventure.v1':JSON.stringify(first.adventure)})[k]??null};
+ if(r.exportSave&&first){const storage={getItem:k=>({'turquill.character.v1':first.character,'turquill.adventure.v1':JSON.stringify(first.adventure)})[k]??null};
   try{out.saveCode=r.exportSave(storage,false);}catch(e){console.log('  ('+commit+' code: '+e.message+')');}}
  // A shared table with a party (partyRules.js): the host's snapshot, then a second hero joining.
  if(r.startParty&&r.joinParty&&first&&other){try{let party=r.startParty(first.adventure,'A','Brenna');party=r.joinParty(party,'B',{character:other.character,game:other.adventure.game,health:other.adventure.health,name:'Vey'});out.party=party.snapshot??party;}catch(e){console.log('  ('+commit+' party: '+e.message+')');}}

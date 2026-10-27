@@ -89,7 +89,7 @@ assert.deepEqual(stray,[],'colours written outside tint(): '+stray.slice(0,12).j
 const web=fs.readFileSync('webTheme.js','utf8');
 assert.ok(web.includes('const css=tint(`')&&web.includes('themedText(flourishMarkup(turn),theme,mode)')&&web.includes("'--qb-emblem-filter':emblemFilter(theme)")&&web.includes('[data-qb=emblem]{position:relative;filter:var(--qb-emblem-filter);}'),'webTheme.js wraps its style sheet and writes its pictures and the emblem filter per theme');
 const themeSource=fs.readFileSync('theme.js','utf8');
-assert.ok(themeSource.includes("const KEY='questbound.theme.v1'")&&themeSource.includes('export function setTheme')&&themeSource.includes("coin:tint('#e8c77b')"));
+assert.ok(themeSource.includes("const KEY='turquill.theme.v1'")&&themeSource.includes('export function setTheme')&&themeSource.includes("coin:tint('#e8c77b')"));
 // The Theme section is in Settings.
 const app=['App.js','MenuScreens.js'].map(f=>fs.readFileSync(f,'utf8')).join(' ');assert.ok(app.includes("{screen === 'Settings' && <ThemeSettings/>}")&&app.includes("import {ThemeSettings} from './ThemeControls';"));
 const controls=fs.readFileSync('ThemeControls.js','utf8');assert.ok(controls.includes('themeChoices.map')&&controls.includes('setTheme(choice.id)')&&controls.includes('accessibilityRole="radio"'));
@@ -146,7 +146,7 @@ assert.ok(card.length>=9&&card.every(Boolean),'the loading card names its colour
 const table=Object.fromEntries(themeIds.flatMap(id=>['dark','light'].map(mode=>[id+':'+mode,card.map(colour=>themedText(colour,id,mode))])));
 // The card's emblem takes the same filter as the game's (--bf).
 const filters=Object.fromEntries(themeIds.filter(id=>emblemFilter(id)!=='none').map(id=>[id,emblemFilter(id)]));
-const script="<script>(function(){try{var p=JSON.parse(localStorage.getItem('questbound.theme.v1')||'{}'),t=p.theme||'red',m=p.mode==='light'?'light':'dark',c="+JSON.stringify(table)+"[t+':'+m],f="+JSON.stringify(filters)+"[t],s=document.documentElement.style;document.documentElement.setAttribute('data-appearance',m);if(c){for(var i=0;i<c.length;i++)s.setProperty('--b'+i,c[i]);}if(f)s.setProperty('--bf',f);}catch(e){}})();</script>";
+const script="<script>(function(){try{var p=JSON.parse(localStorage.getItem('turquill.theme.v1')||localStorage.getItem('questbound.theme.v1')||'{}'),t=p.theme||'red',m=p.mode==='light'?'light':'dark',c="+JSON.stringify(table)+"[t+':'+m],f="+JSON.stringify(filters)+"[t],s=document.documentElement.style;document.documentElement.setAttribute('data-appearance',m);if(c){for(var i=0;i<c.length;i++)s.setProperty('--b'+i,c[i]);}if(f)s.setProperty('--bf',f);}catch(e){}})();</script>";
 const block=/(<!-- qb-theme-colours:start[^>]*-->\s*)([\s\S]*?)(\s*<!-- qb-theme-colours:end -->)/,found=page.match(block);
 assert.ok(found,'public/index.html has the qb-theme-colours block');
 // The loading card shows the emblem picture, tinted like the game's.

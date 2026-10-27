@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {legalUpdated} from './legalText';
 import {tableEndpoint} from './tableClient';
 import {selectProfile,currentProfile} from './playerStorage';
-const KEY='questbound.account.v2',OLD='questbound.account.v1';
+const KEY='turquill.account.v2',OLD='turquill.account.v1';
 export const tidyEmail=email=>String(email??'').trim().toLowerCase();
 export const emailProblem=email=>/^[^\s@]{1,64}@[^\s@.]{1,63}(\.[^\s@.]{1,63})+$/.test(tidyEmail(email))&&tidyEmail(email).length<=254?null:'Enter a full email address.';
 export const passwordProblem=password=>typeof password!=='string'||password.length<8?'Choose a password of at least 8 characters.':password.length>200?'That password is too long.':null;

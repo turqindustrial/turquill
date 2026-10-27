@@ -1,3 +1,5 @@
+// First of all: saved keys from before the rename (questbound.*) move to their new names before anything reads them.
+import './storageMigration';
 import { registerRootComponent } from 'expo';
 
 import App from './App';

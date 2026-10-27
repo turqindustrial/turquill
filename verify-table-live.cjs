@@ -78,7 +78,7 @@ const keepAlive=setInterval(()=>{},1000);
  // 3. Over HTTP: the account service, then the desktop server and the share gateway in front of it. A wait is held past
  // the services' request-receiving time limits (it bounds receiving a request, not answering it).
  const port=await listen(service.server);service.server.requestTimeout=300;
- const accountHeaders=t=>({Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+port,Cookie:'questbound_account='+t.token});
+ const accountHeaders=t=>({Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+port,Cookie:'turquill_account='+t.token});
  const second=C.create(A,{snapshot:fixture.snapshot('fighter'),name:'Alice',party:true}),table=second.campaignId;
  C.join(B,{invite:second.invite,snapshot:fixture.snapshot('cleric'),name:'Bob'});
  const direct=(who,route,body)=>request(port,'/'+route,{headers:accountHeaders(who),body:JSON.stringify({campaignId:table,...body})});
@@ -99,7 +99,7 @@ const keepAlive=setInterval(()=>{},1000);
  {
   const tight=createSyncServer({...fixture.options,dir:path.join(root,'tight'),limits:{'campaign-wait':[2,600000],'campaign-typing':[1,600000]},live:{waitMs:50}});
   const ta=await fixture.user(tight.accounts,'carol@example.test'),T={...tight.accounts.identity(ta.token)};const made=tight.campaigns.create(T,{snapshot:fixture.snapshot('fighter'),name:'Carol',party:true});
-  const tp=await listen(tight.server),h={Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+tp,Cookie:'questbound_account='+ta.token};
+  const tp=await listen(tight.server),h={Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+tp,Cookie:'turquill_account='+ta.token};
   const go=(route,body)=>request(tp,'/'+route,{headers:h,body:JSON.stringify({campaignId:made.campaignId,...body})});
   assert.equal((await go('campaign-wait',{knownVersion:-1})).status,200);assert.equal((await go('campaign-wait',{knownVersion:-1})).status,200);
   const refused=await go('campaign-wait',{knownVersion:-1});assert.equal(refused.status,429);assert.ok(refused.headers['retry-after']);assert.ok(!busyRetry.test(refused.json.error));
@@ -112,14 +112,14 @@ const keepAlive=setInterval(()=>{},1000);
  assert.ok(syncTimeout('campaign-wait')>30000&&syncTimeout('poll')===20000&&syncTimeout('campaign-turn')===240000);
  const desktopPort=await freePort(),desktop=createDesktopServer({root:dist,port:desktopPort,syncBackend:'http://127.0.0.1:'+port,feedbackFile:null,metricsFile:null});
  await new Promise(r=>desktop.listen(desktopPort,'127.0.0.1',r));
- const viaDesktop=(who,route,body)=>request(desktopPort,'/api/sync/'+route,{headers:{Host:'localhost:'+desktopPort,Origin:'http://localhost:'+desktopPort,'Content-Type':'application/json',Cookie:'questbound_account='+who.token},body:JSON.stringify({campaignId:table,...body})});
+ const viaDesktop=(who,route,body)=>request(desktopPort,'/api/sync/'+route,{headers:{Host:'localhost:'+desktopPort,Origin:'http://localhost:'+desktopPort,'Content-Type':'application/json',Cookie:'turquill_account='+who.token},body:JSON.stringify({campaignId:table,...body})});
  {
   const seen=(await viaDesktop(b,'poll',{knownVersion:-1})).json;
   const held=viaDesktop(b,'campaign-wait',{knownVersion:seen.version,knownPresence:seen.presence});await sleep(80);
   const typedAt=Date.now();assert.equal((await viaDesktop(a,'campaign-typing',{typing:true})).status,200);const r=await held;
   assert.equal(r.status,200);assert.ok(r.json.players.find(p=>p.name==='Alice').typing);console.log('  desktop server: typing reached the other member '+(Date.now()-typedAt)+' ms after the ping');
   await viaDesktop(a,'campaign-typing',{typing:false});
-  const leave=http.request({hostname:'127.0.0.1',port:desktopPort,path:'/api/sync/campaign-wait',method:'POST',headers:{Host:'localhost:'+desktopPort,Origin:'http://localhost:'+desktopPort,'Content-Type':'application/json',Cookie:'questbound_account='+b.token}});leave.on('error',()=>{});
+  const leave=http.request({hostname:'127.0.0.1',port:desktopPort,path:'/api/sync/campaign-wait',method:'POST',headers:{Host:'localhost:'+desktopPort,Origin:'http://localhost:'+desktopPort,'Content-Type':'application/json',Cookie:'turquill_account='+b.token}});leave.on('error',()=>{});
   leave.end(JSON.stringify({campaignId:table,knownVersion:r.json.version,knownPresence:(await viaDesktop(b,'poll',{knownVersion:r.json.version})).json.presence}));
   await sleep(80);assert.equal(C.live.status().open,1);leave.destroy();await sleep(80);assert.equal(C.live.status().open,0,'the desktop server lets the wait go upstream');
  }
@@ -131,7 +131,7 @@ const keepAlive=setInterval(()=>{},1000);
   const call=(route,{headers={},body}={})=>request(gp,route,{headers:{Host:'quest.example.com',...headers},body});
   const paired=await call('/pair',{headers:{Origin:'https://quest.example.com','Content-Type':'application/json','CF-Connecting-IP':'198.51.100.7'},body:JSON.stringify({code:'87654321'})});assert.equal(paired.status,200);
   const phone=paired.headers['set-cookie'][0].split(';')[0];
-  const viaGateway=(who,route,body)=>call('/api/sync/'+route,{headers:{Origin:'https://quest.example.com','Content-Type':'application/json','CF-Connecting-IP':'198.51.100.7',Cookie:phone+'; questbound_account='+who.token},body:JSON.stringify({campaignId:table,...body})});
+  const viaGateway=(who,route,body)=>call('/api/sync/'+route,{headers:{Origin:'https://quest.example.com','Content-Type':'application/json','CF-Connecting-IP':'198.51.100.7',Cookie:phone+'; turquill_account='+who.token},body:JSON.stringify({campaignId:table,...body})});
   const seen=(await viaGateway(b,'poll',{knownVersion:-1})).json;
   let held=viaGateway(b,'campaign-wait',{knownVersion:seen.version,knownPresence:seen.presence});await sleep(80);
   const typedAt=Date.now();assert.equal((await viaGateway(a,'campaign-typing',{typing:true})).status,200);let r=await held;
@@ -287,7 +287,7 @@ const keepAlive=setInterval(()=>{},1000);
   const D={...svc.accounts.identity(da.token)},E={...svc.accounts.identity(eb.token)};
   const made=await svc.campaigns.create(D,{snapshot:fixture.snapshot('fighter'),name:'Dana',party:true});await svc.campaigns.join(E,{invite:made.invite,snapshot:fixture.snapshot('wizard'),name:'Eli'});
   const sp=await listen(svc.server),file=path.join(root,'stream','campaigns',made.campaignId+'.json');
-  const go=(who,route,body)=>request(sp,'/'+route,{headers:{Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+sp,Cookie:'questbound_account='+who.token},body:JSON.stringify({campaignId:made.campaignId,...body})});
+  const go=(who,route,body)=>request(sp,'/'+route,{headers:{Origin:'http://localhost:8081','Content-Type':'application/json',Host:'127.0.0.1:'+sp,Cookie:'turquill_account='+who.token},body:JSON.stringify({campaignId:made.campaignId,...body})});
   const known=s=>({knownVersion:s.version,knownPresence:s.presence,knownDraft:s.draftKey});
   // Waits until a held wait's answer says what is wanted (each asked with what the last one saw).
   const until=async(from,ok,{draft=true}={})=>{let s=from;for(let i=0;i<12;i++){const r=await go(eb,'campaign-wait',draft?known(s):{knownVersion:s.version,knownPresence:s.presence});assert.equal(r.status,200);s=r.json;if(ok(s))return s;}throw Error('never: '+JSON.stringify(s).slice(0,200));};

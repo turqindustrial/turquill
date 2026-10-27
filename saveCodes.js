@@ -3,7 +3,7 @@ import {validAdventure} from './adventureStorage';
 // A save code carries one hero and their adventure to another browser, device or playtest link (browser saves belong
 // to one web address). Format: 'QB2.' + base64 of the gzip-compressed save, or 'QB1.' + plain base64 where a browser
 // cannot compress. Codes pass the same checks as a normal save before anything is replaced.
-const KEYS={character:'questbound.character.v1',adventure:'questbound.adventure.v1'};
+const KEYS={character:'turquill.character.v1',adventure:'turquill.adventure.v1'};
 const damaged='That save code is damaged or incomplete. Copy the whole code again.';
 const toBase64=bytes=>{let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s);};
 const fromBase64=text=>Uint8Array.from(atob(text),c=>c.charCodeAt(0));

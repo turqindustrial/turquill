@@ -43,14 +43,14 @@ assert.match(agendaOf({...fixture,motive:'She wants to keep the ferry running th
 for(const t of leaks)assert.ok(r.agendaHush.test(t),'the hush catches '+t);
 console.log('Passed: a first greeting\'s agenda is a public want from the motive, never the hook, and nothing when the motive gives a secret away ('+leaks.length+' leaks from the deployment check).');
 // ---- The host's people library, when it is here ----
-// This checkout's own (or QUESTBOUND_DATA's), else the main checkout's when this is a git worktree (read only).
+// This checkout's own (or TURQUILL_DATA's), else the main checkout's when this is a git worktree (read only).
 function libraryFile(){
  if(process.env.QB_PEOPLE_LIBRARY)return process.env.QB_PEOPLE_LIBRARY;
- const here=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-people','library.json');if(fs.existsSync(here))return here;
+ const here=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-people','library.json');if(fs.existsSync(here))return here;
  try{const dotGit=path.join(__dirname,'.git');if(fs.statSync(dotGit).isFile()){
   const gitDir=path.resolve(__dirname,fs.readFileSync(dotGit,'utf8').match(/^gitdir:\s*(.+)$/m)[1].trim());
   const common=path.resolve(gitDir,fs.existsSync(path.join(gitDir,'commondir'))?fs.readFileSync(path.join(gitDir,'commondir'),'utf8').trim():'.');
-  return path.join(path.dirname(common),'.questbound-people','library.json');}}catch{}
+  return path.join(path.dirname(common),'.turquill-people','library.json');}}catch{}
  return here;
 }
 const file=libraryFile();

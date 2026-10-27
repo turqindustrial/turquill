@@ -5,8 +5,8 @@ Turquill keeps every save any tester-reachable build ever wrote playable. The fi
 
 ## Where saves live
 
-- **In the browser** (per account profile, `playerStorage.js`): the hero (`questbound.character.v1`), the adventure
-  (`questbound.adventure.v1`: `{version:1, saveVersion, character, game, health, chosen}`, where `character` is the
+- **In the browser** (per account profile, `playerStorage.js`): the hero (`turquill.character.v1`), the adventure
+  (`turquill.adventure.v1`: `{version:1, saveVersion, character, game, health, chosen}`, where `character` is the
   hero as text), the roster of heroes set aside and the graveyard (`rosterRules.js`).
 - **Save codes** (Settings → Move your hero, `saveCodes.js`): the same two keys, carried as text.
 - **Shared tables** on the host's computer (`campaigns.cjs`): an adventure snapshot, with a party's heroes inside it.

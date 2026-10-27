@@ -7,7 +7,7 @@ const listeners=new Set(),editable=el=>!!el&&(/^(INPUT|TEXTAREA)$/.test(el.tagNa
 export function initializeWebLayout(){
  if(typeof document==='undefined')return;
  document.querySelector('meta[name="viewport"]')?.setAttribute('content','width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content');
- const style=document.createElement('style');style.id='questbound-mobile-layout';
+ const style=document.createElement('style');style.id='turquill-mobile-layout';
  // The game fills the whole screen, under the notch, the rounded corners and the home indicator too (viewport-fit=cover),
  // so the painting and the bars reach every edge. What must be seen or tapped is kept clear of those parts: the safe-area
  // insets (--sa-*) are given as transparent borders, so a background drawn on the same element still fills them. With a
@@ -15,7 +15,7 @@ export function initializeWebLayout(){
  style.textContent='html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;}'
   +':root{--sa-t:env(safe-area-inset-top,0px);--sa-r:env(safe-area-inset-right,0px);--sa-b:env(safe-area-inset-bottom,0px);--sa-l:env(safe-area-inset-left,0px);}'
   +'html.qb-keyboard{--sa-b:0px;}'
-  +'#root{position:fixed;left:0;top:var(--questbound-top,0px);width:100%;height:var(--questbound-height,100dvh);min-height:0;box-sizing:border-box;}'
+  +'#root{position:fixed;left:0;top:var(--turquill-top,0px);width:100%;height:var(--turquill-height,100dvh);min-height:0;box-sizing:border-box;}'
   // A screen's own frame (the menus' and the play screen's shell, the launch card, every dialog's shade).
   +'[data-safe=pad],[data-qb=scrim]{box-sizing:border-box;border-style:solid !important;border-color:transparent !important;border-width:var(--sa-t) var(--sa-r) var(--sa-b) var(--sa-l) !important;}'
   // A dialog is never taller than the room its shade leaves (sheets size themselves to the window, which counts the insets).
@@ -26,7 +26,7 @@ export function initializeWebLayout(){
   // Cards that float near the top (deeds, experience) start below the notch.
   +'[data-safe=top]{margin-top:var(--sa-t);}'
   // Dialogs sit inside the visible part too, so a field in one is never hidden behind the keyboard.
-  +'[data-qb=scrim]{flex:none !important;height:var(--questbound-height,100dvh) !important;margin-top:var(--questbound-top,0px);}'
+  +'[data-qb=scrim]{flex:none !important;height:var(--turquill-height,100dvh) !important;margin-top:var(--turquill-top,0px);}'
   +'input,textarea{font-size:16px;}';
  document.head.appendChild(style);
  let full=0,width=0;
@@ -46,7 +46,7 @@ export function initializeWebLayout(){
   if(window.innerWidth!==width){width=window.innerWidth;full=height;}else if(!editable(document.activeElement))full=height;else full=Math.max(full,height);
   const keyboard=editable(document.activeElement)&&height<full-110;
   const root=document.documentElement;
-  root.style.setProperty('--questbound-height',height+'px');root.style.setProperty('--questbound-top',top+'px');root.classList.toggle('qb-keyboard',keyboard);
+  root.style.setProperty('--turquill-height',height+'px');root.style.setProperty('--turquill-top',top+'px');root.classList.toggle('qb-keyboard',keyboard);
   if(visual.height!==height||visual.keyboard!==keyboard){
    // Less of the page is visible than a moment ago (a keyboard opening): keep the field being typed in on screen.
    const shrunk=height<visual.height||keyboard;

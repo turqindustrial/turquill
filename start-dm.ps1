@@ -26,7 +26,7 @@ try {
         $retrySetup = Read-Host 'Press Enter to retry privately, or type Q to quit'
         if ($retrySetup -match '^[qQ]$') { return }
     }
-    $env:QUESTBOUND_DM_PORT = '8084'
+    $env:TURQUILL_DM_PORT = '8084'
     & node (Join-Path $PSScriptRoot 'dm-server.cjs')
 }
-finally { Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_MODEL -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_STORY_MODEL -ErrorAction SilentlyContinue; Remove-Item Env:QUESTBOUND_DM_PORT -ErrorAction SilentlyContinue }
+finally { Remove-Item Env:OPENAI_API_KEY -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_MODEL -ErrorAction SilentlyContinue; Remove-Item Env:OPENAI_STORY_MODEL -ErrorAction SilentlyContinue; Remove-Item Env:TURQUILL_DM_PORT -ErrorAction SilentlyContinue }

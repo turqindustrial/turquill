@@ -1,6 +1,6 @@
 // Full screen for the web build. Desktop and Android browsers use the Fullscreen API.
 // iPhone browsers do not allow it for web pages, so there the game is added to the Home Screen and opens full screen from there.
-const KEY='questbound.display.v1';
+const KEY='turquill.display.v1';
 const doc=()=>typeof document!=='undefined'?document:null;
 // Atmosphere (effects): 'full' moves the fog, embers, light shafts and painting; 'light' keeps the look but holds it
 // still and drops the blur behind panels; 'auto' is full unless this computer struggled to keep up when the game

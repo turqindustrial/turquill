@@ -5,7 +5,7 @@
 // table (feedback-report.cjs) and the content check's entries in the security log (moderation.cjs) name players by it,
 // and `node accounts.cjs ban mod-…` turns it back into the identity it stands for (by hashing the known ids).
 //
-// The bans are kept in banned.json beside the accounts (.questbound-accounts/, git-ignored) as hashes of the banned
+// The bans are kept in banned.json beside the accounts (.turquill-accounts/, git-ignored) as hashes of the banned
 // ids, each with its label, when it was set and the host's note. The account service reads the file whenever it
 // changes, so `node accounts.cjs ban` takes effect without a restart: a banned identity is refused the Dungeon Master
 // (the gateway's /usage check), every campaign route and feedback.
@@ -13,7 +13,7 @@ const crypto=require('node:crypto'),fs=require('node:fs'),path=require('node:pat
 const sha=text=>crypto.createHash('sha256').update(text).digest('hex');
 const moderationLabel=id=>'mod-'+sha('questbound-mod-v1:'+String(id)).slice(0,20);
 const banHash=id=>sha('questbound-ban-v1:'+String(id));
-function createBans({dir=path.join(__dirname,'.questbound-accounts'),now=Date.now}={}){
+function createBans({dir=path.join(__dirname,'.turquill-accounts'),now=Date.now}={}){
  const file=path.join(dir,'banned.json');
  let cache={stamp:null,bans:{}};
  // Re-read only when the file changed; an unreadable file keeps the bans last read (never quietly lifts them).

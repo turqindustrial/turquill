@@ -1,3 +1,4 @@
+require('./name-migration.cjs').legacyEnv(); // settings given under their old names (QUESTBOUND_*) still count
 const http=require('node:http');
 const {diagnose,providerError}=require('./ai-diagnostics.cjs'),{loopbackHost}=require('./security-headers.cjs');
 delete require.cache[require.resolve('./dm-rules.cjs')];
@@ -515,17 +516,17 @@ async function streamedText(response,onNarration,onUsage=null,onCompleted=null){
  if(!completed||completed.status!=='completed')throw Object.assign(Error('The AI reply was incomplete. No game action was applied.'),{partial:text,incomplete:completed?.incomplete_details?.reason??(completed?String(completed.status):'cut off')});
  return outputText(completed)||text;
 }
-// The models the host chose (the launcher's -Models writes .questbound-model and .questbound-story-model) are read on
+// The models the host chose (the launcher's -Models writes .turquill-model and .turquill-story-model) are read on
 // every live request, so a change takes effect at once: no restart, no key. The play model answers turns; the story
 // writer writes adventures and heroes and follows the play model unless it was set apart. Tests with a stand-in
 // provider never read the files.
-function chosenModel(file){try{const id=require('node:fs').readFileSync(require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,file),'utf8').replace(/^\uFEFF/,'').trim();return /^[A-Za-z0-9][A-Za-z0-9._:-]{1,79}$/.test(id)?id:null;}catch{return null;}}
-// How hard the story writer thinks about a new tale: the host's choice in .questbound-story-effort (none, minimal,
+function chosenModel(file){try{const id=require('node:fs').readFileSync(require('node:path').join(process.env.TURQUILL_DATA||__dirname,file),'utf8').replace(/^\uFEFF/,'').trim();return /^[A-Za-z0-9][A-Za-z0-9._:-]{1,79}$/.test(id)?id:null;}catch{return null;}}
+// How hard the story writer thinks about a new tale: the host's choice in .turquill-story-effort (none, minimal,
 // low, medium, high or xhigh; read on every live request, like the models), else what the service was started with.
-function storyEffort(fallback,read=chosenModel){const chosen=read('.questbound-story-effort');return ['none','minimal','low','medium','high','xhigh'].includes(chosen)?chosen:fallback;}
-// How hard the play model thinks about an ordinary turn: the host's choice in .questbound-dm-effort (read on every
+function storyEffort(fallback,read=chosenModel){const chosen=read('.turquill-story-effort');return ['none','minimal','low','medium','high','xhigh'].includes(chosen)?chosen:fallback;}
+// How hard the play model thinks about an ordinary turn: the host's choice in .turquill-dm-effort (read on every
 // live request), else what the service was started with (none by default: quick replies).
-function turnEffort(fallback,read=chosenModel){const chosen=read('.questbound-dm-effort');return ['none','minimal','low','medium','high'].includes(chosen)?chosen:fallback;}
+function turnEffort(fallback,read=chosenModel){const chosen=read('.turquill-dm-effort');return ['none','minimal','low','medium','high'].includes(chosen)?chosen:fallback;}
 // Stories in the making are kept in a module of their own, which stays loaded while this file is reloaded.
 // The day's spending and the host's ceilings on it (spending.cjs) also stay loaded between requests.
 function loadSpending(){if(require('./spending.cjs').revision!==7)delete require.cache[require.resolve('./spending.cjs')];return require('./spending.cjs').spending;}
@@ -542,7 +543,7 @@ const hostJobOf=(subject,guest)=>guest||typeof subject?.campaignId!=='string'?nu
 // and its score), so the host can see what the library is missing (dm-report.cjs lists them). Live runs only.
 function recordCreatureMiss(note,live,guest){
  if(!live||!note||typeof note!=='object')return;
- try{const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),...(guest?{guest}:{}),art:'creature-unmatched',name:String(note.name??'').slice(0,60),...(note.template?{template:String(note.template).slice(0,20)}:{}),...(note.terrain?{terrain:String(note.terrain).slice(0,20)}:{}),...(note.creatureKind?{creatureKind:String(note.creatureKind).slice(0,60)}:{}),closest:note.closest&&typeof note.closest.id==='string'?{id:note.closest.id.slice(0,60),score:Number(note.closest.score)||0}:null})+'\n');}catch{}
+ try{const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),...(guest?{guest}:{}),art:'creature-unmatched',name:String(note.name??'').slice(0,60),...(note.template?{template:String(note.template).slice(0,20)}:{}),...(note.terrain?{terrain:String(note.terrain).slice(0,20)}:{}),...(note.creatureKind?{creatureKind:String(note.creatureKind).slice(0,60)}:{}),closest:note.closest&&typeof note.closest.id==='string'?{id:note.closest.id.slice(0,60),score:Number(note.closest.score)||0}:null})+'\n');}catch{}
 }
 const guestOf=body=>typeof body?.guest==='string'&&/^(?:account-)?[a-f0-9]{16,64}$/.test(body.guest)?body.guest:null;
 // Ready journeys (tale-library.cjs) also stay loaded between requests: a shared library of finished tales that players
@@ -615,10 +616,10 @@ function keptTale(result,brief,shelf){
  return rest;
 }
 // The host's pause for the journey library (2026-10-22; the stories spec, Phase 0): while the file
-// .questbound-library-paused exists (any content; Questbound.cmd -PauseLibrary makes it, -ResumeLibrary removes it) no
+// .turquill-library-paused exists (any content; Turquill.cmd -PauseLibrary makes it, -ResumeLibrary removes it) no
 // new journey is written, read live on every top-up and again before each write, so a fill under way stops at the next
-// journey. Journeys already written are still listed and started. QUESTBOUND_LIBRARY=off only skips the start-up fill.
-function libraryPaused(){try{return require('node:fs').existsSync(require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-library-paused'));}catch{return false;}}
+// journey. Journeys already written are still listed and started. TURQUILL_LIBRARY=off only skips the start-up fill.
+function libraryPaused(){try{return require('node:fs').existsSync(require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-library-paused'));}catch{return false;}}
 function topUpLibrary(library,{apiKey,storyModel,effort,fetchImpl,live=true,spend=null}){
  if(!library||!apiKey||!storyModel||libraryPaused())return false;
  const ceilings=spend??(live?loadSpending():null);
@@ -638,7 +639,7 @@ function topUpLibrary(library,{apiKey,storyModel,effort,fetchImpl,live=true,spen
 // ready-made paintings, whatever its `readyMade(subject)` says. A device never asks for a cover that would be painted.
 function journeyCovers(){
  if(require('./world-art.cjs').revision!==13)delete require.cache[require.resolve('./world-art.cjs')];
- const fs=require('node:fs'),path=require('node:path'),art=require('./world-art.cjs'),dir=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-art');
+ const fs=require('node:fs'),path=require('node:path'),art=require('./world-art.cjs'),dir=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-art');
  return subject=>{try{if(typeof art.artStore?.readyMade==='function'&&art.artStore.readyMade(subject))return true;return fs.existsSync(path.join(dir,art.artKey(art.validateSubject(subject))+'.jpg'));}catch{return false;}};
 }
 // When the Dungeon Master starts, the library tops itself up (the host's writer, one journey at a time).
@@ -696,7 +697,7 @@ function typedByPlayer(body){
 }
 function loadStoryJobs(){if(require('./story-jobs.cjs').revision!==1)delete require.cache[require.resolve('./story-jobs.cjs')];return require('./story-jobs.cjs').storyJobs;}
 function liveModels(model,storyModel,read=chosenModel){
- const play=read('.questbound-model'),story=read('.questbound-story-model');
+ const play=read('.turquill-model'),story=read('.turquill-story-model');
  if(play){if(storyModel===model)storyModel=play;model=play;}
  if(story)storyModel=story;
  return {model,storyModel};
@@ -743,19 +744,19 @@ const promptLayout=3,cacheBuckets=8;
 //    prompt_cache_retention is not sent to these: the reference maps it to the request's ttl, and a request-level 12 hours
 //    would bill every turn's new scene at 2.5 times instead of 1.25.
 //  - Earlier models: prompt_cache_retention '24h' (no write charge there).
-// .questbound-cache-hold (read live, like .questbound-dm-effort): 12h (the default), 30m (the breakpoints, the hero's for
+// .turquill-cache-hold (read live, like .turquill-dm-effort): 12h (the default), 30m (the breakpoints, the hero's for
 // 30 minutes) or off. A provider 400 naming a parameter drops it for this DM process and asks again at once, as with
-// prompt_cache_key: a 12-hour ttl refused (globalThis.__questboundNoLongTtl) falls back to the breakpoints for 30 minutes,
-// breakpoints refused (globalThis.__questboundNoCacheBreakpoints) to prompt_cache_retention
-// '24h', and that refused (globalThis.__questboundNoCacheRetention) to nothing. Usage lines carry hold: what was sent
+// prompt_cache_key: a 12-hour ttl refused (globalThis.__turquillNoLongTtl) falls back to the breakpoints for 30 minutes,
+// breakpoints refused (globalThis.__turquillNoCacheBreakpoints) to prompt_cache_retention
+// '24h', and that refused (globalThis.__turquillNoCacheRetention) to nothing. Usage lines carry hold: what was sent
 // (12h or 30m for breakpoints, 24h for retention).
 const newerCaching=model=>/^gpt-(?:5\.(?:[6-9]|\d{2,})|[6-9]|\d{2,})(?![\d])/.test(String(model??''));
 function cacheHoldFor(model,setting){
  if(!['12h','30m'].includes(setting))return null;
- const retain=setting==='12h'&&!globalThis.__questboundNoCacheRetention?{label:'24h',kind:'retention',params:{prompt_cache_retention:'24h'},apply:q=>q}:null;
- if(!newerCaching(model)||globalThis.__questboundNoCacheBreakpoints)return retain;
+ const retain=setting==='12h'&&!globalThis.__turquillNoCacheRetention?{label:'24h',kind:'retention',params:{prompt_cache_retention:'24h'},apply:q=>q}:null;
+ if(!newerCaching(model)||globalThis.__turquillNoCacheBreakpoints)return retain;
  const block=(text,mark)=>[{type:'input_text',text,prompt_cache_breakpoint:mark}];
- const long=setting==='12h'&&!globalThis.__questboundNoLongTtl;
+ const long=setting==='12h'&&!globalThis.__turquillNoLongTtl;
  return {label:long?'12h':'30m',kind:'breakpoints',params:{},apply:q=>{
   const input=q.input.map(m=>({...m})),users=input.map((m,i)=>m.role==='user'?i:-1).filter(i=>i>=0);
   if(input[0]?.role==='developer'&&typeof input[0].content==='string')input[0].content=block(input[0].content,long?{mode:'explicit',ttl:'12h'}:{mode:'explicit'});
@@ -770,7 +771,7 @@ function cacheHoldFor(model,setting){
   return {...q,input};
  }};
 }
-function cacheHold(fallback,read=chosenModel){const chosen=read('.questbound-cache-hold');return ['12h','30m','off'].includes(chosen)?chosen:fallback;}
+function cacheHold(fallback,read=chosenModel){const chosen=read('.turquill-cache-hold');return ['12h','30m','off'].includes(chosen)?chosen:fallback;}
 // One prompt_cache_key per share of the players (by tale and hero), the same for every kind of reply, so a hero's turns
 // and their tellings meet the provider machine that saw the last one, and no one machine is asked too often.
 function cacheKeyFor(body){
@@ -944,20 +945,20 @@ function turnAsker(body,{canDiscover,canAmbush,phaseInstructions,shape,replySche
   // waits for; 2026-10-23, replies of 5 to 13 s with the PC idle could not be told apart from the feed's own pacing).
   const sentAt=Date.now();let firstAt=0;
   for(let waits=0;;waits++){
-  const keyed=!globalThis.__questboundNoCacheKey?cacheKey:{},held=cacheHoldFor(model,holdCache??(live?cacheHold('12h'):'off')),sent=held?held.apply(request):request;
+  const keyed=!globalThis.__turquillNoCacheKey?cacheKey:{},held=cacheHoldFor(model,holdCache??(live?cacheHold('12h'):'off')),sent=held?held.apply(request):request;
   // A provider that refuses the effects list (its anyOf items) is asked with every effect spelled out as a field, as
   // before 2026-10-21, for the rest of this DM process; flatReply reads either shape.
-  const schema=globalThis.__questboundSpelledOut?spelledOutSchema():replySchema;
+  const schema=globalThis.__turquillSpelledOut?spelledOutSchema():replySchema;
   response=await fetchImpl('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},signal:AbortSignal.timeout(Math.max(1000,Math.min(limit,providerTimeout(effort),left()))),body:JSON.stringify({...modelOptions(model,effort),...(safety??{}),...keyed,...(held?.params??{}),...(onNarration?{stream:true}:{}),store:false,...sent,max_output_tokens:outputBudget(room,effort),text:{format:{type:'json_schema',name:'dm_reply',strict:true,schema}}})});
   state.held=held?.label??null;
   if(response.ok)break;
-  if(response.status===400&&(keyed.prompt_cache_key||held||!globalThis.__questboundSpelledOut)){let data=null;try{data=await response.json();}catch{}
+  if(response.status===400&&(keyed.prompt_cache_key||held||!globalThis.__turquillSpelledOut)){let data=null;try{data=await response.json();}catch{}
    const said=JSON.stringify(data??'');
-   if(held?.label==='12h'&&/\bttl\b|12h/.test(said)){globalThis.__questboundNoLongTtl=true;waits--;continue;}
-   if(held?.kind==='breakpoints'&&/prompt_cache_(?:breakpoint|options)|\bttl\b|input_text/.test(said)){globalThis.__questboundNoCacheBreakpoints=true;waits--;continue;}
-   if(held?.kind==='retention'&&/prompt_cache_retention/.test(said)){globalThis.__questboundNoCacheRetention=true;waits--;continue;}
-   if(keyed.prompt_cache_key&&/prompt_cache_key/.test(said)){globalThis.__questboundNoCacheKey=true;waits--;continue;}
-   if(!globalThis.__questboundSpelledOut&&/anyOf|json_schema|text\.format|schema/i.test(said)){globalThis.__questboundSpelledOut=true;waits--;continue;}
+   if(held?.label==='12h'&&/\bttl\b|12h/.test(said)){globalThis.__turquillNoLongTtl=true;waits--;continue;}
+   if(held?.kind==='breakpoints'&&/prompt_cache_(?:breakpoint|options)|\bttl\b|input_text/.test(said)){globalThis.__turquillNoCacheBreakpoints=true;waits--;continue;}
+   if(held?.kind==='retention'&&/prompt_cache_retention/.test(said)){globalThis.__turquillNoCacheRetention=true;waits--;continue;}
+   if(keyed.prompt_cache_key&&/prompt_cache_key/.test(said)){globalThis.__turquillNoCacheKey=true;waits--;continue;}
+   if(!globalThis.__turquillSpelledOut&&/anyOf|json_schema|text\.format|schema/i.test(said)){globalThis.__turquillSpelledOut=true;waits--;continue;}
    throw await providerError({status:400,json:async()=>data??{}});}
   // Too many requests in this minute (several players at once): wait as long as the provider asks, briefly, and try
   // again, rather than failing the player's turn. Anything else (no credit, a bad key) is reported at once.
@@ -1272,7 +1273,7 @@ async function secondLooked(body,{canDiscover,turnReasoning,left,state},{live},a
 function recordUsage(mode,model,usage,live=true,guest=null,extra=null){
  if(!live||((!usage||typeof usage!=='object')&&!extra))return;usage=usage&&typeof usage==='object'?usage:{};
  try{
-  const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-usage.jsonl');
+  const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-usage.jsonl');
   // Cache writes, on the models that report them (priced at the write rates by spending.cjs costOf).
   const written=usage.input_tokens_details?.cache_write_tokens,long=usage.input_tokens_details?.cache_write_tokens_details?.ttl_12h_tokens;
   const entry={at:new Date().toISOString(),mode,model:String(model??''),input:usage.input_tokens??0,cached:usage.input_tokens_details?.cached_tokens??0,...(Number.isFinite(written)&&written>0?{written,...(Number.isFinite(long)&&long>0?{written12h:long}:{})}:{}),output:usage.output_tokens??0,reasoning:usage.output_tokens_details?.reasoning_tokens??0,...(guest?{guest}:{}),...(extra??{})};
@@ -1295,7 +1296,7 @@ function replyShape(text,reply){
 function recordRejection(error,result,body,live=true,shape=null,extra=null){
  if(!live)return;
  try{
-  const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl');
+  const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl');
   const r=result??{},entry={at:new Date().toISOString(),guest:guestOf(body),error:String(error).slice(0,300),...(shape?{shape}:{}),...(extra??{}),context:{stage:body.context?.stage??null,pendingSpell:!!body.context?.pendingSpell,engineResolved:!!body.context?.engineResolved,sceneTrigger:!!body.context?.sceneTrigger,recruitmentTargets:body.context?.recruitmentTargets??[],participants:(body.context?.conversationParticipants??[]).map(p=>p.id)},
    reply:{actionId:r.actionId??null,castCommand:r.castCommand?String(r.castCommand).slice(0,120):null,ruling:r.ruling??null,check:r.check?{...r.check,reason:undefined,success:undefined,failure:undefined,outcomes:r.check.outcomes!=null?true:undefined}:null,arrival:r.arrival!=null?true:undefined,recruitment:(r.recruitment??[]).map(p=>({npcId:p?.npcId,decision:p?.decision,dc:p?.dc,reasonLength:p?.reason?.length??0,termsLength:p?.terms?.length??0})),dialogueSpeakers:(r.dialogue??[]).map(l=>l?.speakerId),narrationLength:typeof r.narration==='string'?r.narration.length:null,worldEventLength:typeof r.worldEvent==='string'?r.worldEvent.length:null,...(r.discovery&&typeof r.discovery==='object'?{discovery:{kind:r.discovery.kind??null,bearing:r.discovery.bearing??null,miles:r.discovery.miles??null,travel:r.discovery.travel??null,danger:r.discovery.danger??null,region:!!r.discovery.region,lair:r.discovery.lair?.template??null,ally:r.discovery.lair?.ally?.template??null,nameLength:typeof r.discovery.name==='string'?r.discovery.name.length:null,descriptionLength:typeof r.discovery.description==='string'?r.discovery.description.length:null,featureLength:typeof r.discovery.feature==='string'?r.discovery.feature.length:null,canDiscover:!!body.context?.world?.canDiscover}}:{})}};
   if(fs.existsSync(file)&&fs.statSync(file).size>2e6)fs.renameSync(file,file+'.old');
@@ -1307,13 +1308,13 @@ function recordRejection(error,result,body,live=true,shape=null,extra=null){
 // incomplete, failed, refused, invalid JSON, rejected by journeyCheck...), so the next failure can be told apart.
 function recordWriteFailure(what,error,live=true,guest=null){
  if(!live)return;
- try{const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),...(guest?{guest}:{}),write:what,...requestFailure(error)})+'\n');}catch{}
+ try{const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),...(guest?{guest}:{}),write:what,...requestFailure(error)})+'\n');}catch{}
 }
 // Second looks are noted beside the rejections (kind and outcome only), so the host can see how often the Dungeon
 // Master had to be asked twice: node dm-report.cjs counts them.
 function recordSecondLook(kind,outcome,body,live=true){
  if(!live)return;
- try{const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),guest:guestOf(body),secondLook:kind,outcome,stage:body.context?.stage??null})+'\n');}catch{}
+ try{const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),guest:guestOf(body),secondLook:kind,outcome,stage:body.context?.stage??null})+'\n');}catch{}
 }
 // How a troubled turn ended (dm-report.cjs): 'asked again' (a quiet retry gave a usable reply), 'rescued' (the
 // attempts were spent and the usable part of a reply was told: nothing invalid applied) or 'failed' (the player saw a
@@ -1321,11 +1322,11 @@ function recordSecondLook(kind,outcome,body,live=true){
 function recordTurn(outcome,reasons,body,live=true,asks=1){
  if(!live)return;
  const c=body?.context??{},phase=c.engineResolved?'resolved':c.pendingSpell?'spell':c.sceneTrigger?'cue':c.outOfCharacter?'ooc':'ordinary';
- try{const fs=require('node:fs'),file=require('node:path').join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),guest:guestOf(body),turn:outcome,reasons:(reasons??[]).slice(0,4),asks,phase,stage:c.stage??null})+'\n');}catch{}
+ try{const fs=require('node:fs'),file=require('node:path').join(process.env.TURQUILL_DATA||__dirname,'.turquill-diagnostics.jsonl');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),guest:guestOf(body),turn:outcome,reasons:(reasons??[]).slice(0,4),asks,phase,stage:c.stage??null})+'\n');}catch{}
 }
 // Several players can share one Dungeon Master: up to `concurrency` replies are written at once and the rest wait
 // briefly for a turn instead of being turned away. Illustration requests only queue or report progress, so they never wait.
-function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENAI_MODEL,storyModel=process.env.OPENAI_STORY_MODEL||model,reasoning=process.env.QUESTBOUND_DM_REASONING||'none',storyReasoning=process.env.QUESTBOUND_STORY_REASONING||'medium',fetchImpl=fetch,concurrency=Number(process.env.QUESTBOUND_DM_CONCURRENCY)||3,queueLimit=12,queueWait=40000}={}){
+function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENAI_MODEL,storyModel=process.env.OPENAI_STORY_MODEL||model,reasoning=process.env.TURQUILL_DM_REASONING||'none',storyReasoning=process.env.TURQUILL_STORY_REASONING||'medium',fetchImpl=fetch,concurrency=Number(process.env.TURQUILL_DM_CONCURRENCY)||3,queueLimit=12,queueWait=40000}={}){
   let running=0;const waiting=[];
   const busy=()=>Object.assign(Error('The Dungeon Master is busy with other players. Try again in a moment. Your adventure is unchanged.'),{httpStatus:429});
   const acquire=()=>new Promise((resolve,reject)=>{
@@ -1336,7 +1337,7 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
   });
   const release=()=>{running--;waiting.shift()?.start();};
   // When the Dungeon Master starts with a live key, the library of ready journeys tops itself up (the host's writer).
-  if(fetchImpl===fetch&&apiKey&&model&&process.env.QUESTBOUND_LIBRARY!=='off')setTimeout(()=>{try{require(__filename).startLibrary({apiKey,model,storyModel,storyReasoning});}catch{}},3000).unref?.();
+  if(fetchImpl===fetch&&apiKey&&model&&process.env.TURQUILL_LIBRARY!=='off')setTimeout(()=>{try{require(__filename).startLibrary({apiKey,model,storyModel,storyReasoning});}catch{}},3000).unref?.();
   return http.createServer(async(req,res)=>{
     const origin=req.headers.origin;
     const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store',...(allowedOrigins.has(origin)?{'Access-Control-Allow-Origin':origin,'Vary':'Origin'}:{})});res.end(JSON.stringify(data));};
@@ -1363,5 +1364,5 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
     }catch(e){send(e.httpStatus??502,{error:e.name==='TimeoutError'?'The AI timed out. Your adventure is unchanged.':e.message});}finally{if(slot)release();}
   });
 }
-if(require.main===module){const port=Number(process.env.QUESTBOUND_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
+if(require.main===module){require('./name-migration.cjs').migrateDataNames(process.env.TURQUILL_DATA||__dirname);const port=Number(process.env.TURQUILL_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
 module.exports={loadWritten,taleLand,taleMatch,sharedTale,keptTale,standingPrompt,heroPrompt,replySchemaFor,asFields,flatReply,cacheKeyFor,promptLayout,sceneParts,sceneMessages,turnRequest,requestParts,requestScene,phaseFields,hostJobOf,recordCreatureMiss,castFor,peopleToMeetFor,portraitsTaken,pooledIntroduce,introduceSchema,loadPeople,recordWriteFailure,cleanRemember,memoryInstructions,typedByPlayer,startLibrary,topUpLibrary,libraryPaused,journeyCheck,unusable,transient,tellingCut,castableSpell,castWords,distinctDialogue,echoes,turnEffort,storyEffort,questInstructions,liveModels,chosenModel,createServer,generate,validRequest,validRuling,checkedHp,partialNarration,streamedText,sceneFor,repairedDiscovery,repairedCreature,repairedIntroduce,repairedJson,replyShape,contractInstructions};

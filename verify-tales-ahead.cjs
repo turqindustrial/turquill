@@ -5,7 +5,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('nod
 const {revision,generation}=require('./tale-library.cjs');
 const {generate}=require('./dm-server.cjs');
 const {requestParts,requestScene}=require('./dm-server.cjs');
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-tales-'));
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-tales-'));
 
 const story={title:'T',premise:'P',opening:'O',objective:'J',resolution:'R',secret:'S',foe:'Bog hag',foeSpecies:'Hag',foeAppearance:'A bent green crone with river weed for hair.',locations:{inn:{name:'A',description:'a'},bridge:{name:'B',description:'b'},tower:{name:'C',description:'c'}},npcs:{keeper:{name:'Ivo',species:'Human',role:'r',motive:'m',appearance:'A tall man with a grey beard and a limp.',personality:'Gruff, slow to trust, quick to laugh.',regard:{stance:'wary',reason:'I lost a brother to your kind.'},ties:{other:'friend',foe:'enemy',note:'n'}},mara:{name:'Sera',species:'Elf',role:'r',motive:'m',appearance:'A slight elf with ink on her hands and a red scarf.',personality:'Curious and precise, always counting.',regard:{stance:'warm',reason:'Travellers bring news.'},ties:{other:'friend',foe:'neutral',note:'n'}}}};
 (async()=>{

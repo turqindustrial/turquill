@@ -7,15 +7,15 @@ const {rulesSource}=require('./rules-files.cjs'),W=require('./written-walk.cjs')
 // stands (sequelRules.js joinRegion). The joined game is a valid save; every name the tale's staging uses still resolves
 // to the tale's own place or person (stagingIds); every place the hero went to can be walked back to; and the golden
 // path of the tale's walkthrough (written-walk.cjs) still reaches its ending wherever it did before.
-// Reads the shelf's tales only (QUESTBOUND_DATA, this checkout, then the main checkout); skips when there are none.
+// Reads the shelf's tales only (TURQUILL_DATA, this checkout, then the main checkout); skips when there are none.
 // No AI, no network, no ports.
 const names=[...new Set([...W.needs,'readyHero','readyHeroes','blankBuild','makeCharacter','subclassOptions','joinRegion','stagingIds','stagingNamesUsed','stagingNameKey','mapLocation','worldPlaces','travelRoute','mapRegions','metPerson','validAdventure','adventureSnapshot','freshStoryGame','newAdventure'])];
 const r=vm.runInNewContext(rulesSource()+'\n({'+names.join(',')+'})',{AsyncStorage:{}});
 const plain=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function shelfDir(){
- const roots=[process.env.QUESTBOUND_DATA,__dirname].filter(Boolean);
+ const roots=[process.env.TURQUILL_DATA,__dirname].filter(Boolean);
  try{let common=execFileSync('git',['-C',__dirname,'rev-parse','--git-common-dir'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],timeout:5000}).trim();if(common){if(!path.isAbsolute(common))common=path.resolve(__dirname,common);roots.push(path.dirname(common));}}catch{}
- for(const root of roots){const dir=path.join(root,'.questbound-written');if(fs.existsSync(dir))return dir;}
+ for(const root of roots){const dir=path.join(root,'.turquill-written');if(fs.existsSync(dir))return dir;}
  return null;
 }
 // The ready-made Fighter at any level (as check-written-tale.cjs makes heroes: the developer options).
@@ -44,7 +44,7 @@ function earlierWorld(hero,clash){
 }
 const dir=shelfDir();
 const files=dir?fs.readdirSync(dir).filter(f=>f.endsWith('.json')&&f!=='plays.json').sort():[];
-if(!files.length){console.log('Campaign world: no written tales on this PC (looked for .questbound-written): skipped.');process.exit(0);}
+if(!files.length){console.log('Campaign world: no written tales on this PC (looked for .turquill-written): skipped.');process.exit(0);}
 let walked=0,skipped=[];
 for(const file of files){
  const tale=JSON.parse(fs.readFileSync(path.join(dir,file),'utf8'));if(tale.format!==1||!plain(tale.story)||!plain(tale.walkthrough?.golden))continue;

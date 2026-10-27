@@ -11,16 +11,16 @@ const browser=['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Progr
 if(!browser){console.error('Chrome or Edge is needed to draw the icons.');process.exit(1);}
 const next=process.argv.includes('--next');
 const page='file:///'+path.join(__dirname,...(next?['assets','branding','next-icon']:['assets','title']),'icon.html').replace(/\\/g,'/');
-const profile=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-icons-'));
+const profile=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-icons-'));
 // [pixels, file, query]. Maskable and adaptive icons keep the emblem inside the safe middle; small ones are cut close to
 // the serpent ring (simple) so the sword and quill stay readable.
 const icons=[
- [1024,'assets/questbound-icon.png','inset=.09'],
+ [1024,'assets/turquill-icon.png','inset=.09'],
  [512,'public/icons/icon-512.png','inset=.09'],
  [192,'public/icons/icon-192.png','inset=.05&simple=1'],
  [512,'public/icons/maskable-512.png','inset=.19'],
  [180,'public/icons/apple-touch-icon.png','inset=.06&simple=1'],
- [48,'assets/questbound-favicon.png','inset=.01&simple=1'],
+ [48,'assets/turquill-favicon.png','inset=.01&simple=1'],
  [1024,'assets/android-icon-background.png','layer=bg'],
  [1024,'assets/android-icon-foreground.png','layer=fg&inset=.22'],
  [1024,'assets/android-icon-monochrome.png','layer=mono&inset=.24&simple=1'],
@@ -28,12 +28,12 @@ const icons=[
 // The stored gold icon: the same set (named as the live files they would replace), every small one cut close to the ring;
 // the maskable one keeps the serpent inside the safe circle (80% of the width) that Android's masks never cut.
 const nextIcons=[
- [1024,'questbound-icon.png','inset=.05&simple=1'],
+ [1024,'turquill-icon.png','inset=.05&simple=1'],
  [512,'icon-512.png','inset=.04&simple=1'],
  [192,'icon-192.png','inset=.03&simple=1'],
  [512,'maskable-512.png','inset=.1&simple=1'],
  [180,'apple-touch-icon.png','inset=.03&simple=1'],
- [48,'questbound-favicon.png','inset=.005&simple=1'],
+ [48,'turquill-favicon.png','inset=.005&simple=1'],
  [32,'favicon-32.png','inset=.005&simple=1'],
  [1024,'android-icon-background.png','layer=bg'],
  [1024,'android-icon-foreground.png','layer=fg&inset=.2&simple=1'],

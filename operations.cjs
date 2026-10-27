@@ -1,19 +1,19 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {secretKey,secretKeyAsync,seal,unseal}=require('./private-secrets.cjs');
 function atomic(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file+'.tmp',JSON.stringify(value),{mode:0o600});fs.renameSync(file+'.tmp',file);}
-// One line in the security log (.questbound-security.jsonl): mechanical labels only, never emails, passwords, session
+// One line in the security log (.turquill-security.jsonl): mechanical labels only, never emails, passwords, session
 // cookies, prompts, codes or network addresses. alerts.cjs (the gateway and the Dungeon Master) writes it this way too.
 function auditTo(dir,event,details={},now=Date.now){
- const log=path.join(dir,'.questbound-security.jsonl');
+ const log=path.join(dir,'.turquill-security.jsonl');
  const row={at:new Date(now()).toISOString(),event:String(event).replace(/[^a-z-]/g,'').slice(0,60)};
  for(const k of ['account','campaign','route','status'])if(details[k]!==undefined)row[k]=String(details[k]).replace(/[^a-zA-Z0-9:_-]/g,'').slice(0,100);
  fs.mkdirSync(dir,{recursive:true});if(fs.existsSync(log)&&fs.statSync(log).size>1048576){fs.rmSync(log+'.old',{force:true});fs.renameSync(log,log+'.old');}fs.appendFileSync(log,JSON.stringify(row)+'\n',{mode:0o600});
 }
-function createOperations({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.now,key=null}={}){
- const store=path.join(dir,'.questbound-backups'),log=path.join(dir,'.questbound-security.jsonl'),ledger=path.join(dir,'.questbound-limits.json');
+function createOperations({dir=process.env.TURQUILL_DATA||__dirname,now=Date.now,key=null}={}){
+ const store=path.join(dir,'.turquill-backups'),log=path.join(dir,'.turquill-security.jsonl'),ledger=path.join(dir,'.turquill-limits.json');
  let encryption=key,counters={};
  try{counters=JSON.parse(fs.readFileSync(ledger,'utf8'));}catch(e){if(e.code!=='ENOENT')throw Error('Usage ledger is unreadable; refusing to reset limits.');}
- const today=()=>new Date(now()).toISOString().slice(0,10),getKey=()=>encryption??(encryption=secretKey(path.join(dir,'.questbound-backup-key.dpapi')));
+ const today=()=>new Date(now()).toISOString().slice(0,10),getKey=()=>encryption??(encryption=secretKey(path.join(dir,'.turquill-backup-key.dpapi')));
  // Mechanical labels only: never emails, passwords, session cookies, prompts or codes.
  const audit=(event,details={})=>auditTo(dir,event,details,now);
  // peek: only check that one more is allowed (a turn is counted once it is accepted); spend: count it even when the
@@ -40,7 +40,7 @@ function createOperations({dir=process.env.QUESTBOUND_DATA||__dirname,now=Date.n
  // (a campaign's invite code), so a copy of the stored files alone cannot be searched for it.
  const keyed=(purpose,text)=>crypto.createHmac('sha256',getKey()).update(String(purpose)+':'+String(text)).digest('hex');
  // Unlock the key in the background (a service calls this when it starts), so no request waits for PowerShell.
- const warm=()=>encryption?Promise.resolve(true):secretKeyAsync(path.join(dir,'.questbound-backup-key.dpapi')).then(k=>{encryption??=k;return true;},()=>false);
+ const warm=()=>encryption?Promise.resolve(true):secretKeyAsync(path.join(dir,'.turquill-backup-key.dpapi')).then(k=>{encryption??=k;return true;},()=>false);
  return {audit,consume,backup,status,keyed,warm};
 }
 module.exports={createOperations,atomic,auditTo};

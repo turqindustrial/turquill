@@ -1,5 +1,5 @@
 // Draws the Turquill emblem's still layer (2026-10-26; the host's words: "create a new logo for it", then "maybe a quill
-// and a sword", "abandon the T shape of it" and "Finer sword"): the Questbound emblem's still layer
+// and a sword", "abandon the T shape of it" and "Finer sword"): the Turquill emblem's still layer
 // (public/emblem/core-v2.webp: the Q, its dagger and the inner circle with its suns, moons and dots) with the Q and the
 // dagger taken out, and in their place a SWORD and a QUILL crossed in a saltire, as on a coat of arms. The sword's hilt
 // (a small star pommel, a long wrapped grip, a thin straight crossguard with diamond finials and a gem) is to the upper
@@ -10,7 +10,7 @@
 // and stay within about 300 px of the middle. Each part is drawn upright and laid on its diagonal by a transform, its
 // lighting turned back so the light still falls from the upper left. The parts carry chiselled bevels and the painted
 // Q's marbled crimson stone, and a colour pass matches their saturation, green and value to the old Q as painted
-// (assets/title/questbound-seal-source.webp cut as make-emblem.cjs cuts it), turning hues 8 degrees toward its
+// (assets/title/turquill-seal-source.webp cut as make-emblem.cjs cuts it), turning hues 8 degrees toward its
 // crimson-rose (--hue N). The serpent ring (ring-v2.webp) is unchanged: it was already whole under the dagger.
 // Writes public/emblem/core-v3.webp (make-turquill-emblem.cjs makes the other pictures from it); --png F and --svg F also
 // write those. The report prints the balance (centroid, quadrants), the colour figures and any overlap with the suns,
@@ -18,7 +18,7 @@
 // Run: node make-turquill-core.cjs [--png out.png] [--svg out.svg]   (headless Chrome or Edge; no internet needed)
 const fs=require('node:fs'),path=require('node:path');
 const {start}=require(process.env.QB_CDP||'C:/Users/itsbr/qb-work/tools/cdp.cjs');
-const here=__dirname,CORE=path.join(here,'public/emblem/core-v2.webp'),SOURCE=path.join(here,'assets/title/questbound-seal-source.webp'),OUT=path.join(here,'public/emblem/core-v3.webp');
+const here=__dirname,CORE=path.join(here,'public/emblem/core-v2.webp'),SOURCE=path.join(here,'assets/title/turquill-seal-source.webp'),OUT=path.join(here,'public/emblem/core-v3.webp');
 const args=process.argv.slice(2),opt=(k,d)=>args.includes(k)?args[args.indexOf(k)+1]:d;
 const MIRROR=args.includes('--mirror'),ANG=Number(opt('--angle',36)),PNG=opt('--png',null),SVG=opt('--svg',null),HUE=Number(opt('--hue',8));
 

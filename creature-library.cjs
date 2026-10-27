@@ -1,12 +1,12 @@
 // The host's library of ready creature pictures (2026-10-17, the host's words: "we should do the same thing for all
 // creatures as well", as for places and people). Every creature a player fights (a lair's or an errand's threat, a
 // creature the Dungeon Master springs in an ambush, a tale's main foe when it is a creature, the vault's guardians, the
-// Skirmish's foe) is shown with the library picture that fits it best, free: .questbound-creatures/<id>.jpg plus
-// library.json ([{id, file, ...}], ids from creature-catalogue.cjs; under QUESTBOUND_DATA when hosted), painted once
+// Skirmish's foe) is shown with the library picture that fits it best, free: .turquill-creatures/<id>.jpg plus
+// library.json ([{id, file, ...}], ids from creature-catalogue.cjs; under TURQUILL_DATA when hosted), painted once
 // by make-creature-library.cjs. The match is worked out from what the game says (its template, the land's terrain,
 // the kind a tale's foe is) and the creature's own name and look in words: what it is first (a wolf, a spider, the
 // dead), then what sets one of its kind apart (colour, a mark, a band rather than one), then the land. A creature keeps
-// the picture it was first given (its pick is kept under .questbound-art/creature-picks/), two creatures of one tale
+// the picture it was first given (its pick is kept under .turquill-art/creature-picks/), two creatures of one tale
 // get different pictures while another fits, and a creature painted before the library keeps its painting. When
 // nothing in the library fits well enough the creature is painted as before (world-art.cjs notes what was missing).
 // The running Dungeon Master keeps this module loaded (world-art.cjs loads it afresh when it loads): a change here or
@@ -133,7 +133,7 @@ function bestGuess(pictures,subject){
 }
 const pictureIds=new Map(catalogue.pictures.map(p=>[p.id,p]));
 const validEntry=e=>!!e&&typeof e.id==='string'&&/^[a-z]+(?:-[a-z]+)*-\d$/.test(e.id)&&pictureIds.has(e.id)&&e.file===e.id+'.jpg';
-function createCreatureLibrary({directory=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-creatures'),picksDirectory=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-art','creature-picks'),refreshMs=30000,cacheEntries=40,campaignsKept=300,picksPerCampaign=600}={}){
+function createCreatureLibrary({directory=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-creatures'),picksDirectory=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-art','creature-picks'),refreshMs=30000,cacheEntries=40,campaignsKept=300,picksPerCampaign=600}={}){
  let entries=[],byId=new Map(),checkedAt=0,stamp=null;const bad=new Set();
  // library.json grows while the library is painted: looked at again at most every refreshMs.
  async function refresh(){

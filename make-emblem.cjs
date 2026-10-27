@@ -1,4 +1,4 @@
-// Prepares the Questbound emblem (the host's own art, assets/title/questbound-seal-source.webp, supplied 2026-10-10) for
+// Prepares the Turquill emblem (the host's own art, assets/title/turquill-seal-source.webp, supplied 2026-10-10) for
 // the game: the dark background becomes transparency (colour to alpha, so the art looks the same on the game's own dark
 // backdrop) and the picture is split into the layers the title screen animates (webTheme.js [data-qb=emblem]):
 //   public/emblem/ring-v2.webp   the serpent ring with its west, east and south stars, which turns
@@ -8,7 +8,7 @@
 //   public/emblem/seal-v1.webp   a small whole emblem for the top bar's mark
 //   public/emblem/seal-ring-v1.webp, seal-core-v1.webp   small ring and core layers, so the boot card and the pairing
 //                                page turn the ring too without waiting for the big layers
-//   assets/title/questbound-emblem.webp   the whole emblem, for the app icons (assets/title/icon.html) and native builds
+//   assets/title/painted-emblem.webp    the painting's whole emblem, with the Q (kept for reference; the game shows turquill-emblem.webp)
 // Under the blade the ring layer is filled with the serpent's own scales from a little further round the ring (a whole
 // number of scale rows away), so nothing of the blade turns with the ring.
 // Run: node make-emblem.cjs   (draws with a headless Chrome or Edge, a throwaway profile; no internet needed)
@@ -18,8 +18,8 @@ const {spawn}=require('node:child_process'),fs=require('node:fs'),path=require('
 const browser=['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Microsoft/Edge/Application/msedge.exe','/usr/bin/google-chrome','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(file=>fs.existsSync(file));
 if(!browser){console.error('Chrome or Edge is needed to draw the emblem.');process.exit(1);}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const source=path.join(__dirname,'assets','title','questbound-seal-source.webp');
-const outputs={'ring':'public/emblem/ring-v2.webp','core':'public/emblem/core-v2.webp','ringGlow':'public/emblem/ring-glow-v2.webp','coreGlow':'public/emblem/core-glow-v2.webp','seal':'public/emblem/seal-v1.webp','sealRing':'public/emblem/seal-ring-v1.webp','sealCore':'public/emblem/seal-core-v1.webp','whole':'assets/title/questbound-emblem.webp'};
+const source=path.join(__dirname,'assets','title','turquill-seal-source.webp');
+const outputs={'ring':'public/emblem/ring-v2.webp','core':'public/emblem/core-v2.webp','ringGlow':'public/emblem/ring-glow-v2.webp','coreGlow':'public/emblem/core-glow-v2.webp','seal':'public/emblem/seal-v1.webp','sealRing':'public/emblem/seal-ring-v1.webp','sealCore':'public/emblem/seal-core-v1.webp','whole':'assets/title/painted-emblem.webp'};
 
 // Everything below runs in the page. Measurements are in the source picture's pixels (1254 x 1212).
 function draw(){
@@ -97,7 +97,7 @@ function draw(){
 }
 
 (async()=>{
- const profile=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-emblem-'));
+ const profile=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-emblem-'));
  const chrome=spawn(browser,['--headless=new','--user-data-dir='+profile,'--remote-debugging-port=0','--no-first-run','--no-default-browser-check','about:blank'],{stdio:'ignore'});
  try{
   let port;for(let i=0;i<100&&!port;i++){try{port=fs.readFileSync(path.join(profile,'DevToolsActivePort'),'utf8').split(/\r?\n/)[0];}catch{await sleep(200);}}

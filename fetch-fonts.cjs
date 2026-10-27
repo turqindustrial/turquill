@@ -32,7 +32,7 @@ function merged(faces){
  }).sort((a,b)=>a.family.localeCompare(b.family)||a.style.localeCompare(b.style)||Number(a.weight.split(' ')[0])-Number(b.weight.split(' ')[0])||a.subset.localeCompare(b.subset));
 }
 function writeSheet(faces){
- const sheet='/* Questbound\'s typefaces, served from this host. Cinzel, Cinzel Decorative, EB Garamond and Inter are licensed under the\n   SIL Open Font License 1.1 (see the OFL-*.txt files beside this one). Written by fetch-fonts.cjs: one file per family,\n   style and writing system, each covering a range of weights. */\n'+
+ const sheet='/* Turquill\'s typefaces, served from this host. Cinzel, Cinzel Decorative, EB Garamond and Inter are licensed under the\n   SIL Open Font License 1.1 (see the OFL-*.txt files beside this one). Written by fetch-fonts.cjs: one file per family,\n   style and writing system, each covering a range of weights. */\n'+
   faces.map(f=>'@font-face{font-family:"'+f.family+'";font-style:'+f.style+';font-weight:'+f.weight+';font-display:swap;src:url(/fonts/'+f.file+') format("woff2");unicode-range:'+f.range+';}').join('\n')+'\n';
  fs.writeFileSync(path.join(dir,'fonts-v2.css'),sheet);
  return sheet;

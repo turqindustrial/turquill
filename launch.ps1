@@ -1,5 +1,5 @@
-# Turquill launcher (the files keep their Questbound names; Turquill.cmd runs Questbound.cmd): starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
-# Double-click Turquill.cmd (or Questbound.cmd, the same launcher) to run it. Services already running are reused, never duplicated.
+# Turquill launcher (the files keep their Turquill names; Turquill.cmd runs Turquill.cmd): starts the private AI Dungeon Master, the shared table, the desktop game and phone access.
+# Double-click Turquill.cmd (or Turquill.cmd, the same launcher) to run it. Services already running are reused, never duplicated.
 #   -Stop            stop everything this launcher started
 #   -Dev             serve the desktop game with the live-reloading Expo dev server instead of the finished build
 #   -NoBrowser       do not open the browser
@@ -20,19 +20,23 @@ param([switch]$PauseGuests,[switch]$ResumeGuests,[switch]$PauseLibrary,[switch]$
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
-$logs = Join-Path $root '.questbound-logs'
+# The game's files were named .questbound-* until 2026-10-27; they take their new names (.turquill-*) here first, and so
+# do the Desktop copies of the libraries. A second run finds nothing to do. (name-migration.cjs)
+try { & node (Join-Path $root 'name-migration.cjs') --desktop --quiet } catch {}
+$oldStartupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Questbound.lnk'
+$logs = Join-Path $root '.turquill-logs'
 $pidFile = Join-Path $logs 'pids.json'
-$keyFile = Join-Path $root '.questbound-key.dpapi'
-$modelFile = Join-Path $root '.questbound-model'
-$storyModelFile = Join-Path $root '.questbound-story-model'
-$sessionFile = Join-Path $root '.questbound-phone-session.json'
-$shareFile = Join-Path $root '.questbound-share-session.json'
-$tunnelTokenFile = Join-Path $root '.questbound-tunnel.dpapi'
-$tunnelHostFile = Join-Path $root '.questbound-tunnel-host'
-$discordFile = Join-Path $root '.questbound-discord.dpapi'
-$discordLastFile = Join-Path $root '.questbound-discord-last'
-$pauseFile = Join-Path $root '.questbound-guests-paused'
-$libraryPauseFile = Join-Path $root '.questbound-library-paused'
+$keyFile = Join-Path $root '.turquill-key.dpapi'
+$modelFile = Join-Path $root '.turquill-model'
+$storyModelFile = Join-Path $root '.turquill-story-model'
+$sessionFile = Join-Path $root '.turquill-phone-session.json'
+$shareFile = Join-Path $root '.turquill-share-session.json'
+$tunnelTokenFile = Join-Path $root '.turquill-tunnel.dpapi'
+$tunnelHostFile = Join-Path $root '.turquill-tunnel-host'
+$discordFile = Join-Path $root '.turquill-discord.dpapi'
+$discordLastFile = Join-Path $root '.turquill-discord-last'
+$pauseFile = Join-Path $root '.turquill-guests-paused'
+$libraryPauseFile = Join-Path $root '.turquill-library-paused'
 New-Item -ItemType Directory -Force $logs | Out-Null
 
 function Say($text, $color = 'Gray') { Write-Host $text -ForegroundColor $color }
@@ -155,8 +159,8 @@ if ($SetupTunnel) {
   Say "  Saved. Turquill.cmd -Share now uses https://$hostName/ (if sharing is running, stop it first with Turquill.cmd -Stop)." 'Green'
   return
 }
-$startupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Questbound.lnk'
-if ($RemoveStartup) { Remove-Item $startupLink -ErrorAction SilentlyContinue; Say 'Turquill will no longer start when you sign in.' 'Green'; return }
+$startupLink = Join-Path ([Environment]::GetFolderPath('Startup')) 'Turquill.lnk'
+if ($RemoveStartup) { Remove-Item $startupLink, $oldStartupLink -ErrorAction SilentlyContinue; Say 'Turquill will no longer start when you sign in.' 'Green'; return }
 if ($InstallStartup) {
   if (-not (Test-Path $keyFile)) { Say 'Run Turquill once and choose to remember your API key first; background start cannot ask for it.' 'Yellow'; return }
   $shell = New-Object -ComObject WScript.Shell
@@ -166,6 +170,7 @@ if ($InstallStartup) {
   $link.WorkingDirectory = $root
   $link.WindowStyle = 7
   $link.Save()
+  Remove-Item $oldStartupLink -ErrorAction SilentlyContinue
   Say 'Turquill will start in the background when you sign in to Windows. Undo with: Turquill.cmd -RemoveStartup' 'Green'
   return
 }
@@ -180,7 +185,7 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Say '  Turquill nee
 if (-not (Test-Path (Join-Path $root 'node_modules'))) {
   Say '  First run: installing the game components (a few minutes)...'
   & cmd.exe /c "npm.cmd ci > `"$logs\install.log`" 2>&1"
-  if ($LASTEXITCODE -ne 0) { Say '  Installing failed. See .questbound-logs\install.log' 'Red'; return }
+  if ($LASTEXITCODE -ne 0) { Say '  Installing failed. See .turquill-logs\install.log' 'Red'; return }
 }
 
 # 1. Keep the desktop and phone copies on the current source version.
@@ -192,7 +197,7 @@ if (-not $Dev) {
   if (-not (Test-Path $dist) -or $newest.LastWriteTime -gt $built -or ($assets -and $assets.LastWriteTime -gt $built)) {
     Say '  Building the latest version of the game (about a minute)...'
     & cmd.exe /c "npm.cmd run build:web > `"$logs\build.log`" 2>&1"
-    if ($LASTEXITCODE -ne 0) { Say '  The build failed. See .questbound-logs\build.log' 'Red'; return }
+    if ($LASTEXITCODE -ne 0) { Say '  The build failed. See .turquill-logs\build.log' 'Red'; return }
   }
 }
 
@@ -216,7 +221,7 @@ else {
     $env:OPENAI_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr).Trim()
     $env:OPENAI_MODEL = $model
     if ($storyModel) { $env:OPENAI_STORY_MODEL = $storyModel } else { Remove-Item Env:OPENAI_STORY_MODEL -ErrorAction SilentlyContinue }
-    $env:QUESTBOUND_DM_PORT = '8084'
+    $env:TURQUILL_DM_PORT = '8084'
     if ($fresh) {
       Say '  Checking the key with one small live reply...'
       & node (Join-Path $root 'check-dm-setup.cjs')
@@ -227,21 +232,21 @@ else {
     Start-Hidden 'dm' 'node' 'dm-server.cjs' | Out-Null
   } finally {
     [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
-    Remove-Item Env:OPENAI_API_KEY, Env:OPENAI_MODEL, Env:OPENAI_STORY_MODEL, Env:QUESTBOUND_DM_PORT -ErrorAction SilentlyContinue
+    Remove-Item Env:OPENAI_API_KEY, Env:OPENAI_MODEL, Env:OPENAI_STORY_MODEL, Env:TURQUILL_DM_PORT -ErrorAction SilentlyContinue
   }
-  if (Wait-Up 'http://localhost:8084/health' 15) { Say '  Dungeon Master    started' 'Green' } else { Say '  The Dungeon Master did not start. See .questbound-logs\dm.err.log' 'Red' }
+  if (Wait-Up 'http://localhost:8084/health' 15) { Say '  Dungeon Master    started' 'Green' } else { Say '  The Dungeon Master did not start. See .turquill-logs\dm.err.log' 'Red' }
 }
 
 # 3. The shared table (loopback only).
 if (Test-Up 'http://localhost:8086/health') { Say '  Shared table      already running' 'DarkGray' }
-else { Start-Hidden 'table' 'node' 'sync-server.cjs' | Out-Null; if (Wait-Up 'http://localhost:8086/health' 10) { Say '  Shared table      started' 'Green' } else { Say '  The shared table did not start. See .questbound-logs\table.err.log' 'Red' } }
+else { Start-Hidden 'table' 'node' 'sync-server.cjs' | Out-Null; if (Wait-Up 'http://localhost:8086/health' 10) { Say '  Shared table      started' 'Green' } else { Say '  The shared table did not start. See .turquill-logs\table.err.log' 'Red' } }
 
 # 4. The desktop game.
 if (Test-Up 'http://localhost:8081/') { Say '  Desktop game      already running' 'DarkGray' }
 else {
   if ($Dev) { Start-Hidden 'desktop' 'npx.cmd' 'expo start --web --port 8081' | Out-Null; $wait = 90 }
   else { Start-Hidden 'desktop' 'node' 'desktop-server.cjs' | Out-Null; $wait = 10 }
-  if (Wait-Up 'http://localhost:8081/' $wait) { Say '  Desktop game      started' 'Green' } else { Say '  The desktop game did not start. See .questbound-logs\desktop.err.log' 'Red' }
+  if (Wait-Up 'http://localhost:8081/' $wait) { Say '  Desktop game      started' 'Green' } else { Say '  The desktop game did not start. See .turquill-logs\desktop.err.log' 'Red' }
 }
 
 # 5. Remote play now requires the encrypted link, including on home Wi-Fi.
@@ -288,12 +293,12 @@ if ($Share) {
           if (Test-Path $tunnelLog) { $m = [regex]::Match("$(Get-Content $tunnelLog -Raw -ErrorAction SilentlyContinue)", 'https://[a-z0-9-]+\.trycloudflare\.com'); if ($m.Success) { $url = $m.Value } }
         }
       }
-      if (-not $url) { Say '  The secure link did not start. See .questbound-logs\tunnel.err.log' 'Red' }
+      if (-not $url) { Say '  The secure link did not start. See .turquill-logs\tunnel.err.log' 'Red' }
       else {
         Start-Hidden 'share' 'node' "phone-server.cjs --public $url" | Out-Null
         for ($i = 0; $i -lt 20 -and -not (Test-Path $shareFile); $i++) { Start-Sleep -Milliseconds 500 }
         if (Test-Path $shareFile) { $shared = Get-Content $shareFile -Raw | ConvertFrom-Json; Say '  Sharing           started' 'Green' }
-        else { Say '  Sharing did not start. See .questbound-logs\share.err.log' 'Red' }
+        else { Say '  Sharing did not start. See .turquill-logs\share.err.log' 'Red' }
       }
     }
   }

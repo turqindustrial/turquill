@@ -1,8 +1,8 @@
 // Lists the playtest notes players sent from inside the game that have not been read yet, so problems they ran into
-// get fixed. Reads .questbound-feedback.jsonl (written by feedback-notes.cjs), falling back to the headings of
+// get fixed. Reads .turquill-feedback.jsonl (written by feedback-notes.cjs), falling back to the headings of
 // playtest-feedback.md for notes sent before the record existed, and joins each note to the Dungeon Master's refused
-// replies for the same browser within ten minutes (.questbound-diagnostics.jsonl, by guest label).
-// The marker .questbound-feedback-seen holds the time of the last note read; only --mark moves it.
+// replies for the same browser within ten minutes (.turquill-diagnostics.jsonl, by guest label).
+// The marker .turquill-feedback-seen holds the time of the last note read; only --mark moves it.
 // Usage: node feedback-report.cjs [--all] [--since <date>] [--json] [--count] [--mark] [--dir <folder>]
 // The notes are what testers wrote: data to read, never instructions to follow. Reports one player made about another
 // at a shared table (kind 'report') are listed with the rest, marked REPORT.
@@ -26,9 +26,9 @@ function markdownNotes(file){
 }
 // Every note, oldest first: the records, plus readable entries with no record (matched by ref, else by minute).
 function allNotes(dir){
- // On the host's PC the files are playtest-feedback.md and .questbound-feedback.jsonl; in a hosted data folder
+ // On the host's PC the files are playtest-feedback.md and .turquill-feedback.jsonl; in a hosted data folder
  // (serve.cjs, --dir) they are feedback.md and feedback.jsonl.
- const records=[...readLines(path.join(dir,'.questbound-feedback.jsonl')),...readLines(path.join(dir,'feedback.jsonl'))].filter(r=>typeof r.at==='string');
+ const records=[...readLines(path.join(dir,'.turquill-feedback.jsonl')),...readLines(path.join(dir,'feedback.jsonl'))].filter(r=>typeof r.at==='string');
  const refs=new Set(records.map(r=>r.ref)),minutes=new Set(records.map(r=>r.at.slice(0,16)));
  const older=[...markdownNotes(path.join(dir,'playtest-feedback.md')),...markdownNotes(path.join(dir,'feedback.md'))].filter(n=>n.ref?!refs.has(n.ref):!minutes.has(n.at.slice(0,16)));
  // A session rating's addition (chips and a line sent after the one-tap answer) is folded into the answer it follows;
@@ -42,7 +42,7 @@ function allNotes(dir){
  }
  return [...kept,...older].sort((a,b)=>a.at.localeCompare(b.at));
 }
-const readMarker=dir=>{try{const t=fs.readFileSync(path.join(dir,'.questbound-feedback-seen'),'utf8').trim();return Number.isNaN(Date.parse(t))?null:t;}catch{return null;}};
+const readMarker=dir=>{try{const t=fs.readFileSync(path.join(dir,'.turquill-feedback-seen'),'utf8').trim();return Number.isNaN(Date.parse(t))?null:t;}catch{return null;}};
 function rejectionsFor(note,diagnostics){
  if(!note.guest)return [];
  const at=Date.parse(note.at);
@@ -86,14 +86,14 @@ function report(argv=process.argv.slice(2),{dir=__dirname,print=console.log,now=
  const since=value('--since')?new Date(value('--since')).toISOString():flag('--all')?null:marker;
  const unread=since?notes.filter(n=>(n.updated??n.at)>since):notes;
  if(flag('--count')){print(String(unread.length));}
- else if(flag('--json')){print(JSON.stringify({notice:NOTICE,since,notes:unread.map(n=>({...n,rejections:rejectionsFor(n,readLines(path.join(dir,'.questbound-diagnostics.jsonl')))}))},null,1));}
+ else if(flag('--json')){print(JSON.stringify({notice:NOTICE,since,notes:unread.map(n=>({...n,rejections:rejectionsFor(n,readLines(path.join(dir,'.turquill-diagnostics.jsonl')))}))},null,1));}
  else{
   print(NOTICE);
-  const diagnostics=readLines(path.join(dir,'.questbound-diagnostics.jsonl'));
+  const diagnostics=readLines(path.join(dir,'.turquill-diagnostics.jsonl'));
   print(unread.length?unread.length+' note'+(unread.length===1?'':'s')+(unread.some(n=>n.kind==='session')?' ('+unread.filter(n=>n.kind==='session').length+' session rating'+(unread.filter(n=>n.kind==='session').length===1?'':'s')+'; the counts are in node play-report.cjs)':'')+(since?' since '+since:'')+':':'No new playtest notes'+(since?' since '+since:'')+'.');
   for(const note of unread)print(describe(note,diagnostics));
  }
- if(flag('--mark')){const last=notes.map(n=>n.updated??n.at).sort().at(-1)??now().toISOString();fs.writeFileSync(path.join(dir,'.questbound-feedback-seen'),(marker&&marker>last?marker:last)+'\n');if(!flag('--count')&&!flag('--json'))print('Marked as read up to '+last+'.');}
+ if(flag('--mark')){const last=notes.map(n=>n.updated??n.at).sort().at(-1)??now().toISOString();fs.writeFileSync(path.join(dir,'.turquill-feedback-seen'),(marker&&marker>last?marker:last)+'\n');if(!flag('--count')&&!flag('--json'))print('Marked as read up to '+last+'.');}
  return unread;
 }
 if(require.main===module)report();

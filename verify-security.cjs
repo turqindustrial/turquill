@@ -6,7 +6,7 @@ const assert=require('node:assert/strict'),http=require('node:http'),fs=require(
 const {pagePolicy,inlineScriptHashes}=require('./security-headers.cjs');
 const {createPhoneServer,networkVerdict}=require('./phone-server.cjs'),{createDesktopServer}=require('./desktop-server.cjs'),{createSyncServer}=require('./sync-server.cjs');
 const {createServer}=require('./dm-server.cjs'),{createAccounts,weakPassword}=require('./accounts.cjs'),{createSpending,costOf}=require('./spending.cjs');
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-security-')),root=path.join(tmp,'dist'),script='window.loaded=1;';
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-security-')),root=path.join(tmp,'dist'),script='window.loaded=1;';
 fs.mkdirSync(root);
 fs.writeFileSync(path.join(root,'index.html'),'<!doctype html><html><head><script>'+script+'</script><script src="/_expo/app.js" defer></script></head><body></body></html>');
 fs.writeFileSync(path.join(root,'privacy.html'),'<!doctype html><title>Privacy</title><style>p{color:red}</style>');
@@ -113,13 +113,13 @@ const hashOf=text=>"'sha256-"+crypto.createHash('sha256').update(text).digest('b
  assert.equal(networkVerdict(null,[]).unknown,true);assert.equal(networkVerdict(null,[]).ok,false,'an unknown network cannot expose the Wi-Fi server');
  const ps1=fs.readFileSync('launch.ps1','utf8');assert.ok(ps1.includes('Turquill-Share.cmd')&&!ps1.includes("Start-Hidden 'phone'"),'the launcher directs phone players to HTTPS and no longer starts plaintext LAN play');
  // Passwords guessers try first are refused.
- for(const p of ['password123','Password1','12345678','qwertyuiop','aaaaaaaa','abcdefghij','my-questbound','iloveyou'])assert.ok(weakPassword(p),p);
+ for(const p of ['password123','Password1','12345678','qwertyuiop','aaaaaaaa','abcdefghij','my-turquill','iloveyou'])assert.ok(weakPassword(p),p);
  assert.ok(weakPassword('ada.lovelace99','ada.lovelace@example.com'),'the name before the @');
  for(const p of ['lantern-wisp-71','copper-kettle-42','made-up-pass'])assert.equal(weakPassword(p,'tester@example.com'),false,p);
  await assert.rejects(createAccounts({dir:path.join(tmp,'weak')}).register('someone@example.com','password123'),/guessers/);
 
  // The guests' daily allowance, worked out from the usage log as it grows.
- const data=path.join(tmp,'data'),log=path.join(data,'.questbound-usage.jsonl');fs.mkdirSync(data);
+ const data=path.join(tmp,'data'),log=path.join(data,'.turquill-usage.jsonl');fs.mkdirSync(data);
  let clock=new Date(2026,9,3,12).getTime();const spend=createSpending({dir:data,now:()=>clock});
  const line=entry=>fs.appendFileSync(log,JSON.stringify({at:new Date(clock).toISOString(),mode:'art',model:'gpt-6-luna',input:0,cached:0,output:0,...entry})+'\n');
  assert.equal(spend.check('g1').ok,true,'nothing spent yet');
@@ -127,19 +127,19 @@ const hashOf=text=>"'sha256-"+crypto.createHash('sha256').update(text).digest('b
  assert.match(spend.check('g1').error,/your share/);assert.equal(spend.check('g2').ok,true,'another guest plays on');assert.equal(spend.check(null).ok,true,'the host is never stopped');
  for(let i=0;i<100;i++)line({guest:'g'+(2+i%5),images:1});
  assert.match(spend.check('g9').error,/allowance for the Dungeon Master is used up/);
- const budget=path.join(data,'.questbound-guest-budget');
+ const budget=path.join(data,'.turquill-guest-budget');
  fs.writeFileSync(budget,'20\n');assert.equal(spend.check('g9').ok,true,'the host raised the allowance');
  fs.writeFileSync(budget,'off\n');assert.equal(spend.check('g1').ok,true,'or turned it off');
  fs.writeFileSync(budget,'5\n');assert.equal(spend.check('g9').ok,false);
  clock+=86400000;assert.equal(spend.check('g1').ok,true,'a new day, a new allowance');clock-=86400000;
  fs.renameSync(log,log+'.old');line({mode:'turn',guest:'g1',input:100,output:10});assert.equal(spend.check('g1').ok,false,'a rotated log forgets nothing spent today');
  assert.ok(costOf({model:'mystery-model',input:1e6})>costOf({model:'gpt-6-luna',input:1e6}),'an unknown model is priced high on purpose');
- // The host may set what each player may use a day (.questbound-player-budget), apart from the guests' total.
- const data2=path.join(tmp,'data2'),log2=path.join(data2,'.questbound-usage.jsonl'),each=path.join(data2,'.questbound-player-budget');fs.mkdirSync(data2);
+ // The host may set what each player may use a day (.turquill-player-budget), apart from the guests' total.
+ const data2=path.join(tmp,'data2'),log2=path.join(data2,'.turquill-usage.jsonl'),each=path.join(data2,'.turquill-player-budget');fs.mkdirSync(data2);
  const spend2=createSpending({dir:data2,now:()=>clock});fs.writeFileSync(each,'1\n');
  for(let i=0;i<34;i++)fs.appendFileSync(log2,JSON.stringify({at:new Date(clock).toISOString(),mode:'art',model:'gpt-6-luna',guest:'p1',images:1})+'\n');
  assert.match(spend2.check('p1').error,/your share/,'a dollar a day each');assert.equal(spend2.check('p2').ok,true);assert.equal(spend2.summary().share,1);
- fs.writeFileSync(path.join(data2,'.questbound-guest-budget'),'off\n');assert.equal(spend2.check('p1').ok,false,'the per-player limit holds with no total');
+ fs.writeFileSync(path.join(data2,'.turquill-guest-budget'),'off\n');assert.equal(spend2.check('p1').ok,false,'the per-player limit holds with no total');
  fs.writeFileSync(each,'off\n');assert.equal(spend2.check('p1').ok,true,'and can be turned off');
  fs.rmSync(tmp,{recursive:true,force:true});
  console.log('Security: page policies and safe headers on every page, loopback services that answer only to this PC, visitors told apart by headers they cannot forge, the Wi-Fi link only at home, the gateway\'s guest label, plain feedback, weak passwords refused and the guests\' daily allowance.');

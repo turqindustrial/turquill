@@ -56,7 +56,7 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
  for(const [mood,amb] of [['menu','menu'],['explore','hearth'],['haven','hearth'],['explore','wild'],['combat','battle'],['explore','cave'],['silence','none']]){now+=20;const before=nodes;audio.setMood(mood);audio.setAmbience(amb);await wait(1600);now+=1;await wait(250);if(mood!=='silence')assert.ok(nodes>before,mood+'/'+amb+' plays');}
  audio.setDanger(.9);await wait(50);audio.setDanger(0);
  // Settings persist and apply; muting silences new sounds.
- audio.setAudio({night:true,master:.5});assert.equal(JSON.parse(store['questbound.audio.v1']).night,true);
+ audio.setAudio({night:true,master:.5});assert.equal(JSON.parse(store['turquill.audio.v1']).night,true);
  audio.setAudio({muted:true});const muted=nodes;audio.playSound('hit');assert.equal(nodes,muted,'Muted means silent');audio.setAudio({muted:false,night:false,master:.85});
  // Muting stops the work too: the score's scheduler, the ambience timers and the heartbeat end and the context is
  // suspended (so its reverbs stop rendering); nothing new is started while muted, and unmuting brings it all back.

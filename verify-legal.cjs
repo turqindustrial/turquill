@@ -46,7 +46,7 @@ assert.ok(fs.readFileSync('dm-server.cjs','utf8').includes("recordUsage('turn'")
  assert.ok(mod.includes("MODEL='omni-moderation-latest'")&&text(privacyPolicy).includes("OpenAI's moderation service")&&text(termsOfUse).includes("checked by OpenAI's moderation service")&&text(permissionsAgreement).includes("OpenAI's moderation service checks what you type"),'the moderation check is described');
  assert.ok(camp.includes('return lines.slice(-5);')&&text(privacyPolicy).includes('the last few lines (at most five) the reported player typed'),'what a report carries');
  assert.ok(mod.includes('pauseMs=1200000')&&text(privacyPolicy).includes('pause your use of the Dungeon Master for twenty minutes'),'the pause');
- assert.ok(text(privacyPolicy).includes('the players you muted at each shared table')&&fs.readFileSync('tableMutes.js','utf8').includes("KEY='questbound.mutes.v1'")&&text(privacyPolicy).includes('keeps a keyed hash of that browser')&&text(termsOfUse).includes('close the whole game to your browser'),'mutes and bans');}
+ assert.ok(text(privacyPolicy).includes('the players you muted at each shared table')&&fs.readFileSync('tableMutes.js','utf8').includes("KEY='turquill.mutes.v1'")&&text(privacyPolicy).includes('keeps a keyed hash of that browser')&&text(termsOfUse).includes('close the whole game to your browser'),'mutes and bans');}
 // Typefaces come from the host, so no third party sees a page load; the policy no longer names Google Fonts.
 for(const file of ['webTheme.js','public/index.html','phone-server.cjs'])assert.ok(!fs.readFileSync(file,'utf8').includes('fonts.googleapis.com'),file+' loads no fonts from Google');
 assert.ok(!text(privacyPolicy).includes('Google Fonts')&&fs.existsSync('public/fonts/fonts-v2.css')&&['cinzel','cinzel-decorative','eb-garamond','inter'].every(f=>fs.existsSync('public/fonts/OFL-'+f+'.txt')),'fonts and their licences are in public/fonts');
@@ -86,7 +86,7 @@ assert.equal(r.validPlannedSubclass({class:'Barbarian',plannedSubclass:'Path of 
 // Dungeon Master, the story writer or a developer what never to use.
 {
  const books=new RegExp(['Player.s Handbook','Dungeon Master.s Guide','Monster Manual','Xanathar','Tasha','Volo.s','Mordenkainen','Monsters of the Multiverse','Fizban','Sword Coast','Wildemount','Tal.Dorei','Critical Role','Eberron','Forgotten Realms','Ravnica','Theros','Ravenloft','Strixhaven','Spelljammer','Astral Adventurer','Planescape','Bigby','Book of Many Things','Acquisitions Incorporated','Radiant Citadel','Elemental Evil','Princes of the Apocalypse','Dragonlance','Phandelver','Curse of Strahd','Tomb of Annihilation','Storm King.s Thunder','Out of the Abyss','Tyranny of Dragons','Hoard of the Dragon Queen','Rise of Tiamat','Dragon Heist','Mad Mage','Descent into Avernus','Icewind Dale','Rime of the Frostmaiden','Candlekeep','Witchlight','Ghosts of Saltmarsh','Golden Vault','Vecna','Infinite Staircase','Heroes of Faer','Kwalish','Glory of the Giants','Lost Mine','Dungeon of the Mad Mage','Mythic Odysseys','Van Richten'].map(t=>'\\b'+t+'\\b').join('|'),'i');
- const skip=/^(?:node_modules|dist[\w-]*|\.git|\.expo|project-memory|backups?|\.questbound-.*)$/,exempt=/never use names|is not SRD wording|book-name guard/i,seen=[];
+ const skip=/^(?:node_modules|dist[\w-]*|\.git|\.expo|project-memory|backups?|\.turquill-.*)$/,exempt=/never use names|is not SRD wording|book-name guard/i,seen=[];
  const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){if(skip.test(e.name)||(dir==='assets'&&e.name==='art'))continue;const p=dir==='.'?e.name:dir+'/'+e.name;if(e.isDirectory())walk(p);else if(/\.(?:js|cjs|mjs|json|md|html)$/.test(e.name))seen.push(p);}};
  walk('.');
  for(const file of seen){if(file==='verify-legal.cjs')continue;const lines=fs.readFileSync(file,'utf8').split('\n');lines.forEach((line,i)=>assert.ok(exempt.test(line)||!books.test(line),file+':'+(i+1)+' names an unlicensed book ('+line.match(books)?.[0]+')'));}
@@ -116,7 +116,7 @@ else for(const [file,content] of Object.entries(outputs))assert.equal(fs.existsS
 // The pages are served to an unpaired browser, so the pairing page's links work.
 (async()=>{
  const {createPhoneServer}=require('./phone-server.cjs');
- const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-legal-'));
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-legal-'));
  try{
   fs.writeFileSync(path.join(tmp,'index.html'),'<!doctype html><title>game</title>');fs.writeFileSync(path.join(tmp,'privacy.html'),outputs['public/privacy.html']);fs.writeFileSync(path.join(tmp,'terms.html'),outputs['public/terms.html']);fs.writeFileSync(path.join(tmp,'permissions.html'),outputs['public/permissions.html']);
   const {server}=createPhoneServer({root:tmp,host:'127.0.0.1',port:0,code:'12345678'});const port=await new Promise(r=>server.listen(0,'127.0.0.1',()=>r(server.address().port)));

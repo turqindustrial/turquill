@@ -123,7 +123,7 @@ async function service(){
  const fx=fixtures(home,{now:()=>tick,moderate:async(text,user)=>{names.push(text);return /Vile/.test(text)?{action:'refuse',categories:['hate'],line:'That name was held back by the game’s content check (hateful words). Choose another name.'}:{action:'allow',categories:[]};}});
  const svc=createSyncServer(fx.options);await new Promise(r=>svc.server.listen(0,'127.0.0.1',r));const at='http://127.0.0.1:'+svc.server.address().port;
  const ask=async(route,body={},cookie='',headers={})=>{const response=await fetch(at+'/'+route,{method:'POST',headers:{Origin:'http://localhost:8081','Content-Type':'application/json',Cookie:cookie,...headers},body:JSON.stringify({expectedAccountId:'guest',...body})});return {status:response.status,body:await response.json(),cookie:response.headers.get('set-cookie')};};
- const guest=async n=>{const g=await ask('account-guest',{},'',{'X-Questbound-Client':'198.51.100.'+n});assert.equal(g.status,200);return {cookie:g.cookie.split(';')[0],id:g.body.id};};
+ const guest=async n=>{const g=await ask('account-guest',{},'',{'X-Turquill-Client':'198.51.100.'+n});assert.equal(g.status,200);return {cookie:g.cookie.split(';')[0],id:g.body.id};};
  const servers=[svc.server];
  try{
   const A=await guest(1),B=await guest(2),C=await guest(3);
@@ -178,7 +178,7 @@ async function service(){
   assert.deepEqual(findIdentity('beef',svc.accounts.knownIds()),[],'too short to name anyone');
   assert.equal(svc.bans.ban(B.id,{note:'harassment at a table'}),moderationLabel(B.id));
   for(const route of ['poll','usage','campaign-list','account-status']){const r=await ask(route,{campaignId,kind:'dm'},B.cookie);assert.equal(r.status,403,route);assert.equal(r.body.banned,true,route);}
-  const noNew=await ask('account-guest',{},B.cookie,{'X-Questbound-Client':'198.51.100.2'});assert.equal(noNew.status,403,'a banned browser is not handed a fresh guest');assert.equal(noNew.cookie,null);
+  const noNew=await ask('account-guest',{},B.cookie,{'X-Turquill-Client':'198.51.100.2'});assert.equal(noNew.status,403,'a banned browser is not handed a fresh guest');assert.equal(noNew.cookie,null);
   assert.equal((await ask('poll',{campaignId},A.cookie)).status,200,'others are untouched');
   assert.deepEqual(svc.bans.list().map(b=>b.label),[moderationLabel(B.id)]);
   // The gateway refuses the banned browser's feedback (it asks /usage as for the Dungeon Master).
@@ -192,7 +192,7 @@ async function service(){
   assert.equal((await via('/api/feedback',{text:'All good here'},paired+'; '+A.cookie)).status,200,'others still send notes');
   const dmTurn=await via('/api/dm',{input:'Hello',context:{choices:[]}},paired+'; '+B.cookie);assert.equal(dmTurn.status,403,'and the Dungeon Master refuses him');
   assert.equal(svc.bans.unban(moderationLabel(B.id)),moderationLabel(B.id));assert.equal((await ask('poll',{campaignId},B.cookie)).status,200,'unbanned');
-  const security=fs.readFileSync(path.join(home,'.questbound-security.jsonl'),'utf8');for(const e of ['campaign-member-banned','campaign-ban-refused','campaign-member-unbanned','campaign-report','banned-refused'])assert.ok(security.includes('"'+e+'"'),e);
+  const security=fs.readFileSync(path.join(home,'.turquill-security.jsonl'),'utf8');for(const e of ['campaign-member-banned','campaign-ban-refused','campaign-member-unbanned','campaign-report','banned-refused'])assert.ok(security.includes('"'+e+'"'),e);
   // Rate: at most five reports an hour from one player.
   const D=await guest(4),dj=await ask('campaign-join',{invite,snapshot:fx.snapshot('rogue'),name:'Dee'},D.cookie);assert.equal(dj.status,200,JSON.stringify(dj.body));
   const seats=(await ask('poll',{campaignId},D.cookie)).body.members.filter(m=>m.name!=='Dee').map(m=>m.id);assert.equal(seats.length,3);
@@ -205,7 +205,7 @@ async function service(){
 function mutes(){
  const vm=require('node:vm'),store=new Map();
  const src=fs.readFileSync('tableMutes.js','utf8').replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
- const ctx={localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,String(v))},profileKey:k=>'questbound.profile.guest.'+k,tableMembership:()=>({campaignId:'c'.repeat(32)}),useState:()=>[0,()=>{}],useEffect:()=>{}};
+ const ctx={localStorage:{getItem:k=>store.get(k)??null,setItem:(k,v)=>store.set(k,String(v))},profileKey:k=>'turquill.profile.guest.'+k,tableMembership:()=>({campaignId:'c'.repeat(32)}),useState:()=>[0,()=>{}],useEffect:()=>{}};
  ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(src+'\n;this.out={mutedMembers,setMuted,isMutedLine};',ctx);const {mutedMembers,setMuted,isMutedLine}=ctx.out;
  const ben={id:'seat-'+'1'.repeat(16),name:'Ben'};
  assert.deepEqual([...mutedMembers()],[]);setMuted(ben,true);assert.deepEqual(JSON.parse(JSON.stringify(mutedMembers())),[{seat:ben.id,name:'Ben'}]);
@@ -216,7 +216,7 @@ function mutes(){
  assert.equal(isMutedLine({kind:'dialogue',text:'NPC',speakerName:'Ben'},list),false,'only what players type');
  assert.equal(mutedMembers('d'.repeat(32)).length,0,'per campaign');
  setMuted(ben,false);assert.equal(mutedMembers().length,0);
- assert.ok(store.has('questbound.profile.guest.questbound.mutes.v1'),'kept on this device, in the player\'s profile');
+ assert.ok(store.has('turquill.profile.guest.turquill.mutes.v1'),'kept on this device, in the player\'s profile');
 }
 // AbortSignal.timeout's timer does not keep the process alive by itself; this does, until the checks finish.
 const alive=setInterval(()=>{},1000);

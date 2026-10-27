@@ -1,7 +1,7 @@
 import React,{useLayoutEffect,useRef} from 'react';
 import {View,Image,Platform,StyleSheet} from 'react-native';
 
-// The Turquill emblem: the serpent of the host's own painting (assets/title/questbound-seal-source.webp, 2026-10-10)
+// The Turquill emblem: the serpent of the host's own painting (assets/title/turquill-seal-source.webp, 2026-10-10)
 // biting its tail round a sword and a quill crossed like a coat of arms (2026-10-26, drawn by make-turquill-core.cjs in
 // place of the painting's Q and dagger). make-emblem.cjs splits the painting into layers (public/emblem/) and
 // webTheme.js animates them: the serpent ring with its stars turns all the way round, once every 36 s, the way the

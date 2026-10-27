@@ -125,7 +125,7 @@ function TaleShelf({written,selected,onSelect,onStart,busy,error,narrow}){
 const fateCopy={setting:'One of the ready journeys, chosen for you by chance. You find out which when it begins.',conflict:'Its land, its people and its trouble stay a surprise until the first scene, and it starts at once.',journey:null,stakes:null,tone:'Any journey',arrival:'Ready at once'};
 // Let fate decide, with written tales: one this device has not played, from the open tab, by chance.
 const fateWrittenCopy={setting:'A written tale you haven’t played, chosen by chance from the tab that is open (from another tab once you have played them all). You find out which when it begins.',conflict:'It starts at once, with a clear first step.',journey:null,stakes:null,tone:'Any written tale',arrival:'Ready at once'};
-const firstTime=()=>{try{return !globalThis.localStorage?.getItem('questbound.tips.v1');}catch{return false;}};
+const firstTime=()=>{try{return !globalThis.localStorage?.getItem('turquill.tips.v1');}catch{return false;}};
 export default function AdventureIntros({selected,onSelect,onStart,busy,error,continuation=null,continuing=false,onContinuing,idea='',onIdea=()=>{},journeys=null,forTable=null,written=null}){
  const narrow=useWindowDimensions().width<420;
  // The host of a shared table chooses the table's tale here (campaigns.cjs tale): the same tales, without the Skirmish

@@ -21,9 +21,9 @@ nothing else).
 | `icon-192.png` | 192 | manifest icon, Android home screen, browser tab (`<link rel="icon">`) | `public/icons/icon-192.png` |
 | `icon-512.png` | 512 | manifest icon, install and splash screens | `public/icons/icon-512.png` |
 | `maskable-512.png` | 512 | manifest maskable icon (Android shapes it; the ring sits in the safe circle) | `public/icons/maskable-512.png` |
-| `questbound-favicon.png` | 48 | browser tab icon (Expo turns it into `favicon.ico` in the build) | `assets/questbound-favicon.png` |
+| `turquill-favicon.png` | 48 | browser tab icon (Expo turns it into `favicon.ico` in the build) | `assets/turquill-favicon.png` |
 | `favicon-32.png` | 32 | a 32 px tab icon, for a `<link rel="icon" sizes="32x32">` if one is wanted | optional: `public/icons/favicon-32.png` |
-| `questbound-icon.png` | 1024 | the app icon for native builds (`app.json` `icon`) | `assets/questbound-icon.png` |
+| `turquill-icon.png` | 1024 | the app icon for native builds (`app.json` `icon`) | `assets/turquill-icon.png` |
 | `android-icon-background.png` | 1024 | Android adaptive icon, background layer | `assets/android-icon-background.png` |
 | `android-icon-foreground.png` | 1024 | Android adaptive icon, foreground layer (the gold emblem, inside the safe zone) | `assets/android-icon-foreground.png` |
 | `android-icon-monochrome.png` | 1024 | Android themed (monochrome) icon | `assets/android-icon-monochrome.png` |

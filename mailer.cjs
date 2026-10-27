@@ -1,13 +1,13 @@
 // Fixed Gmail TLS destination; no player-controlled mail headers, URLs, or SMTP hosts.
 const fs=require('node:fs'),path=require('node:path'),tls=require('node:tls'),{execFile}=require('node:child_process');
 const fail=()=>Object.assign(Error('Verification mail is unavailable. Ask the host to finish connecting the game email.'),{status:503});
-function createMailer({dir=process.env.QUESTBOUND_DATA||__dirname,transport=null}={}){
- const config=()=>{let saved={};try{saved=JSON.parse(fs.readFileSync(path.join(dir,'.questbound-mail.json'),'utf8').replace(/^\uFEFF/,''));}catch{}return {...saved,...(process.env.QUESTBOUND_MAIL_SENDER?{sender:process.env.QUESTBOUND_MAIL_SENDER.trim(),feedback:true}:{})};};
- const configured=()=>!!transport||(/^[a-z0-9._%+-]+@gmail\.com$/i.test(config().sender??'')&&(!!process.env.QUESTBOUND_MAIL_PASSWORD||fs.existsSync(path.join(dir,'.questbound-mail.dpapi'))));
+function createMailer({dir=process.env.TURQUILL_DATA||__dirname,transport=null}={}){
+ const config=()=>{let saved={};try{saved=JSON.parse(fs.readFileSync(path.join(dir,'.turquill-mail.json'),'utf8').replace(/^\uFEFF/,''));}catch{}return {...saved,...(process.env.TURQUILL_MAIL_SENDER?{sender:process.env.TURQUILL_MAIL_SENDER.trim(),feedback:true}:{})};};
+ const configured=()=>!!transport||(/^[a-z0-9._%+-]+@gmail\.com$/i.test(config().sender??'')&&(!!process.env.TURQUILL_MAIL_PASSWORD||fs.existsSync(path.join(dir,'.turquill-mail.dpapi'))));
  async function password(){
-  if(process.env.QUESTBOUND_MAIL_PASSWORD)return process.env.QUESTBOUND_MAIL_PASSWORD;
+  if(process.env.TURQUILL_MAIL_PASSWORD)return process.env.TURQUILL_MAIL_PASSWORD;
   if(process.platform!=='win32')throw fail();
-  return new Promise((resolve,reject)=>execFile('powershell.exe',['-NoProfile','-NonInteractive','-Command',"$ErrorActionPreference='Stop';$s=ConvertTo-SecureString ((Get-Content -Raw -LiteralPath $env:QB_MAIL_FILE).Trim());$p=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($s);try{[Console]::Write([Runtime.InteropServices.Marshal]::PtrToStringBSTR($p))}finally{[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($p)}"],{windowsHide:true,timeout:10000,env:{...process.env,QB_MAIL_FILE:path.join(dir,'.questbound-mail.dpapi')}},(e,out)=>e?reject(fail()):resolve(out.trim())));
+  return new Promise((resolve,reject)=>execFile('powershell.exe',['-NoProfile','-NonInteractive','-Command',"$ErrorActionPreference='Stop';$s=ConvertTo-SecureString ((Get-Content -Raw -LiteralPath $env:QB_MAIL_FILE).Trim());$p=[Runtime.InteropServices.Marshal]::SecureStringToBSTR($s);try{[Console]::Write([Runtime.InteropServices.Marshal]::PtrToStringBSTR($p))}finally{[Runtime.InteropServices.Marshal]::ZeroFreeBSTR($p)}"],{windowsHide:true,timeout:10000,env:{...process.env,QB_MAIL_FILE:path.join(dir,'.turquill-mail.dpapi')}},(e,out)=>e?reject(fail()):resolve(out.trim())));
  }
  async function send(to,subject,text){
   if(!configured())throw fail();
@@ -17,7 +17,7 @@ function createMailer({dir=process.env.QUESTBOUND_DATA||__dirname,transport=null
   await new Promise((resolve,reject)=>{
    const socket=tls.connect({host:'smtp.gmail.com',port:465,servername:'smtp.gmail.com',minVersion:'TLSv1.2',rejectUnauthorized:true});
    let buffer='',step=0,done=false;
-   const commands=[['EHLO questbound.local',250],['AUTH PLAIN '+Buffer.from('\0'+sender+'\0'+secret).toString('base64'),235],['MAIL FROM:<'+sender+'>',250],['RCPT TO:<'+to+'>',250],['DATA',354],['From: Turquill <'+sender+'>\r\nTo: <'+to+'>\r\nSubject: '+subject+'\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+Buffer.from(text).toString('base64').match(/.{1,76}/g).join('\r\n')+'\r\n.',250]];
+   const commands=[['EHLO turquill.local',250],['AUTH PLAIN '+Buffer.from('\0'+sender+'\0'+secret).toString('base64'),235],['MAIL FROM:<'+sender+'>',250],['RCPT TO:<'+to+'>',250],['DATA',354],['From: Turquill <'+sender+'>\r\nTo: <'+to+'>\r\nSubject: '+subject+'\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n'+Buffer.from(text).toString('base64').match(/.{1,76}/g).join('\r\n')+'\r\n.',250]];
    const finish=e=>{if(done)return;done=true;clearTimeout(deadline);socket.destroy();e?reject(fail()):resolve();};
    const deadline=setTimeout(()=>finish(Error('deadline')),30000);
    socket.setTimeout(15000,()=>finish(Error('timeout')));socket.on('error',finish);socket.on('end',()=>{if(!done)finish(Error('closed'));});

@@ -5,7 +5,7 @@ import {noteSnapshot,saveToAccount,guestIdentity,accountsOffered} from './accoun
 // Cloud saves: the current hero and adventure are also kept on the host PC under this browser's recovery code, a
 // little after play settles. Entering the code in another browser or device that can reach the game restores them
 // there (and that device then saves under the same code). Only a hash of the code is stored on the PC.
-const CLOUD_KEY='questbound.cloud.v1',codeLetters='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const CLOUD_KEY='turquill.cloud.v1',codeLetters='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const normalCode=code=>String(code??'').toUpperCase().replace(/[^A-Z0-9]/g,'');
 export const showCode=code=>normalCode(code).replace(/(.{4})(?=.)/g,'$1-');
 const randomBytes=n=>{const a=new Uint8Array(n);globalThis.crypto.getRandomValues(a);return a;};

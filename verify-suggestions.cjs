@@ -93,7 +93,7 @@ const calm={...r.freshStoryGame(wiz,story,r.newAdventure(wiz)),spellSlotsUsed:[1
 
 // ---- The screen (DungeonMaster.js) ----
 {const dm=['DungeonMaster.js','DmSuggestions.js','suggestionPanel.js'].map(f=>fs.readFileSync(f,'utf8')).join(' '),guide=fs.readFileSync('ActionGuide.js','utf8');
- assert.ok(dm.includes("const panelKey='questbound.suggestions.v1'")&&dm.includes('return {open:v?.open===true,')&&dm.includes('const [panel,setPanel]=useState(loadPanel)'),'Suggestions starts closed and is remembered per device');
+ assert.ok(dm.includes("const panelKey='turquill.suggestions.v1'")&&dm.includes('return {open:v?.open===true,')&&dm.includes('const [panel,setPanel]=useState(loadPanel)'),'Suggestions starts closed and is remembered per device');
  assert.ok(dm.includes('const battle=inBattle(game)||!!turnsNow;')&&dm.includes('const actionBar=battle?battleBar:calmBar;'),'buttons in battle, Suggestions otherwise');
  assert.ok(/dataSet=\{\{qb:panel\.open\?'seg-on':'chip',keepfocus:'true',suggest:'toggle'\}\}/.test(dm)&&/keepfocus:'true',suggest:id\}\}/.test(dm),'the switch and the sub-tabs keep the keyboard up');
  assert.ok(dm.includes('{!typing&&actionBar}'),'they step aside while typing on a phone');

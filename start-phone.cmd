@@ -1,3 +1,3 @@
 @echo off
 cd /d "%~dp0"
-call Questbound-Share.cmd
+call Turquill-Share.cmd

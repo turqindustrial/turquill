@@ -91,7 +91,7 @@ function tidyPeople(raw,brief,avoidNames=[],existing=[]){
  return {people:out,refused};
 }
 // The library as it stands on this PC (the script writes it between batches), for the uniqueness checks.
-function existingPeople(file=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-people','library.json')){
+function existingPeople(file=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-people','library.json')){
  try{const list=JSON.parse(fs.readFileSync(file,'utf8'));return Array.isArray(list)?list.filter(e=>e&&typeof e==='object'&&typeof e.name==='string').slice(0,2000).map(e=>({id:e.id,name:e.name,role:String(e.role??''),appearance:String(e.appearance??''),hook:String(e.hook??'')})):[];}catch{return [];}
 }
 async function writePeople(body,{apiKey,model,fetchImpl=fetch,onUsage=null,reasoning='low',timeout=170000,libraryFile}){

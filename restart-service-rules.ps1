@@ -1,5 +1,5 @@
 # Read-only identity checks for the server restarter. No processes are changed here.
-function Get-QuestboundCommandArguments {
+function Get-TurquillCommandArguments {
     param([string]$CommandLine)
     $questTokens = @()
     $questEnd = 0
@@ -13,7 +13,7 @@ function Get-QuestboundCommandArguments {
     return $questTokens
 }
 
-function Get-QuestboundHttpsOrigin {
+function Get-TurquillHttpsOrigin {
     param([string]$Link)
     $questParsed = $null
     if (-not [uri]::TryCreate($Link, [UriKind]::Absolute, [ref]$questParsed)) { return $null }
@@ -21,17 +21,17 @@ function Get-QuestboundHttpsOrigin {
     return $questParsed.GetLeftPart([System.UriPartial]::Authority)
 }
 
-function Test-QuestboundServiceOwner {
+function Test-TurquillServiceOwner {
     param($Process, [string]$Root, [string]$NodePath, [string]$Role, [string]$Script, $LauncherPid, $Session, [datetime]$SessionWrittenAt)
     if (-not $Process -or $Process.Name -ne 'node.exe' -or -not $Process.CreationDate) { return $false }
     # Check the executable and actual script argument, not a substring elsewhere in the command.
     if (-not $Process.ExecutablePath -or $Process.ExecutablePath -ine $NodePath) { return $false }
-    $questArgv = @(Get-QuestboundCommandArguments $Process.CommandLine)
+    $questArgv = @(Get-TurquillCommandArguments $Process.CommandLine)
     if ($questArgv.Count -lt 2) { return $false }
     if ($Role -eq 'share') {
         if ($questArgv.Count -ne 4 -or $questArgv[2] -cne '--public') { return $false }
-        $questSavedOrigin = Get-QuestboundHttpsOrigin $Session.link
-        if (-not $questSavedOrigin -or (Get-QuestboundHttpsOrigin $questArgv[3]) -ine $questSavedOrigin) { return $false }
+        $questSavedOrigin = Get-TurquillHttpsOrigin $Session.link
+        if (-not $questSavedOrigin -or (Get-TurquillHttpsOrigin $questArgv[3]) -ine $questSavedOrigin) { return $false }
     } elseif ($questArgv.Count -ne 2) { return $false }
 
     $questExpected = [IO.Path]::GetFullPath((Join-Path $Root $Script))

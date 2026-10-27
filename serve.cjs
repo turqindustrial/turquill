@@ -1,26 +1,29 @@
-// One process for a hosted Questbound (a cloud machine or container): the Dungeon Master and the table service on
+// One process for a hosted Turquill (a cloud machine or container): the Dungeon Master and the table service on
 // loopback, the gateway on the port the host gives it, and everything the services keep under one data folder.
 // Players open the gateway's https address and enter the invite code, exactly as on the tester link. On a PC at home,
-// use the launcher (Questbound.cmd) instead. Settings come from the environment:
+// use the launcher (Turquill.cmd) instead. Settings come from the environment:
 //   PORT                        the port to listen on (8080)
-//   QUESTBOUND_PUBLIC_ORIGIN    the https address players open, e.g. https://play.example.com (required)
-//   QUESTBOUND_DATA             the data folder (/data in the container): accounts, saves, sessions, art, logs. Copy
-//                               the host's place-art library (.questbound-place-art/, git- and docker-ignored) into it,
+//   TURQUILL_PUBLIC_ORIGIN    the https address players open, e.g. https://play.example.com (required)
+//   TURQUILL_DATA             the data folder (/data in the container): accounts, saves, sessions, art, logs. Copy
+//                               the host's place-art library (.turquill-place-art/, git- and docker-ignored) into it,
 //                               or every place the players reach is painted (and paid for) as before: see DEPLOY.md;
-//                               likewise the people library (.questbound-people/), or people met are all painted,
-//                               and the creature library (.questbound-creatures/), or creatures fought are painted
-//   QUESTBOUND_INVITE_CODE      eight digits; else one is made once and kept in the data folder
-//   OPENAI_API_KEY, OPENAI_MODEL, OPENAI_STORY_MODEL (and the other QUESTBOUND_* settings dm-server.cjs reads)
-//   QUESTBOUND_MAX_PLAYERS (500), QUESTBOUND_TURNS_PER_PLAYER (60 per 10 min), QUESTBOUND_TURNS_IN_ALL (1200)
-//   QUESTBOUND_REQUIRE_ACCOUNTS 1 requires signed-in, verified accounts (else accountsRequired in accountRules.js decides)
-//   QUESTBOUND_CLIENT_IP_HEADER the header the platform's proxy sets to the visitor's address (Fly-Client-IP on Fly.io;
+//                               likewise the people library (.turquill-people/), or people met are all painted,
+//                               and the creature library (.turquill-creatures/), or creatures fought are painted
+//   TURQUILL_INVITE_CODE      eight digits; else one is made once and kept in the data folder
+//   OPENAI_API_KEY, OPENAI_MODEL, OPENAI_STORY_MODEL (and the other TURQUILL_* settings dm-server.cjs reads)
+//   TURQUILL_MAX_PLAYERS (500), TURQUILL_TURNS_PER_PLAYER (60 per 10 min), TURQUILL_TURNS_IN_ALL (1200)
+//   TURQUILL_REQUIRE_ACCOUNTS 1 requires signed-in, verified accounts (else accountsRequired in accountRules.js decides)
+//   TURQUILL_CLIENT_IP_HEADER the header the platform's proxy sets to the visitor's address (Fly-Client-IP on Fly.io;
 //                               else the last X-Forwarded-For entry, the one the nearest proxy added)
+require('./name-migration.cjs').legacyEnv(); // settings given under their old names (QUESTBOUND_*) still count
 const path=require('node:path'),fs=require('node:fs'),crypto=require('node:crypto');
 const number=(value,fallback)=>{const n=Number(value);return Number.isFinite(n)&&n>0?n:fallback;};
-async function startHosted({dataDir=process.env.QUESTBOUND_DATA||path.join(__dirname,'.questbound-data'),port=number(process.env.PORT,8080),publicOrigin=process.env.QUESTBOUND_PUBLIC_ORIGIN||null,inviteCode=process.env.QUESTBOUND_INVITE_CODE||null,root=path.join(__dirname,'dist-phone'),bind='0.0.0.0',dmPort=0,syncPort=0,dm={},sync={},log=console.log}={}){
- if(!publicOrigin)throw Error('Set QUESTBOUND_PUBLIC_ORIGIN to the https address players will open (for example https://play.example.com).');
+async function startHosted({dataDir=process.env.TURQUILL_DATA||path.join(__dirname,'.turquill-data'),port=number(process.env.PORT,8080),publicOrigin=process.env.TURQUILL_PUBLIC_ORIGIN||null,inviteCode=process.env.TURQUILL_INVITE_CODE||null,root=path.join(__dirname,'dist-phone'),bind='0.0.0.0',dmPort=0,syncPort=0,dm={},sync={},log=console.log}={}){
+ if(!publicOrigin)throw Error('Set TURQUILL_PUBLIC_ORIGIN to the https address players will open (for example https://play.example.com).');
  if(!fs.existsSync(path.join(root,'index.html')))throw Error('Build the game first: npx expo export --platform web --output-dir dist-phone');
- fs.mkdirSync(dataDir,{recursive:true});process.env.QUESTBOUND_DATA=dataDir;
+ fs.mkdirSync(dataDir,{recursive:true});process.env.TURQUILL_DATA=dataDir;
+ // Files named .questbound-* before the rename of 2026-10-27 take their new names here, once.
+ require('./name-migration.cjs').migrateDataNames(dataDir);
  const {createServer}=require('./dm-server.cjs'),{createSyncServer}=require('./sync-server.cjs'),{createPhoneServer}=require('./phone-server.cjs');
  const listen=(server,at,host)=>new Promise((resolve,reject)=>{server.once('error',reject);server.listen(at,host,()=>resolve(server.address().port));});
  // `dm` holds the Dungeon Master's own options (its provider fetch among them); the gateway reaches loopback with the real fetch.
@@ -32,12 +35,12 @@ async function startHosted({dataDir=process.env.QUESTBOUND_DATA||path.join(__dir
  const codeFile=path.join(dataDir,'invite-code.txt');let code=/^\d{8}$/.test(inviteCode??'')?inviteCode:null;
  if(!code)try{const saved=fs.readFileSync(codeFile,'utf8').trim();if(/^\d{8}$/.test(saved))code=saved;}catch{}
  if(!code){code=String(crypto.randomInt(10000000,100000000));fs.writeFileSync(codeFile,code+'\n');}
- const gateway=createPhoneServer({root,host:bind,port,publicOrigin,code,expiresAt:Date.now()+365*86400000,sessionHours:24*60,maxSessions:number(process.env.QUESTBOUND_MAX_PLAYERS,500),dmLimit:number(process.env.QUESTBOUND_TURNS_PER_PLAYER,60),dmTotal:number(process.env.QUESTBOUND_TURNS_IN_ALL,1200),sessionStore:path.join(dataDir,'sessions.json'),feedbackFile:path.join(dataDir,'feedback.md'),metricsFile:path.join(dataDir,'metrics.jsonl'),metricsFrom:'hosted',backends:['http://127.0.0.1:'+dmAt],syncBackend:'http://127.0.0.1:'+syncAt,trustProxy:process.env.QUESTBOUND_CLIENT_IP_HEADER||(process.env.FLY_APP_NAME?'fly-client-ip':true)});
+ const gateway=createPhoneServer({root,host:bind,port,publicOrigin,code,expiresAt:Date.now()+365*86400000,sessionHours:24*60,maxSessions:number(process.env.TURQUILL_MAX_PLAYERS,500),dmLimit:number(process.env.TURQUILL_TURNS_PER_PLAYER,60),dmTotal:number(process.env.TURQUILL_TURNS_IN_ALL,1200),sessionStore:path.join(dataDir,'sessions.json'),feedbackFile:path.join(dataDir,'feedback.md'),metricsFile:path.join(dataDir,'metrics.jsonl'),metricsFrom:'hosted',backends:['http://127.0.0.1:'+dmAt],syncBackend:'http://127.0.0.1:'+syncAt,trustProxy:process.env.TURQUILL_CLIENT_IP_HEADER||(process.env.FLY_APP_NAME?'fly-client-ip':true)});
  const at=await listen(gateway.server,port,bind);
  log('Turquill is hosted at '+publicOrigin+' (port '+at+'). Invite code: '+code+'. Data in '+dataDir+'.');
- if(!fs.existsSync(path.join(dataDir,'.questbound-people','library.json')))log('No people library in '+path.join(dataDir,'.questbound-people')+': everyone players meet is invented and painted (and paid for) until it is copied there (DEPLOY.md).');
- if(!fs.existsSync(path.join(dataDir,'.questbound-creatures','library.json')))log('No creature library in '+path.join(dataDir,'.questbound-creatures')+': creatures players fight will be painted (and paid for) until it is copied there (DEPLOY.md).');
- if(!fs.existsSync(path.join(dataDir,'.questbound-place-art','library.json')))log('No place-art library in '+path.join(dataDir,'.questbound-place-art')+': places will be painted (and paid for) until it is copied there (DEPLOY.md).');
+ if(!fs.existsSync(path.join(dataDir,'.turquill-people','library.json')))log('No people library in '+path.join(dataDir,'.turquill-people')+': everyone players meet is invented and painted (and paid for) until it is copied there (DEPLOY.md).');
+ if(!fs.existsSync(path.join(dataDir,'.turquill-creatures','library.json')))log('No creature library in '+path.join(dataDir,'.turquill-creatures')+': creatures players fight will be painted (and paid for) until it is copied there (DEPLOY.md).');
+ if(!fs.existsSync(path.join(dataDir,'.turquill-place-art','library.json')))log('No place-art library in '+path.join(dataDir,'.turquill-place-art')+': places will be painted (and paid for) until it is copied there (DEPLOY.md).');
  const close=()=>Promise.all([gateway.server,table,dungeonMaster].map(s=>new Promise(resolve=>s.close(resolve))));
  return {gateway:gateway.server,table,dungeonMaster,info:{...gateway.info,port:at,dataDir,dmPort:dmAt,syncPort:syncAt,inviteCode:code},close};
 }

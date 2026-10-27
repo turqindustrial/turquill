@@ -1,6 +1,3 @@
 @echo off
-rem Double-click to host a playtest: starts Turquill (Turquill-Share.cmd runs this same file) and a secure internet link, then shows the link and invite code for your testers.
-cd /d "%~dp0"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0launch.ps1" -Share %*
-echo.
-pause
+rem The old name of Turquill-Share.cmd (until 2026-10-27): runs it with the same arguments.
+call "%~dp0Turquill-Share.cmd" %*

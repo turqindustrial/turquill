@@ -48,7 +48,7 @@ module.exports.outputTexts=outputTexts;module.exports.outputText=outputText;modu
 // own fetch whose header and silence limits are ten minutes, so the caller's own timeout is the only bound. That agent
 // is made from the global one Node keeps under undici's shared symbol (no package needed); if that ever changes it is
 // simply not used. Kept on globalThis so a reload of this file never makes another.
-const patientKey=Symbol.for('questbound.patientAgent');
+const patientKey=Symbol.for('turquill.patientAgent');
 async function patientDispatcher(fetchImpl=fetch,limit=600000){
  if(fetchImpl!==globalThis.fetch)return null;
  try{
@@ -95,7 +95,7 @@ async function longResponse(payload,{apiKey,timeout,fetchImpl=fetch,onUsage=null
  if(data?.status!=='completed')throw Object.assign(Error(incomplete),{kind:data?.status==='incomplete'?'incomplete':data?.status==='failed'?'failed':'cut-off',reason:data?.incomplete_details?.reason??data?.error?.code??null,seconds:seconds()});
  return data;
 }
-// What a failed long write was, in mechanical terms only (never the provider's words), for .questbound-diagnostics.jsonl.
+// What a failed long write was, in mechanical terms only (never the provider's words), for .turquill-diagnostics.jsonl.
 const mechanical=v=>typeof v==='string'&&/^[A-Za-z0-9_.:-]{1,60}$/.test(v)?v:null;
 function requestFailure(e){
  const known=['timeout','http','incomplete','failed','cut-off','network','refused','invalid-json','invalid-story','rejected','too-alike','no-story','ceiling'];

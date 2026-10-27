@@ -72,16 +72,16 @@ import SessionRating from './SessionRating';
 import {startPlayMetrics,notePlace,noteTale,noteTaleState,noteStoryWait,placeOf,talking,readInsight,noteRatingShown,sessionSeconds,deviceSeconds,subscribeInsight} from './playMetrics';
 import {ratingMomentOf,mayAskRating} from './ratingRules';
 // The title painting: a valley at dusk, dark on the left where the menu sits (see assets/title/ART-NOTES.md).
-const titlePainting=require('./assets/title/questbound-title.jpg');
+const titlePainting=require('./assets/title/turquill-title.jpg');
 
 export default function App(){
  const [ready,setReady]=useState(false),[profile,setProfile]=useState(currentProfile);
  useEffect(()=>{const off=subscribeProfile(setProfile);bootstrapAccount(undefined,{required:accountsRequired}).finally(()=>{setProfile(currentProfile());setReady(true);});return off;},[]);
- useEffect(()=>{const changed=e=>{if(e.key==='questbound.account.v2')globalThis.location?.reload();};globalThis.addEventListener?.('storage',changed);return()=>globalThis.removeEventListener?.('storage',changed);},[]);
+ useEffect(()=>{const changed=e=>{if(e.key==='turquill.account.v2')globalThis.location?.reload();};globalThis.addEventListener?.('storage',changed);return()=>globalThis.removeEventListener?.('storage',changed);},[]);
  if(!ready)return <View style={{flex:1,backgroundColor:colors.ink,padding:30}}><Text style={{color:colors.text}}>{accountsRequired?'Opening your account…':'Opening Turquill…'}</Text></View>;
- return <SceneTransitionProvider key={profile}><QuestboundApp/></SceneTransitionProvider>;
+ return <SceneTransitionProvider key={profile}><TurquillApp/></SceneTransitionProvider>;
 }
-function QuestboundApp() {
+function TurquillApp() {
   const {width:windowWidth,height:windowHeight}=useWindowDimensions(),compact=windowWidth<600;
   // Short, wide windows (a phone on its side, a small full-screen window) put the title beside the menu.
   const shortHome=windowHeight<640&&windowWidth>windowHeight*1.2,denseHome=windowHeight<700;

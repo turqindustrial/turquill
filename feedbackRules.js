@@ -9,7 +9,7 @@ const FEEDBACK_MAX_BYTES=16000;
 // The tester name the feedback form remembers, kept per account profile (playerStorage.js) so the next account on a
 // shared browser does not send the last player's name. The old browser-wide key is only ever taken up by the guest
 // profile (as playerStorage does with its other old keys) and is removed once moved.
-const TESTER_NAME_KEY='questbound.tester.name';
+const TESTER_NAME_KEY='turquill.tester.name';
 const testerKey=()=>typeof profileKey==='function'?profileKey(TESTER_NAME_KEY):TESTER_NAME_KEY;
 export function readTesterName(storage=globalThis.localStorage){
  try{

@@ -8,7 +8,7 @@ import {upgradeCharacter,upgradeAdventure,sameHeroText} from './saveMigrations';
 // remembered in the graveyard with how and where they fell. A grave is a memorial line only (name, species, class,
 // level, the tale and how they fell): no sheet and no save, so the fallen can never be played again. Graves written
 // before this kept the hero's sheet; it is dropped when the graveyard is read.
-const ROSTER_KEY='questbound.roster.v1',GRAVES_KEY='questbound.graveyard.v1';
+const ROSTER_KEY='turquill.roster.v1',GRAVES_KEY='turquill.graveyard.v1';
 export const maxRoster=8,maxGraves=40;
 const rosterText=(v,max)=>typeof v==='string'&&v.trim().length>0&&v.length<=max;
 export function rosterEntry(hero,game,health,chosen,now=Date.now()){

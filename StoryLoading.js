@@ -33,7 +33,7 @@ export const primer=[
  ['people','People remember','Talk to someone by typing what you say to them, or find them under Suggestions, Speak. They remember how you treat them: some will help, some will travel with you, and some will not forgive you easily.'],
  ['map','Your tale','The Quest tab shows the chapter under way and the Map where you can go. If something goes wrong, tap DM beside the message box and tell the Dungeon Master.'],
 ];
-const firstTime=()=>{try{return !globalThis.localStorage?.getItem('questbound.tips.v1');}catch{return false;}};
+const firstTime=()=>{try{return !globalThis.localStorage?.getItem('turquill.tips.v1');}catch{return false;}};
 // `hero` mode covers the Dungeon Master drafting a complete character from the player's idea.
 // `near` names the place the hero is leaving when the next tale is set in the same region.
 export default function StoryLoading({introId,hero=null,near=null}){
@@ -41,7 +41,7 @@ export default function StoryLoading({introId,hero=null,near=null}){
  // The primer keeps turning, round and round; a page turned by hand holds for twenty seconds, then it rolls on.
  const [teaching]=useState(()=>hero==null&&firstTime()),[page,setPage]=useState(0),pausedUntil=useRef(0),small=height<720,tiny=height<480;
  // Once the primer has been shown, the in-game How to play card has less to say (DungeonMaster.js).
- useEffect(()=>{if(teaching)try{globalThis.localStorage?.setItem('questbound.primer.v1','seen');}catch{}},[teaching]);
+ useEffect(()=>{if(teaching)try{globalThis.localStorage?.setItem('turquill.primer.v1','seen');}catch{}},[teaching]);
  useEffect(()=>{const a=setInterval(()=>setTip(t=>(t+1)%tips.length),tipMs),b=setInterval(()=>setSeconds(s=>s+1),1000);return()=>{clearInterval(a);clearInterval(b);};},[]);
  useEffect(()=>{if(!teaching)return;const t=setInterval(()=>{if(autoTurnDue(Date.now(),pausedUntil.current))setPage(p=>cyclePage(p,1,primer.length));},primerMs);return()=>clearInterval(t);},[teaching]);
  const turn=by=>{pausedUntil.current=Date.now()+primerResumeMs;setPage(p=>cyclePage(p,by,primer.length));};

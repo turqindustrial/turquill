@@ -72,9 +72,9 @@ assert.deepEqual(run(b),xs);assert.notDeepEqual(run(c),xs);assert.ok(xs.every(v=
   landmarks:[['The Low Gate','road','S',.25,'inn'],['The Stone Arch','landmark','E',.4,'inn'],['The Old Workings','cave','W',.3,'inn'],['The Burnt Terraces','ruin','SW',.35,'inn'],['The Wind Shrine','shrine','N',.4,'tower']].map(([name,kind,bearing,miles,from])=>({name,kind,bearing,miles,from,description:'A part of the city: '+name.toLowerCase()+', with its own lanes.',danger:'safe',feature:''}))};
  const cityGames=[['our gorge city',siege(gorge)]];
  // The real tale, when this PC has it (never in the repository: a tale's words stay on the host's shelf).
- const shelves=[process.env.QUESTBOUND_DATA,process.cwd()];
+ const shelves=[process.env.TURQUILL_DATA,process.cwd()];
  try{shelves.push(path.dirname(path.resolve(execFileSync('git',['rev-parse','--git-common-dir'],{encoding:'utf8'}).trim())));}catch{}
- for(const dir of shelves.filter(Boolean)){const file=path.join(dir,'.questbound-written','siege-of-dunscaur.json');if(fs.existsSync(file)){const tale=JSON.parse(fs.readFileSync(file,'utf8'));cityGames.push(['The Siege of Dunscaur',siege(tale.story,'dunscaur-check')]);break;}}
+ for(const dir of shelves.filter(Boolean)){const file=path.join(dir,'.turquill-written','siege-of-dunscaur.json');if(fs.existsSync(file)){const tale=JSON.parse(fs.readFileSync(file,'utf8'));cityGames.push(['The Siege of Dunscaur',siege(tale.story,'dunscaur-check')]);break;}}
  for(const [label,game] of cityGames){
   const cities=q.landCities(game,'home');
   assert.equal(cities.length,1,label+': one city');const city=cities[0];

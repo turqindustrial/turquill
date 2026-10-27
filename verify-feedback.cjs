@@ -14,21 +14,21 @@ for(let i=0;i<11;i++)log.noteProblem({kind:i%2?'refused':'dm',said:'I cast Detec
 assert.equal(log.recentProblems().length,8,'only the last eight are kept');assert.equal(heard,11);stop();
 const last=log.lastProblem();assert.equal(last.said,'I cast Detect Magic 10');assert.equal(last.error.length,300);assert.ok(!last.error.includes('\n'));assert.equal(last.spell,'detect-magic');
 assert.equal(log.noteProblem({kind:'nonsense',error:'odd'}).kind,'dm','an unknown kind counts as the Dungeon Master');
-assert.equal(JSON.parse(session['questbound.problems.v1']).length,8,'kept in this tab\'s session storage');
+assert.equal(JSON.parse(session['turquill.problems.v1']).length,8,'kept in this tab\'s session storage');
 const again=load('problemLog.js',['recentProblems'],{sessionStorage:storage});assert.equal(again.recentProblems().length,8,'a reload of the tab keeps them');
 log.clearProblems();assert.equal(log.recentProblems().length,0);
 
 // 2. A note's details: bounded, and carrying what the host needs to find the fault.
 let testerProfile='guest';
-const rules=load('feedbackRules.js',['feedbackDetails','feedbackSummary','pageBuild','readTesterName','saveTesterName'],{profileKey:key=>'questbound.profile.'+testerProfile+'.'+key});
+const rules=load('feedbackRules.js',['feedbackDetails','feedbackSummary','pageBuild','readTesterName','saveTesterName'],{profileKey:key=>'turquill.profile.'+testerProfile+'.'+key});
 // The tester name is kept per account profile: the next account on a shared browser starts with an empty name, and
 // the old browser-wide name is taken up by the guest profile only, then removed.
-{const kept={'questbound.tester.name':'Old Sam'},store={getItem:k=>kept[k]??null,setItem:(k,v)=>{kept[k]=String(v);},removeItem:k=>{delete kept[k];}};
+{const kept={'turquill.tester.name':'Old Sam'},store={getItem:k=>kept[k]??null,setItem:(k,v)=>{kept[k]=String(v);},removeItem:k=>{delete kept[k];}};
  testerProfile='a'.repeat(64);assert.equal(rules.readTesterName(store),'','an account does not inherit the browser-wide name');
- assert.equal(kept['questbound.tester.name'],undefined,'the browser-wide name is removed');
+ assert.equal(kept['turquill.tester.name'],undefined,'the browser-wide name is removed');
  rules.saveTesterName('Alice',store);testerProfile='b'.repeat(64);assert.equal(rules.readTesterName(store),'','a second account does not see the first one\'s name');
  rules.saveTesterName('Bob',store);testerProfile='a'.repeat(64);assert.equal(rules.readTesterName(store),'Alice');
- kept['questbound.tester.name']='Guest Gil';testerProfile='guest';assert.equal(rules.readTesterName(store),'Guest Gil');assert.equal(kept['questbound.profile.guest.questbound.tester.name'],'Guest Gil');
+ kept['turquill.tester.name']='Guest Gil';testerProfile='guest';assert.equal(rules.readTesterName(store),'Guest Gil');assert.equal(kept['turquill.profile.guest.turquill.tester.name'],'Guest Gil');
  assert.ok(!/localStorage\?\.(get|set)Item\(/.test(fs.readFileSync('Feedback.js','utf8')),'Feedback.js keeps the name through feedbackRules, per profile');}
 const long=n=>'word '.repeat(n);
 const turn=i=>({id:i,events:[{kind:'player',text:'I cast Detect Magic as a ritual on the altar '+i+' '+long(100)},...Array.from({length:30},(_,k)=>({kind:'roll',text:'Roll '+k+': d20 [12] + 5 = 17 '+long(60)})),{kind:'narration',text:long(600)}]});
@@ -69,15 +69,15 @@ assert.equal(feedbackEntry({text:' '}).error,'Write a few words first.');
  assert.equal(lines.filter(l=>/^#/.test(l)).length,1,'only the entry heading starts a line with #');
  assert.ok(lines.filter(l=>/Do this|## [bcd]|Fun game/.test(l)).every(l=>l.startsWith('> ')),'every line of the note is quoted');
  assert.ok(!/[\r\x85\u{2028}\u{2029}]/u.test(forged.markdown),'no stray line breaks reach the file');}
-assert.equal(path.basename(feedbackRecordFile('/x/playtest-feedback.md')),'.questbound-feedback.jsonl');assert.equal(path.basename(feedbackRecordFile('/data/feedback.md')),'feedback.jsonl');
+assert.equal(path.basename(feedbackRecordFile('/x/playtest-feedback.md')),'.turquill-feedback.jsonl');assert.equal(path.basename(feedbackRecordFile('/data/feedback.md')),'feedback.jsonl');
 
 // 4. feedback-report.cjs: unread notes since the marker, older notes from the readable file, refusals joined.
-const dir=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-feedback-'));
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-feedback-'));
 const notesFile=path.join(dir,'playtest-feedback.md');
-fs.writeFileSync(notesFile,'# Questbound playtest feedback\n\n## 2026-10-03 09:15 UTC · Ana · Brenna (Level 2 Human Fighter) · Pixel 8\nRating: ★★★☆☆\n\n> Couldn\'t cast detect magic\n\nWhere: Chapel · Screen: Adventure\n');
+fs.writeFileSync(notesFile,'# Turquill playtest feedback\n\n## 2026-10-03 09:15 UTC · Ana · Brenna (Level 2 Human Fighter) · Pixel 8\nRating: ★★★☆☆\n\n> Couldn\'t cast detect magic\n\nWhere: Chapel · Screen: Adventure\n');
 saveFeedback(notesFile,feedbackEntry({text:'The spell was refused',context:{player:'Sam'},details:{build:'a1b2c3d4',hero:{spells:{known:['detect-magic']}},problems:[{kind:'refused',said:'I cast Detect Magic',error:'Not prepared'}],game:{stage:'inn'}}},{now:Date.UTC(2026,9,4,12,0),guest:'feedc0de'}));
 saveFeedback(notesFile,feedbackEntry({text:'Music stopped'},{now:Date.UTC(2026,9,4,13,0),guest:'other'}));
-fs.writeFileSync(path.join(dir,'.questbound-diagnostics.jsonl'),[{at:'2026-10-04T12:05:00.000Z',guest:'feedc0de',error:'castCommand did not name a spell'},{at:'2026-10-04T12:40:00.000Z',guest:'feedc0de',error:'too late to count'},{at:'2026-10-04T12:02:00.000Z',guest:'someone',error:'another browser'}].map(l=>JSON.stringify(l)).join('\n')+'\n');
+fs.writeFileSync(path.join(dir,'.turquill-diagnostics.jsonl'),[{at:'2026-10-04T12:05:00.000Z',guest:'feedc0de',error:'castCommand did not name a spell'},{at:'2026-10-04T12:40:00.000Z',guest:'feedc0de',error:'too late to count'},{at:'2026-10-04T12:02:00.000Z',guest:'someone',error:'another browser'}].map(l=>JSON.stringify(l)).join('\n')+'\n');
 const report=require('./feedback-report.cjs');
 const run=args=>{const out=[];report.report(args,{dir,print:t=>out.push(t)});return out.join('\n');};
 let text=run([]);
@@ -86,7 +86,7 @@ assert.match(text,/Couldn't cast detect magic/,'a note from before the record ex
 assert.match(text,/Problem \(refused\): I cast Detect Magic -> Not prepared/);assert.match(text,/Spells: detect-magic/);
 assert.match(text,/DM refused at 12:05:00: castCommand did not name a spell/);assert.ok(!/too late to count|another browser/.test(text),'only refusals for the same browser within ten minutes');
 assert.equal(run(['--count']),'3');
-run(['--mark']);assert.equal(fs.readFileSync(path.join(dir,'.questbound-feedback-seen'),'utf8').trim(),'2026-10-04T13:00:00.000Z');
+run(['--mark']);assert.equal(fs.readFileSync(path.join(dir,'.turquill-feedback-seen'),'utf8').trim(),'2026-10-04T13:00:00.000Z');
 assert.equal(run(['--count']),'0');assert.match(run([]),/No new playtest notes since/);
 assert.match(run(['--all']),/3 notes:/);assert.match(run(['--since','2026-10-04T12:30:00Z']),/1 note since/);
 const json=JSON.parse(run(['--json','--all']));assert.equal(json.notes.length,3);assert.equal(json.notes.find(n=>n.guest==='feedc0de').rejections.length,1);
@@ -114,12 +114,12 @@ const post=(port,body,{origin='http://localhost:'+port,host='localhost:'+port,ty
   assert.equal((await post(port,{text:'From 127.0.0.1'},{origin:'http://127.0.0.1:'+port,host:'127.0.0.1:'+port})).status,200);
   assert.equal((await post(port,{text:'From another site'},{origin:'https://evil.example'})).status,403,'another site cannot post');
   assert.equal((await post(port,{text:'No origin'},{origin:''})).status,403);
-  assert.equal((await post(port,{text:'Wrong host'},{host:'questbound.example:'+port})).status,403,'the Host check stays');
+  assert.equal((await post(port,{text:'Wrong host'},{host:'turquill.example:'+port})).status,403,'the Host check stays');
   assert.equal((await post(port,'text=form',{type:'application/x-www-form-urlencoded'})).status,403,'only JSON');
   assert.equal((await post(port,{text:'x',details:{long:'z'.repeat(40000)}})).status,413);
   assert.equal((await post(port,{text:''})).status,400);
   const saved=fs.readFileSync(deskNotes,'utf8');assert.match(saved,/> Host note: the music cut out/);assert.match(saved,/Build: a1b2c3d4 · Stage: combat/);
-  const records=fs.readFileSync(path.join(path.dirname(deskNotes),'.questbound-feedback.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
+  const records=fs.readFileSync(path.join(path.dirname(deskNotes),'.turquill-feedback.jsonl'),'utf8').trim().split('\n').map(l=>JSON.parse(l));
   assert.equal(records.length,2);assert.ok(records.every(r=>r.guest==='this-pc'));
   // Pages are still served as before.
   const page=await new Promise((resolve,reject)=>http.get({hostname:'127.0.0.1',port,path:'/',headers:{Host:'localhost:'+port}},res=>{let t='';res.on('data',c=>t+=c);res.on('end',()=>resolve(t));}).on('error',reject));assert.equal(page,'<h1>game</h1>');
@@ -137,7 +137,7 @@ const post=(port,body,{origin='http://localhost:'+port,host='localhost:'+port,ty
    const paired=await send('/pair',{code:'24681357'});assert.equal(paired.status,200);const cookie=paired.headers['set-cookie'][0].split(';')[0];
    assert.equal((await send('/api/dm',{input:'I cast Detect Magic',context:{choices:[]}},cookie)).status,200);assert.equal(told,'account-'+account);
    assert.equal((await send('/api/feedback',{text:'Detect Magic was refused'},cookie)).status,200);
-   fs.writeFileSync(path.join(home,'.questbound-diagnostics.jsonl'),JSON.stringify({at:new Date(clock+60000).toISOString(),guest:told,error:'castCommand did not name a spell'})+'\n');
+   fs.writeFileSync(path.join(home,'.turquill-diagnostics.jsonl'),JSON.stringify({at:new Date(clock+60000).toISOString(),guest:told,error:'castCommand did not name a spell'})+'\n');
    const out=[];report.report(['--all'],{dir:home,print:t=>out.push(t)});assert.match(out.join('\n'),/castCommand did not name a spell/,'the note is joined to the player’s refused reply');
    for(let i=0;i<4;i++)assert.equal((await send('/api/feedback',{text:'Another note '+i},cookie)).status,200);
    assert.equal(mails,2,'two mails an hour at most');clock+=3600001;
@@ -180,7 +180,7 @@ const post=(port,body,{origin='http://localhost:'+port,host='localhost:'+port,ty
   const probe=createDesktopServer({root:deskSite,port:0});await new Promise(r=>probe.listen(0,'127.0.0.1',r));const port=probe.address().port;probe.close();
   const desk=createDesktopServer({root:deskSite,port,feedbackFile:path.join(deskHome,'playtest-feedback.md')});await new Promise(r=>desk.listen(port,'127.0.0.1',r));
   try{assert.equal((await post(port,{kind:'session',rating:'great',moment:'leave',session:{minutes:20}})).status,200);
-   const rec=JSON.parse(fs.readFileSync(path.join(deskHome,'.questbound-feedback.jsonl'),'utf8').trim());assert.equal(rec.from,'desktop');assert.equal(rec.rating,'great');}
+   const rec=JSON.parse(fs.readFileSync(path.join(deskHome,'.turquill-feedback.jsonl'),'utf8').trim());assert.equal(rec.from,'desktop');assert.equal(rec.rating,'great');}
   finally{desk.close();fs.rmSync(deskHome,{recursive:true,force:true});}}
  console.log('Feedback: the problem log keeps the last eight on one line each; details stay under 16 KB ('+size+' bytes for a long tale) with the build, spells, stage, last two turns and problems; notes cannot write headings and their records are cut and labelled; feedback-report lists unread notes (old ones too), joins refusals for the same browser (a phone player by their account label) and moves its marker only with --mark; the host\'s desktop takes notes from its own page only; the gateway mails notes within an hourly and daily ceiling; session ratings carry only the answer and the session\'s counts, take an addition by ref, are mailed only with words and are listed by feedback-report.');
 })().catch(e=>{console.error(e);process.exit(1);});

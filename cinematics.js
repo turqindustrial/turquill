@@ -4,7 +4,7 @@ import {useEffect,useState} from 'react';
 const listeners=new Set();let sequence=0;
 export function cue(kind,data={}){const event={id:++sequence,kind,...data};for(const fn of [...listeners])try{fn(event);}catch{}}
 // Development builds expose the hub so the overlays can be previewed from the browser console.
-if(process.env.NODE_ENV!=='production'&&typeof window!=='undefined')window.__questboundCue=cue;
+if(process.env.NODE_ENV!=='production'&&typeof window!=='undefined')window.__turquillCue=cue;
 export function useCue(handler){useEffect(()=>{listeners.add(handler);return()=>{listeners.delete(handler);};},[handler]);}
 // While a turn plays back, the HP bars follow the story (a blow lands, the bar drops) instead of jumping to the result.
 let shown={hero:null,foe:null};const hpListeners=new Set();

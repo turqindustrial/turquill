@@ -2,9 +2,9 @@
 // unique npcs for the players to run into so that it doesn't eat up all of my credit as they progress" and "make sure
 // to keep in mind every class, race, and gender"; then: "let's cut that npc amount to 300 for now and make sure they are
 // all entirely unique"). Three hundred people, written once through the Dungeon Master
-// (make-people-library.cjs, the 'people-batch' mode) and each painted once, live in .questbound-people/
+// (make-people-library.cjs, the 'people-batch' mode) and each painted once, live in .turquill-people/
 // (library.json: [{id np001…np300, name, gender, species, age, role, class, appearance, personality, motive, voice, hook,
-// placeKinds, terrains, toughness, attitude}] plus <id>.jpg; under QUESTBOUND_DATA when hosted); a second batch of about
+// placeKinds, terrains, toughness, attitude}] plus <id>.jpg; under TURQUILL_DATA when hosted); a second batch of about
 // thirty more a species (np301…np690) is planned the same way. When the Dungeon
 // Master brings someone new into a scene it is offered a few of them that suit where the hero is
 // (context.world.peopleToMeet); a person it introduces from the list is stored whole with `pool:<id>`, and their
@@ -232,7 +232,7 @@ function notALibraryFace(subject){
 // one person in a tale while another of their kind is free: people from the library in the game (avoid), faces already
 // given in the tale (and in its ready journey's own campaign, related) and faces painted for that very tale (from) are
 // taken; when every face that fits is taken, the one used least in the tale is shown again rather than painting. Each
-// tale's picks are kept (.questbound-art/people-picks/), so a person never changes face. A child, a ghost or a beast,
+// tale's picks are kept (.turquill-art/people-picks/), so a person never changes face. A child, a ghost or a beast,
 // or someone whose features no face in the library shares, is painted.
 // What a subject is matched on, or null when the library holds nobody like them (world-art.cjs validateSubject has
 // already kept only known values: species one of lookAlikeSpecies, gender, trained a class, kin a word). A portrait
@@ -284,7 +284,7 @@ function choosePortrait(entries,match,{campaignId='',personId='',taken=new Set()
  for(const e of list){const s=score(e);if(!bestScore||better(s,bestScore)){best=e;bestScore=s;}}
  return best;
 }
-function createPeopleLibrary({directory=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-people'),refreshMs=30000,cacheEntries=30,picksDirectory=null,campaignsKept=300,picksPerCampaign=600}={}){
+function createPeopleLibrary({directory=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-people'),refreshMs=30000,cacheEntries=30,picksDirectory=null,campaignsKept=300,picksPerCampaign=600}={}){
  let entries=[],faces=[],byId=new Map(),faceById=new Map(),checkedAt=0,stamp=null;
  const stampOf=async file=>{try{const info=await fs.stat(file);return info.mtimeMs+':'+info.size;}catch{return '-';}};
  const readList=async file=>{try{const raw=JSON.parse(await fs.readFile(file,'utf8'));return Array.isArray(raw)?raw:[];}catch{return [];}};

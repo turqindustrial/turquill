@@ -3,7 +3,7 @@
 // Dungeon Master itself admitted out of character. Feedback notes carry them (feedbackRules.js) and the Report chip
 // beside an error opens a note about the latest one. Kept in memory and in this tab's sessionStorage only.
 import {profileKey,subscribeProfile} from './playerStorage';
-const PROBLEM_KEY='questbound.problems.v1',PROBLEM_LIMIT=8,PROBLEM_TEXT=300;
+const PROBLEM_KEY='turquill.problems.v1',PROBLEM_LIMIT=8,PROBLEM_TEXT=300;
 export const problemKinds=['refused','dm','reported','save','table'];
 const problemListeners=new Set();
 const clampProblemText=value=>value==null?null:String(value).replace(/[\u0000-\u001f\u007f]+/g,' ').replace(/\s+/g,' ').trim().slice(0,PROBLEM_TEXT)||null;

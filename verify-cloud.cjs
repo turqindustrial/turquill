@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),http=require('node:http'),fs=require(
 // Cloud saves on the host PC (by recovery code, stored as a hash), streamed Dungeon Master turns passed through the
 // phone gateway and read by the game, and week-long pairing that survives a gateway restart.
 const {createSyncServer}=require('./sync-server.cjs'),{createPhoneServer}=require('./phone-server.cjs');
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-cloud-'));
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-cloud-'));
 const listen=server=>new Promise(r=>server.listen(0,'127.0.0.1',()=>r(server.address().port)));
 const call=(port,route,{method='POST',headers={},body,host}={})=>new Promise((resolve,reject)=>{const req=http.request({hostname:'127.0.0.1',port,path:route,method,headers:{...(host?{Host:host}:{}),'Content-Type':'application/json',...(method==='POST'?{Origin:'http://localhost:8081'}:{}),...(accountCookie?{Cookie:accountCookie}:{}),...headers}},res=>{let text='';res.on('data',c=>text+=c);res.on('end',()=>resolve({status:res.statusCode,headers:res.headers,text}));});req.on('error',reject);req.end(body===undefined?undefined:typeof body==='string'?body:JSON.stringify(body));});
 const fixture=require('./test-fixtures.cjs').fixtures(tmp),snapshot=fixture.snapshot();
@@ -10,8 +10,8 @@ let accountCookie='';
 (async()=>{
  // ---- The table service keeps cloud saves ----
  const {server:sync,accounts}=createSyncServer({...fixture.options,cloudLimit:2,limits:{'cloud-load':[2,600000]}});const sp=await listen(sync);
- assert.equal((await call(sp,'/cloud-load',{body:{code:'ABCDEFGHJK23'},headers:{'X-Questbound-Client':'anonymous'}})).status,401);
- const verified=await fixture.user(accounts);accountCookie='questbound_account='+verified.token;
+ assert.equal((await call(sp,'/cloud-load',{body:{code:'ABCDEFGHJK23'},headers:{'X-Turquill-Client':'anonymous'}})).status,401);
+ const verified=await fixture.user(accounts);accountCookie='turquill_account='+verified.token;
  assert.equal((await call(sp,'/cloud-save',{body:{code:'short',snapshot}})).status,400);
  const saved=await call(sp,'/cloud-save',{body:{code:'abcd-efgh-jk23',snapshot}});assert.equal(saved.status,200);
  const files=fs.readdirSync(path.join(tmp,'cloud'));assert.equal(files.length,1);assert.match(files[0],/^[a-f0-9]{64}\.json$/,'Only a hash of the code names the file');
@@ -19,11 +19,11 @@ let accountCookie='';
  assert.equal((await call(sp,'/cloud-load',{body:{code:'ZZZZZZZZZZZZ'}})).status,404);
  // Each caller may try only so many codes; the answer says how long to wait.
  const limited=await call(sp,'/cloud-load',{body:{code:'ZZZZZZZZZZZZ'}});assert.equal(limited.status,429);assert.ok(Number(limited.headers['retry-after'])>=1);assert.match(limited.text,/Too many tries/);
- assert.equal((await call(sp,'/cloud-load',{body:{code:'ZZZZZZZZZZZZ'},headers:{'X-Questbound-Client':'another-visitor'}})).status,404,'counted per caller');
+ assert.equal((await call(sp,'/cloud-load',{body:{code:'ZZZZZZZZZZZZ'},headers:{'X-Turquill-Client':'another-visitor'}})).status,404,'counted per caller');
  assert.equal((await call(sp,'/cloud-save',{body:{code:'BBBBBBBBBBBB',snapshot}})).status,200);
  assert.equal((await call(sp,'/cloud-save',{body:{code:'CCCCCCCCCCCC',snapshot}})).status,507,'New saves cannot evict existing players');
  assert.equal(fs.readdirSync(path.join(tmp,'cloud')).filter(f=>f.endsWith('.json')).length,2);
- assert.equal((await call(sp,'/cloud-load',{body:{code:'ABCDEFGHJK23'},headers:{'X-Questbound-Client':'original-owner'}})).status,200,'The original save survives');
+ assert.equal((await call(sp,'/cloud-load',{body:{code:'ABCDEFGHJK23'},headers:{'X-Turquill-Client':'original-owner'}})).status,200,'The original save survives');
  assert.equal((await call(sp,'/cloud-save',{body:{code:'ABCDEFGHJK23',snapshot}})).status,200,'Existing saves can still update');
  assert.equal((await call(sp,'/cloud-save',{body:{code:'BBBBBBBBBBBB',snapshot:{version:2}}})).status,400);
  sync.close();
@@ -46,10 +46,10 @@ let accountCookie='';
  assert.match(streamed.headers['content-type'],/ndjson/);assert.equal(streamed.text,lines.join(''));
  const whole=await call(gp,'/api/dm',{...H,headers:{...O,Cookie:cookie},body:{input:'x',context:{choices:[]}}});assert.equal(JSON.parse(whole.text).narration,'Whole.');
  // The host's pause switch stops streamed turns too, before the Dungeon Master is asked; the game shows it and does not retry.
- fs.writeFileSync(path.join(tmp,'.questbound-guests-paused'),'Paused by the host');
+ fs.writeFileSync(path.join(tmp,'.turquill-guests-paused'),'Paused by the host');
  const paused=await call(gp,'/api/dm',{...H,headers:{...O,Cookie:cookie},body:{input:'x',context:{choices:[]},stream:true}});
  assert.equal(paused.status,503);assert.match(JSON.parse(paused.text).error,/paused by the host/);assert.doesNotMatch(JSON.parse(paused.text).error,/Please wait before asking|busy with other players/);
- fs.rmSync(path.join(tmp,'.questbound-guests-paused'));
+ fs.rmSync(path.join(tmp,'.turquill-guests-paused'));
  assert.match((await call(gp,'/api/dm',{...H,headers:{...O,Cookie:cookie},body:{input:'x',context:{choices:[]},stream:true}})).headers['content-type'],/ndjson/,'resumed without a restart');
  assert.equal((await call(gp,'/api/dm',{...H,headers:{...O,Cookie:cookie},body:{input:'x',context:{choices:[],mode:'adventure',idea:'y'.repeat(400)}}})).status,400,'an idea longer than the game allows is refused at the gateway');
  const cloud=await call(gp,'/api/sync/cloud-save',{...H,headers:{...O,Cookie:cookie},body:{code:'ABCDEFGHJK23',snapshot}});assert.equal(cloud.status,200);assert.match(forwarded.url,/\/cloud-save$/);

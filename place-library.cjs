@@ -1,9 +1,9 @@
 // The host's library of ready landscape paintings (2026-10-13, the host's words: "about 100-200 pre-generated
 // images for image at the intro of an area that the player travels to rather than have them generated at the time
 // of travel, to save money on the API"). Every picture of a place the player arrives at is taken from
-// .questbound-place-art/ (<id>.jpg plus library.json: [{id, kind, terrain, light, name, description, file}]) at no
+// .turquill-place-art/ (<id>.jpg plus library.json: [{id, kind, terrain, light, name, description, file}]) at no
 // cost; portraits and creatures are still painted (world-art.cjs). A place keeps the picture it was first given
-// (its pick is kept under .questbound-art/place-picks/), two places of one tale get different pictures while the
+// (its pick is kept under .turquill-art/place-picks/), two places of one tale get different pictures while the
 // library has another that fits, and a place painted before the library keeps its painting. While the library is
 // still being painted, a place whose land has nothing that fits yet is painted as before; once every kind of place
 // has a picture in every terrain, a landscape is never painted again.
@@ -51,7 +51,7 @@ function choosePicture(entries,{kind,terrain},{campaignId,placeId,taken=new Set(
  const anywhere=entries.filter(e=>e.kind===kind);
  return best(free(anywhere))??best(anywhere)??best(free(entries))??best(entries);
 }
-function createPlaceLibrary({directory=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-place-art'),picksDirectory=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-art','place-picks'),refreshMs=30000,cacheEntries=40,campaignsKept=300,picksPerCampaign=600}={}){
+function createPlaceLibrary({directory=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-place-art'),picksDirectory=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-art','place-picks'),refreshMs=30000,cacheEntries=40,campaignsKept=300,picksPerCampaign=600}={}){
  let entries=[],byId=new Map(),complete=false,checkedAt=0,stamp=null;const bad=new Set();
  // library.json grows while the library is painted: looked at again at most every refreshMs.
  async function refresh(){

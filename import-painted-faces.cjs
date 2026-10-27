@@ -2,10 +2,10 @@
 // "make sure all unique faces painted are added to the library of potential faces in the game"). Run by hand:
 //   node import-painted-faces.cjs [--dir D]           what would be added (and what is left out, and why); writes nothing
 //   node import-painted-faces.cjs [--dir D] --write   adds them
-// D is the data folder that holds .questbound-art/ and .questbound-people/ (default: QUESTBOUND_DATA, else beside
-// this file). Options: --no-desktop (no copy to the Desktop folder "Questbound people"), --desktop <folder> (another
+// D is the data folder that holds .turquill-art/ and .turquill-people/ (default: TURQUILL_DATA, else beside
+// this file). Options: --no-desktop (no copy to the Desktop folder "Turquill people"), --desktop <folder> (another
 // copy folder), --list (one line per portrait), --json (the result as JSON).
-// Each painted portrait (.questbound-art/<key>.json and <key>.jpg) becomes a face only in .questbound-people/faces.json
+// Each painted portrait (.turquill-art/<key>.json and <key>.jpg) becomes a face only in .turquill-people/faces.json
 // with its picture copied as nf001.jpg, nf002.jpg… (people-library.cjs validFace): the species (one of the common
 // peoples, or for an invented people the nearest common one, the invented people's name kept as `kin`; a people whose
 // features none of the common peoples has, such as fur, a beak or antennae, keeps no species and is shown only to
@@ -54,7 +54,7 @@ function faceFromRecord(record){
 }
 // The whole run: what would be added and what is left out. `write` adds it.
 function importFaces({dataDir,write=false,desktop=null,log=()=>{}}={}){
- const art=path.join(dataDir,'.questbound-art'),dir=path.join(dataDir,'.questbound-people'),facesFile=path.join(dir,'faces.json');
+ const art=path.join(dataDir,'.turquill-art'),dir=path.join(dataDir,'.turquill-people'),facesFile=path.join(dir,'faces.json');
  let existing=[];try{const raw=JSON.parse(fs.readFileSync(facesFile,'utf8'));existing=Array.isArray(raw)?raw.filter(lib.validFace):[];}catch{}
  const sources=new Set(existing.map(e=>e.source)),pictures=new Set(existing.map(e=>e.sha256));
  // The library's own pictures (people and faces), by their bytes.
@@ -110,8 +110,8 @@ function summary({added,left},write){
 }
 if(require.main===module){
  const positional=process.argv.slice(2).find((a,i,all)=>!a.startsWith('--')&&!['--dir','--desktop'].includes(all[i-1]));
- const dataDir=path.resolve(arg('--dir')??positional??process.env.QUESTBOUND_DATA??__dirname),write=process.argv.includes('--write');
- const desktop=process.argv.includes('--no-desktop')?null:arg('--desktop')??path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Questbound people');
+ const dataDir=path.resolve(arg('--dir')??positional??process.env.TURQUILL_DATA??__dirname),write=process.argv.includes('--write');
+ const desktop=process.argv.includes('--no-desktop')?null:arg('--desktop')??path.join(process.env.USERPROFILE||process.env.HOME||dataDir,'Desktop','Turquill people');
  try{
   const result=importFaces({dataDir,write,desktop:write?desktop:null,log:m=>console.log(m)});
   if(process.argv.includes('--json'))console.log(JSON.stringify({dataDir,write,...result},null,1));

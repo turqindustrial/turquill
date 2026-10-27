@@ -73,7 +73,7 @@ export function AccountSettings({onRestore,busy,onChange,onLegal}){
      <GameButton icon="transfer" label="Load saved adventure" disabled={busy||working||!account.savedAt} onPress={loadSaved} style={st.half}/>
     </View>
    </>}
-   {!account.hold&&<GameButton label="Import my adventure from before accounts" disabled={working||busy} onPress={()=>run(async()=>{const raw=await PlayerStorage.scope('guest').getItem('questbound.adventure.v1');if(!raw)throw Error('No earlier adventure was found in this browser.');await onRestore(JSON.parse(raw));},'Earlier adventure copied into this account. Other accounts keep their own saves.')}/>}
+   {!account.hold&&<GameButton label="Import my adventure from before accounts" disabled={working||busy} onPress={()=>run(async()=>{const raw=await PlayerStorage.scope('guest').getItem('turquill.adventure.v1');if(!raw)throw Error('No earlier adventure was found in this browser.');await onRestore(JSON.parse(raw));},'Earlier adventure copied into this account. Other accounts keep their own saves.')}/>}
    <View style={st.buttons}>
     <GameButton icon="back" label="Sign out" disabled={working} onPress={()=>run(async()=>{await signOut();setManage(false);},'Signed out. Your account keeps its saved adventure.')} style={st.half}/>
     <GameButton icon="settings" label={manage?'Close':'Manage account'} disabled={working} onPress={()=>{setManage(v=>!v);setMessage('');}} style={st.half}/>

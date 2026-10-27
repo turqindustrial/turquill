@@ -21,7 +21,7 @@
 // too (add, source 'player'), straight into the compendium: the list on offer stays the library's own varied ten. The
 // compendium keeps at most `compendium` tales; past that the retired ones least played go first (the longest unplayed
 // first among equals), never a journey on offer.
-// Journeys are kept on disk (.questbound-tales/, under QUESTBOUND_DATA when hosted) as journey-g<generation>-<uuid>.json,
+// Journeys are kept on disk (.turquill-tales/, under TURQUILL_DATA when hosted) as journey-g<generation>-<uuid>.json,
 // with library-state.json (recent writes and seeds, the last failure) so a restart keeps the pace. Tales from an earlier
 // generation, and the old per-opening stock (<opening>-g4-<uuid>.json), are cleared away once when the library is made.
 // The running Dungeon Master keeps this module loaded between requests (it is not reloaded with dm-server.cjs); bump
@@ -79,7 +79,7 @@ function publicJourney(entry,{cover=null}={}){
  const s=entry.story,subject=coverSubject(entry);
  return {id:entry.id,title:pitchLine(s.title,100),hook:entry.pitch.hook,blurb:entry.pitch.blurb,mood:entry.pitch.mood,special:entry.pitch.special,chapters:chapterCount(s),region:typeof s.region==='string'&&s.region.trim()?pitchLine(s.region,60):null,terrain:journeyTerrains.includes(s.terrain)?s.terrain:null,cover:subject&&cover&&cover(subject)?subject:null};
 }
-function createLibrary({dir=path.join(process.env.QUESTBOUND_DATA||__dirname,'.questbound-tales'),now=Date.now,random=Math.random,...options}={}){
+function createLibrary({dir=path.join(process.env.TURQUILL_DATA||__dirname,'.turquill-tales'),now=Date.now,random=Math.random,...options}={}){
  const set={...librarySettings,...options};
  const current=new RegExp('^journey-g'+generation+'-[0-9a-f-]{36}\\.json$'),stateFile=path.join(dir,'library-state.json');
  // Tales of an earlier generation and the old stock of tales written ahead per opening are never served.

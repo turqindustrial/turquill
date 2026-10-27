@@ -1,7 +1,7 @@
 // Player accounts: an email and a password that keep a player's hero and adventure on the host's PC, so signing in on
 // another phone or browser (or after this one loses its data) brings them back.
 //
-// What is kept, in .questbound-accounts/ (git-ignored):
+// What is kept, in .turquill-accounts/ (git-ignored):
 //   <id>.json       the password as a salted scrypt hash, and hashes of the sign-in tokens handed to that player's devices
 //   <id>.save.json  their latest hero and adventure
 // <id> is a hash of the email address: the address itself is never written down, so the folder holds no list of who
@@ -22,12 +22,12 @@ const validPassword=password=>typeof password==='string'&&password.length>=8&&pa
 const commonPasswords=new Set(['password','password1','password12','password123','password1234','passw0rd','p@ssw0rd','p@ssword','12345678','123456789','1234567890','0123456789','87654321','987654321','11111111','00000000','12341234','11223344','123123123','qwertyui','qwertyuiop','qwerty12','qwerty123','qwerty1234','1q2w3e4r','1q2w3e4r5t','1qaz2wsx','zaq12wsx','asdfghjk','asdfghjkl','zxcvbnm1','abc12345','abcd1234','abcdefgh','iloveyou','iloveyou1','sunshine','sunshine1','princess','princess1','football','football1','baseball','basketball','welcome1','welcome123','letmein1','letmein123','trustno1','superman','starwars','dragon12','dragon123','monkey12','master12','shadow12','michael1','jennifer','computer','whatever','internet','corvette','mustang1','charlie1','liverpool','chelsea1','pokemon1','minecraft','fortnite','changeme','default1','admin123','administrator','dungeons','dungeonsanddragons','dragons1']);
 function weakPassword(password,email=''){
  const p=String(password).normalize('NFKC').toLowerCase(),local=String(email).split('@')[0];
- return commonPasswords.has(p)||/^(.)\1+$/.test(p)||'01234567890123456789'.includes(p)||'98765432109876543210'.includes(p)||'abcdefghijklmnopqrstuvwxyz'.includes(p)||/questbound|turquill/.test(p)||(!!email&&p===email)||(local.length>=4&&p.includes(local));
+ return commonPasswords.has(p)||/^(.)\1+$/.test(p)||'01234567890123456789'.includes(p)||'98765432109876543210'.includes(p)||'abcdefghijklmnopqrstuvwxyz'.includes(p)||/turquill|turquill/.test(p)||(!!email&&p===email)||(local.length>=4&&p.includes(local));
 }
 const accountId=email=>crypto.createHash('sha256').update('questbound-account-v1:'+email).digest('hex');
 const digest=token=>crypto.createHash('sha256').update(String(token)).digest('hex');
 const hashPassword=(password,salt)=>new Promise((resolve,reject)=>crypto.scrypt(password.normalize('NFKC'),salt,64,{N:32768,r:8,p:1,maxmem:96*1024*1024},(error,key)=>error?reject(error):resolve(key)));
-function createAccounts({dir=path.join(__dirname,'.questbound-accounts'),limit=500,tokenDays=7,idleHours=12,tokensEach=8,now=Date.now,validSnapshot=()=>true,mailer=require('./mailer.cjs').createMailer(),requireVerification=true,backup=null,audit=()=>{},allowGuests=false,guestLimit=5000,guestDays=90,guestIdleDays=60,onGuestRemoved=()=>{}}={}){
+function createAccounts({dir=path.join(__dirname,'.turquill-accounts'),limit=500,tokenDays=7,idleHours=12,tokensEach=8,now=Date.now,validSnapshot=()=>true,mailer=require('./mailer.cjs').createMailer(),requireVerification=true,backup=null,audit=()=>{},allowGuests=false,guestLimit=5000,guestDays=90,guestIdleDays=60,onGuestRemoved=()=>{}}={}){
  const guestDir=path.join(dir,'guests');
  const file=id=>path.join(dir,id+'.json'),saveFile=id=>path.join(dir,id+'.save.json'),guestFile=id=>path.join(guestDir,id+'.json');
  const readFrom=where=>{try{const record=JSON.parse(fs.readFileSync(where,'utf8'));return record&&record.v===1?record:null;}catch{return null;}};

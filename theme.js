@@ -14,7 +14,7 @@ import {defaultTheme,validTheme,mapColours,writtenColour,themedText,pageBackgrou
 // `goldBright` the pale accent of whatever is selected or lit, `goldDeep`/`goldLine`/`goldFaint` the dark main colour
 // of rules and borders. Real gold (coins) is `coin`.
 const web=Platform.OS==='web';
-const KEY='questbound.theme.v1';
+const KEY='turquill.theme.v1';
 function load(){try{return validTheme(JSON.parse(globalThis.localStorage?.getItem(KEY)??'{}')?.theme);}catch{return defaultTheme;}}
 let current=load(),queued=false;
 let mode=(()=>{try{return JSON.parse(globalThis.localStorage?.getItem(KEY)??'{}').mode==='light'?'light':'dark';}catch{return 'dark';}})();
@@ -22,8 +22,8 @@ const listeners=new Set(),written=new Map(),extras=[];
 // One style rule holds every colour variable; it is rewritten when the theme changes or a new colour is first used.
 function paint(){
  queued=false;if(typeof document==='undefined')return;
- let sheet=document.getElementById('questbound-colours');
- if(!sheet){sheet=document.createElement('style');sheet.id='questbound-colours';document.head.appendChild(sheet);}
+ let sheet=document.getElementById('turquill-colours');
+ if(!sheet){sheet=document.createElement('style');sheet.id='turquill-colours';document.head.appendChild(sheet);}
  let rules='';for(const [key,colour] of written)rules+='--qb-'+key+':'+writtenColour(colour,current,mode)+';';
  for(const extra of extras)for(const [name,value] of Object.entries(extra(current,mode)))rules+=name+':'+value+';';
  sheet.textContent=':root{'+rules+'color-scheme:'+mode+';}';document.documentElement.setAttribute('data-theme',current);document.documentElement.setAttribute('data-appearance',mode);
