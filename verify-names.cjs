@@ -90,7 +90,7 @@ assert.ok(fs.readFileSync('Questbound.cmd','utf8').includes('call "%~dp0Turquill
 
 // 4. Nothing of the old name is left but the stored identifiers (their bytes are hashed or saved) and history.
 {const keep=/questbound-(?:art-v1|account-v1|cloud-v1|ban-v1|table-ban-v1|campaign-invite-v2|invite-caller-v1|guest-v1|metrics-v1|mod-v1|people-plan-v2|people-plan-2|people-picks|place-picks|creature-picks|hero-face|creatures-v1|people-library|place-library|creature-library)/g;
- const allowed=new Set(['storageMigration.js','name-migration.cjs','verify-names.cjs','Questbound.cmd','Questbound-Share.cmd','account-server.cjs','phone-server.cjs','public/index.html','verify-theme.cjs','launch.ps1','AGENTS.md','assets/title/ART-NOTES.md','make-emblem.cjs','accounts.cjs','private-secrets.cjs','restart-game-services.ps1','serve.cjs']);
+ const allowed=new Set(['storageMigration.js','name-migration.cjs','verify-names.cjs','Questbound.cmd','Questbound-Share.cmd','account-server.cjs','phone-server.cjs','public/index.html','verify-theme.cjs','launch.ps1','AGENTS.md','assets/title/ART-NOTES.md','make-emblem.cjs','accounts.cjs','private-secrets.cjs','restart-game-services.ps1','serve.cjs','DEPLOY.md','Dockerfile','README.md','compose.production.yml']);
  const files=execSync('git ls-files',{encoding:'utf8'}).split('\n').filter(f=>f&&!f.startsWith('save-fixtures/')&&!f.startsWith('public/fonts/')&&!/\.(png|jpe?g|webp|woff2?|ico|zip)$/i.test(f)&&fs.existsSync(f));
  // Phrases that name the old kind on purpose: the migrations, the wrappers and their comments.
  const meant=/QUESTBOUND_\*|questbound\.\*|\.questbound-\*|Questbound(?:-Share)?\.cmd|questbound_(?:account|phone)|questbound\.theme\.v1|\(Questbound, until 2026-10-27\)/g;
