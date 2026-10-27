@@ -115,7 +115,7 @@ async function dm(){
  await assert.rejects(generate({...body,guest},{...opts,moderation:paused,fetchImpl:async()=>{throw Error('never asked');}}),e=>e.httpStatus===403&&/paused for about 20 minutes/.test(e.message));
  assert.equal((await generate(body,{...opts,moderation:paused})).actionId,'travel-inn','the host\'s own requests are never paused');
  // The live path loads moderation.cjs and keeps it loaded (revision literal in dm-server.cjs).
- assert.ok(fs.readFileSync('dm-server.cjs','utf8').includes("require('./moderation.cjs').revision!==1")&&require('./moderation.cjs').revision===1);
+ assert.ok(fs.readFileSync('dm-server.cjs','utf8').includes("require('./moderation.cjs').revision!==2")&&require('./moderation.cjs').revision===2);
 }
 async function service(){
  const {createSyncServer}=require('./account-server.cjs'),{fixtures}=require('./test-fixtures.cjs'),{report:feedbackReport}=require('./feedback-report.cjs'),{findIdentity}=require('./accounts.cjs');

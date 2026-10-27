@@ -9,7 +9,7 @@ const tick=(ms=5)=>new Promise(resolve=>setTimeout(resolve,ms));
 const story={title:'T',premise:'P',opening:'O',objective:'J',resolution:'R',secret:'S',foe:'Bog hag',foeSpecies:'Hag',foeAppearance:'A bent green crone with river weed for hair.',locations:{inn:{name:'A',description:'a'},bridge:{name:'B',description:'b'},tower:{name:'C',description:'c'}},npcs:{keeper:{name:'Ivo',species:'Human',role:'r',motive:'m',appearance:'A tall man with a grey beard and a limp.',personality:'Gruff, slow to trust, quick to laugh.',ties:{other:'friend',foe:'enemy',note:'n'}},mara:{name:'Sera',species:'Elf',role:'r',motive:'m',appearance:'A slight elf with ink on her hands and a red scarf.',personality:'Curious and precise, always counting.',ties:{other:'friend',foe:'neutral',note:'n'}}}};
 (async()=>{
  // ---- The job store ----
- assert.equal(revision,1);assert.ok(jobIdOk('abcdefghijklmnop'));assert.ok(!jobIdOk('short'));assert.ok(!jobIdOk('has spaces in it, sixteen'));assert.ok(!jobIdOk(42));
+ assert.equal(revision,2);assert.ok(jobIdOk('abcdefghijklmnop'));assert.ok(!jobIdOk('short'));assert.ok(!jobIdOk('has spaces in it, sixteen'));assert.ok(!jobIdOk(42));
  let clock=1000;const jobs=createStoryJobs({now:()=>clock});
  assert.equal(jobs.start('bad id',()=>1).status,'failed');assert.equal(jobs.poll('nobody-knows-this-job').status,'unknown');
  let release,runs=0;const slow=()=>{runs++;return new Promise(resolve=>{release=resolve;});};

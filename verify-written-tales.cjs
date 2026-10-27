@@ -26,8 +26,8 @@ write('refused-tale.json',{...listed,id:'5c3b8e40-6d7f-4091-8cbd-2e3f4a5b6c7d',s
 write('plays.json','{}');
 (async()=>{
  const {createShelf,publicTale,revision,fileProblem}=require('./written-shelf.cjs');
- assert.equal(revision,3);
- assert.ok(read('dm-server.cjs').includes("function loadWritten(){if(require('./written-shelf.cjs').revision!==3)"),'the Dungeon Master reloads the shelf only when its revision changes');
+ assert.equal(revision,4);
+ assert.ok(read('dm-server.cjs').includes("function loadWritten(){if(require('./written-shelf.cjs').revision!==4)"),'the Dungeon Master reloads the shelf only when its revision changes');
  const refused=[];const shelf=createShelf({dir:shelfDir,onRefused:n=>refused.push(n),fresh:0});
 
  // ---- 1. The shelf: what passes, what is listed, what is refused (noted with mechanical fields only) ----

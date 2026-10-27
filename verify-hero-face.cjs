@@ -166,7 +166,7 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-hero-face-'));
   assert.match(party,/<HeroPortrait hero=\{c\.face\} game=\{game\} size=\{20\}\/>/,'each hero at the table shows their own choice');
   assert.match(portrait,/heroArtSubject\(hero,game\)/);
   for(const file of ['HeroFacePicker.js'])assert.ok(!/#[0-9a-f]{3,8}\b/i.test(readText(file).replace(/tint\('#[0-9a-f]+'\)/gi,'')),'colours in tint()');
-  assert.equal(faces.revision,2);assert.equal(require('./world-art.cjs').revision,13);
+  assert.equal(faces.revision,3);assert.equal(require('./world-art.cjs').revision,14);
   console.log('Screens: the builder\'s review and the Character Sheet show the face with Another face and Paint my own; the party cards show each hero\'s own.');
   console.log('Passed: free hero portraits by default, a choice of faces, and Paint my own once.');
  }finally{fs.rmSync(tmp,{recursive:true,force:true});}

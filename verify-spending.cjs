@@ -14,7 +14,7 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'turquill-spending-'));
 const fresh=name=>{const d=path.join(tmp,name);fs.mkdirSync(d);return d;};
 (async()=>{
  // The running Dungeon Master reloads spending.cjs only when its revision differs from dm-server's literal.
- assert.equal(revision,7);assert.match(fs.readFileSync(path.join(__dirname,'dm-server.cjs'),'utf8'),/require\('\.\/spending\.cjs'\)\.revision!==7\)/,'dm-server loads this revision afresh');
+ assert.equal(revision,8);assert.match(fs.readFileSync(path.join(__dirname,'dm-server.cjs'),'utf8'),/require\('\.\/spending\.cjs'\)\.revision!==8\)/,'dm-server loads this revision afresh');
  assert.equal(defaultTotal,8);assert.equal(defaultMonth,30);
  for(const w of Object.values(words))assert.doesNotMatch(w,busy,'never retried by the game as a busy Dungeon Master: '+w);
 

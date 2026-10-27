@@ -239,7 +239,7 @@ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'qb-portraits-'));
   // ---------- Ready journeys written ahead are offered the library's people too ----------
   assert.match(readText('dm-server.cjs'),/const cast=live\?await castFor\(loadPeople\(\)\):null;\s*return require\('\.\/adventure-generator\.cjs'\)\.generateAdventure\(\{[^\n]*ahead:true[^\n]*,cast,/,'the library writer passes the castable people');
   // ---------- Revisions ----------
-  {const dm=readText('dm-server.cjs');assert.equal(lib.revision,4);assert.match(dm,/people-library\.cjs'\)\.revision!==4\)/);assert.equal(require('./world-art.cjs').revision,13);assert.equal(require('./hero-faces.cjs').revision,2);}
+  {const dm=readText('dm-server.cjs');assert.equal(lib.revision,5);assert.match(dm,/people-library\.cjs'\)\.revision!==5\)/);assert.equal(require('./world-art.cjs').revision,14);assert.equal(require('./hero-faces.cjs').revision,3);}
   fs.rmSync(tmp,{recursive:true,force:true});
   console.log('Passed: portraits and creatures without paying for paintings.');
  }catch(e){fs.rmSync(tmp,{recursive:true,force:true});console.error(e);process.exit(1);}
