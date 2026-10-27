@@ -94,19 +94,19 @@ const layers=['ring-v2','core-v3','ring-glow-v2','core-glow-v3','seal-v2','seal-
 for(const file of [...layers,'assets/title/turquill-emblem.webp','assets/title/questbound-seal-source.webp'])assert.ok(fs.existsSync(file)&&isWebp(file)&&fs.statSync(file).size<400000,file+' is a WebP under 400 KB');
 for(const name of ['seal-v2','seal-ring-v1','seal-core-v2'])assert.ok(fs.statSync('public/emblem/'+name+'.webp').size<60000,name+': the top bar, boot card and pairing page pictures stay light');
 // Under the blade the turning ring holds scales lined up by measurement (mismatch), blended in past the blade's outline.
-// The serpent ring comes from the host's painting (make-emblem.cjs); the Turquill T is drawn over the painting's still
-// layer with the Q and the dagger taken out (make-turquill-core.cjs), and the small pictures are made from the two layers
-// (make-turquill-emblem.cjs), since 2026-10-25.
+// The serpent ring comes from the host's painting (make-emblem.cjs); the Turquill sword and quill are drawn over the
+// painting's still layer with the Q and the dagger taken out (make-turquill-core.cjs), and the small pictures are made
+// from the two layers (make-turquill-emblem.cjs), since 2026-10-26.
 const maker=read('make-emblem.cjs');assert.ok(maker.includes('questbound-seal-source.webp')&&['public/emblem/ring-v2.webp','public/emblem/ring-glow-v2.webp','public/emblem/seal-ring-v1.webp','public/emblem/core-v2.webp'].every(file=>maker.includes(file))&&maker.includes('bladeShare')&&maker.includes('ringShare')&&maker.includes('function mismatch('),'make-emblem.cjs makes the ring layers from the painting');
-{const core=read('make-turquill-core.cjs'),rest=read('make-turquill-emblem.cjs');assert.ok(core.includes('core-v2.webp')&&core.includes('core-v3.webp')&&core.includes("globalCompositeOperation='destination-out'"),'make-turquill-core.cjs draws the T over the painting\'s still layer with the Q taken out');
+{const core=read('make-turquill-core.cjs'),rest=read('make-turquill-emblem.cjs');assert.ok(core.includes('core-v2.webp')&&core.includes('core-v3.webp')&&core.includes('questbound-seal-source.webp')&&core.includes("globalCompositeOperation='destination-out'")&&core.includes('const sword=')&&core.includes('const quill='),'make-turquill-core.cjs draws the sword and quill over the painting\'s still layer with the Q taken out');
  assert.ok(['public/emblem/core-glow-v3.webp','public/emblem/seal-v2.webp','public/emblem/seal-core-v2.webp','assets/title/turquill-emblem.webp'].every(file=>rest.includes(file)),'make-turquill-emblem.cjs makes the small pictures from the two layers');}
 assert.ok(!fs.existsSync('serpent.js'),'the drawn serpent is retired');
 for(const file of sources)assert.ok(!/qb:'(serpent|launch-ring|bezel)'/.test(read(file))&&!read(file).includes("from './serpent'"),file+' no longer draws the old seal');
 const emblem=read('TitleEmblem.js'),launch=read('LaunchScreen.js');
-// The ring (with its stars and their twinkles) turns under the Q and its blade, which are drawn after it and stay still.
+// The ring (with its stars and their twinkles) turns under the sword and quill, which are drawn after it and stay still.
 const order=['emblem-back','emblem-turn','emblem-ring','emblem-core','emblem-sheen'].map(name=>emblem.indexOf("qb:'"+name+"'"));
 assert.ok(order.every((at,i)=>at>0&&(i===0||at>order[i-1])),'the layers are drawn back to front: '+order);
-assert.ok(/\{ringStars\.map\(twinkle\)\}\r?\n  <\/View>/.test(emblem)&&emblem.includes('{twinkle(northStar)}'),'the ring stars twinkle as they turn, the Q\'s north star where it stands');
+assert.ok(/\{ringStars\.map\(twinkle\)\}\r?\n  <\/View>/.test(emblem)&&emblem.includes('{twinkle(centreStar)}')&&web.includes('[data-star=centre]'),'the ring stars twinkle as they turn, the star at the crossing where it stands');
 assert.ok(emblem.includes('const box=Math.round(size*1.42),'),'the same square as the old seal and its serpent');
 assert.ok(launch.includes('<TitleEmblem size={ring} place="launch"/>')&&!/\bq=Math.round/.test(launch),'the launch card shows the emblem');
 assert.ok(loading.includes('<TitleEmblem size={106} place="story"/>'),'the story seal is the emblem');
@@ -115,10 +115,10 @@ assert.ok(app.includes('<EmblemMark size={42}/>')&&!app.includes('emblemQ'),'the
 // The ring goes all the way round, steadily (2026-10-10, the host: "make sure the ouroboros animation goes all the way
 // around the circle"): once in 36 s, from exactly 0 to 360 degrees so the wrap cannot be seen, and on the page's one
 // clock (a negative delay) so a change of screen never turns it back. The boot card and the pairing page turn it alike.
-assert.ok(web.includes('[data-qb=emblem-turn]{animation:qb-emblem-turn 36s linear infinite;')&&web.includes('@keyframes qb-emblem-turn{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}')&&!/\[data-qb=emblem-core\]\{[^}]*animation/.test(web),'the ring turns once in 36 seconds the way the head faces; the Q stays still');
+assert.ok(web.includes('[data-qb=emblem-turn]{animation:qb-emblem-turn 36s linear infinite;')&&web.includes('@keyframes qb-emblem-turn{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}')&&!/\[data-qb=emblem-core\]\{[^}]*animation/.test(web),'the ring turns once in 36 seconds the way the head faces; the sword and quill stay still');
 assert.ok(emblem.includes('export const emblemTurn=36;')&&emblem.includes("turn.current.style.animationDelay=Math.round(emblemPhase())+'ms'")&&emblem.includes("<View ref={turn} dataSet={{qb:'emblem-turn'}}"),'each emblem joins the page clock');
 {const phase=eval('('+emblem.match(/export const emblemPhase=([^;]+);/)[1].replace('emblemTurn','36')+')');assert.equal(phase(0),-0);assert.equal(phase(40000),-4000);assert.equal(phase(36000*3+500),-500);}
-assert.ok(web.includes('-webkit-mask:url(/emblem/core-v3.webp)')&&web.includes('[data-qb=emblem-shine]{')&&web.includes('@keyframes qb-emblem-twinkle')&&web.includes('@keyframes qb-emblem-glow'),'the sheen is cut to the T, the stars twinkle, the glow breathes');
+assert.ok(web.includes('-webkit-mask:url(/emblem/core-v3.webp)')&&web.includes('[data-qb=emblem-shine]{')&&web.includes('@keyframes qb-emblem-twinkle')&&web.includes('@keyframes qb-emblem-glow'),'the sheen is cut to the sword and quill, the stars twinkle, the glow breathes');
 assert.ok(web.includes('html[data-effects=light] [data-qb=emblem] *{animation:none !important;}'),'still in the Light atmosphere');
 assert.ok(web.includes('html[data-covered=on] [data-qb=emblem]:not([data-place=story]) *{animation-play-state:paused !important;}'),'still behind a full-screen cover');
 assert.ok(web.includes('@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important;'),'still with reduced motion');
@@ -132,11 +132,11 @@ for(const file of ['phone-server.cjs','desktop-server.cjs'])assert.ok(read(file)
 const icon=read('assets/title/icon.html');
 assert.ok(icon.includes('url(turquill-emblem.webp)')&&!icon.includes('fonts.googleapis.com')&&!icon.includes('qb-serpent'),'the app icon is the emblem and needs no internet');
 assert.ok(read('make-icons.cjs').includes("[48,'assets/questbound-favicon.png','inset=.01&simple=1']")&&read('make-icons.cjs').includes("[180,'public/icons/apple-touch-icon.png','inset=.06&simple=1']"),'small icons are cut close to the ring');
-for(const file of ['public/manifest.json','public/index.html','fullscreen.js','phone-server.cjs'])assert.ok(!/\.png\?v=[123]\b/.test(read(file))&&/\.png\?v=4\b/.test(read(file)),file+' asks for the new icons');
+for(const file of ['public/manifest.json','public/index.html','fullscreen.js','phone-server.cjs'])assert.ok(!/\.png\?v=[1234]\b/.test(read(file))&&/\.png\?v=5\b/.test(read(file)),file+' asks for the new icons (the sword and quill, 2026-10-26)');
 // The gold icon for the next big update is stored, not deployed (2026-10-10): its whole set and how to switch it in.
 {const dir='assets/branding/next-icon/',readme=read(dir+'README.md');
  for(const file of ['apple-touch-icon.png','icon-192.png','icon-512.png','maskable-512.png','questbound-favicon.png','favicon-32.png','questbound-icon.png','android-icon-background.png','android-icon-foreground.png','android-icon-monochrome.png'])assert.ok(fs.existsSync(dir+file)&&readme.includes('`'+file+'`'),dir+file+' is stored and described');
- assert.ok(readme.includes('?v=5')&&read('make-icons.cjs').includes("process.argv.includes('--next')")&&read(dir+'icon.html').includes('url(../../title/turquill-emblem.webp)'),'the stored icon says how to switch it in and is drawn by make-icons.cjs --next');
+ assert.ok(readme.includes('?v=6')&&read('make-icons.cjs').includes("process.argv.includes('--next')")&&read(dir+'icon.html').includes('url(../../title/turquill-emblem.webp)'),'the stored icon says how to switch it in and is drawn by make-icons.cjs --next');
  for(const file of ['public/manifest.json','public/index.html','fullscreen.js','phone-server.cjs',...sources])assert.ok(!read(file).includes('next-icon'),file+' does not use the stored icon yet');}
 // The desktop side column folds to a rail (remembered per device) so a conversation can take the whole width.
 {const adv=read('Adventure.js');assert.ok(adv.includes("const sideKey='questbound.side.v1'")&&adv.includes('label="Hide the side panel"')&&adv.includes('label="Show the side panel"')&&adv.includes("qb:'side-rail'")&&/wide&&folded&&/.test(adv)&&/wide&&!folded&&/.test(adv),'the side column can be folded and unfolded on wide screens');}

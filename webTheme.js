@@ -300,9 +300,9 @@ input::placeholder,textarea::placeholder{font-style:italic;}
 /* The emblem (TitleEmblem.js; its layers are made by make-emblem.cjs in public/emblem). The serpent ring and its stars
    turn all the way round once every 36 seconds (TitleEmblem.js emblemTurn), steadily, the way the dragon's head faces
    (clockwise), chasing its tail: qb-emblem-turn runs from exactly 0 to 360 degrees, so the wrap cannot be seen, and each
-   emblem joins the page's one clock (a negative delay) so a screen change never turns it back. The Q and its whole blade
-   stay still on top. A blurred copy breathes, a light sweeps across the Q now and then (inside the Q's own shape) and
-   the stars twinkle. Only transform and opacity move. */
+   emblem joins the page's one clock (a negative delay) so a screen change never turns it back. The sword and quill
+   (make-turquill-core.cjs) stay still on top. A blurred copy breathes, a light sweeps across them now and then (inside
+   the still layer's own shape) and the stars twinkle. Only transform and opacity move. */
 [data-qb=emblem]{position:relative;filter:var(--qb-emblem-filter);}
 [data-qb^=emblem-]{background-position:center;background-size:100% 100%;background-repeat:no-repeat;}
 [data-qb=emblem-back]{background-image:var(--qb-emblem-back);}
@@ -320,7 +320,7 @@ input::placeholder,textarea::placeholder{font-style:italic;}
 [data-qb=emblem-twinkle]{background-image:${sparkle};background-size:contain;opacity:0;animation:qb-emblem-twinkle 6.4s ease-in-out infinite;}
 [data-qb=emblem-twinkle][data-star=east]{animation-delay:1.6s;}
 [data-qb=emblem-twinkle][data-star=south]{animation-delay:3.2s;}
-[data-qb=emblem-twinkle][data-star=north]{animation-delay:4.8s;}
+[data-qb=emblem-twinkle][data-star=centre]{animation-delay:4.8s;}
 @keyframes qb-emblem-twinkle{0%,60%,100%{opacity:0;transform:scale(.3) rotate(0deg);}72%{opacity:1;transform:scale(1) rotate(30deg);}86%{opacity:0;transform:scale(.5) rotate(60deg);}}
 [data-qb=emblem-mark]{background:url(/emblem/seal-v2.webp) center/contain no-repeat;filter:var(--qb-emblem-filter);}
 [data-qb=launch-prompt]{animation:qb-pulse 2.2s ease-in-out infinite;}

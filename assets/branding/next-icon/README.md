@@ -2,12 +2,13 @@
 
 The host asked on 2026-10-10 to "design the new phone icon but keep it stored until the next big update". This folder
 holds it. Nothing here is served or referenced by the game: the live icons are still the red emblem made by
-`node make-icons.cjs` from `assets/title/icon.html`, at `?v=4`.
+`node make-icons.cjs` from `assets/title/icon.html`, at `?v=5` (the sword and quill since 2026-10-26).
 
-The design: the Questbound emblem (the host's painting, `assets/title/turquill-emblem.webp` from `make-emblem.cjs`)
+The design: the Turquill emblem (the serpent of the host's painting round the sword and quill,
+`assets/title/turquill-emblem.webp` from `make-turquill-emblem.cjs`)
 in gold, the Gold theme's treatment (`grayscale(1) sepia(1) saturate(2.4) hue-rotate(-2deg) brightness(1.4)
 contrast(1.25)`, a little more contrast at small sizes): pale yellow-gold highlights, deep bronze shadows, on a deep
-dark ground with a faint warm glow, cut close to the serpent ring so the Q reads on a home screen and in a browser tab.
+dark ground with a faint warm glow, cut close to the serpent ring so the sword and quill read on a home screen and in a browser tab.
 iOS rounds the corners itself (the ring stays clear of them); the maskable icon keeps the serpent inside Android's safe
 circle (the middle 80%).
 
@@ -30,16 +31,16 @@ nothing else).
 ## Switching it in (at the next big update)
 
 1. Copy each file above to the path in the last column (the names already match the live ones).
-2. Raise the icon version from `?v=4` to `?v=5` everywhere the icons are linked, so installed copies and browser tabs
+2. Raise the icon version from `?v=5` to `?v=6` everywhere the icons are linked, so installed copies and browser tabs
    fetch the new ones:
    - `public/manifest.json` (the three `icons` entries),
-   - `public/index.html` (`<link rel="icon" ...icon-192.png?v=5>` and `<link rel="apple-touch-icon" ...?v=5>`),
+   - `public/index.html` (`<link rel="icon" ...icon-192.png?v=6>` and `<link rel="apple-touch-icon" ...?v=6>`),
    - `fullscreen.js` (the `apple-touch-icon` link it adds),
    - `phone-server.cjs` (the pairing page's icon links); the share gateway must then be restarted.
 3. Make it the page `make-icons.cjs` draws by default: copy `icon.html` over `assets/title/icon.html` (change its
    picture path from `../../title/turquill-emblem.webp` to `turquill-emblem.webp`) and give `make-icons.cjs`'s
    main list the insets used for `nextIcons` (the small icons all cut close to the ring), then run `node make-icons.cjs`
    to check it draws the same files.
-4. Update `verify-presentation.cjs` (it checks `?v=4` and the live icon list), `assets/title/ART-NOTES.md` and the title
+4. Update `verify-presentation.cjs` (it checks `?v=5` and the live icon list), `assets/title/ART-NOTES.md` and the title
    page bullet in `AGENTS.md`, rebuild `dist-phone` (`npm.cmd run build:web`) and run the checks.
 5. An iPhone keeps the icon it was added with: players remove the home-screen icon and add it again.

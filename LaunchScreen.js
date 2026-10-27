@@ -4,7 +4,7 @@ import {playSound} from './audio';
 import {fonts,colors,tint} from './theme';
 import TitleEmblem from './TitleEmblem';
 const native=Platform.OS!=='web';
-// The launch sequence: the emblem draws in (TitleEmblem: its serpent ring turns slowly round the still Q and dagger), the title rises out of the dark, then one tap begins the game.
+// The launch sequence: the emblem draws in (TitleEmblem: its serpent ring turns slowly round the still sword and quill), the title rises out of the dark, then one tap begins the game.
 // That tap is also what browsers require before sound (and full screen) may start.
 export default function LaunchScreen({ready,onBegin}){
  const {width,height}=useWindowDimensions(),size=Math.min(width,height);

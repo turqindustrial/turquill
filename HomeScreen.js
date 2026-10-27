@@ -8,7 +8,7 @@ import {combatBasics} from './combatRules';
 import {fonts,colors,tint} from './theme';
 import {playSound} from './audio';
 // The title screen: the name in crimson foil, a console-style menu and the emblem (TitleEmblem: the host's painting,
-// its serpent ring turning round the still Q and dagger) on the launch glow. Desktop places the seal beside the menu with the saved hero in a slim strip below
+// its serpent ring turning round the still sword and quill) on the launch glow. Desktop places the seal beside the menu with the saved hero in a slim strip below
 // it; upright phones place it above the hero strip and the compact menu; a phone on its side keeps the name and the
 // compact menu on the left with the seal beside them.
 export function homeLayout(width,height){

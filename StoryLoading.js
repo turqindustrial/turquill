@@ -8,7 +8,7 @@ import {tipMs,primerMs,primerResumeMs,cyclePage,autoTurnDue} from './loadingRule
 // While the Dungeon Master writes a new tale (about three minutes when the story writer thinks hard, half a minute
 // when it does not), a loading screen in the manner of a console game: the chosen opening, a turning seal, a moving
 // progress line and a new tip every few seconds, round and round for as long as the wait lasts. The seal is the
-// game's emblem (TitleEmblem), its serpent ring turning slowly round the Q.
+// game's emblem (TitleEmblem), its serpent ring turning slowly round the sword and quill.
 const tips=[
  ['speak','Talk to anyone. Tap a person above the message box, or name them in what you type.'],
  ['d20','Every roll is real: the dice decide how it goes, the Dungeon Master tells you what it means.'],

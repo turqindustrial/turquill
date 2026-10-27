@@ -15,8 +15,8 @@
     <title>%WEB_TITLE%</title>
     <meta name="description" content="A fantasy tabletop adventure with an AI Dungeon Master, for phone and computer." />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=4" />
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=4" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=5" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=5" />
     <!-- The typefaces are served from this host (public/fonts, written by fetch-fonts.cjs; SIL Open Font License), never from
          Google, so no third party sees the player load the game. The title faces and the interface face start downloading
          with the page; each face is one file covering all its weights (fonts-v2.css). -->
@@ -34,8 +34,9 @@
       #root { display: flex; height: 100%; flex: 1; position: relative; z-index: 1; }
       #qb-boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 0;
         background: radial-gradient(ellipse 60% 45% at 50% 42%, var(--b1, rgba(200,40,70,.18)), transparent 70%), radial-gradient(ellipse 120% 80% at 50% 110%, var(--b2, rgba(110,60,200,.16)), transparent 70%), var(--b0, #08060a); }
-      /* The emblem (public/emblem/seal-ring-v1.webp and seal-core-v2.webp, made by make-emblem.cjs from the host's
-         painting), breathing, its serpent ring turning all the way round once every 36 s under the still Q and blade, as
+      /* The emblem (public/emblem/seal-ring-v1.webp from the host's painting by make-emblem.cjs, and seal-core-v2.webp, the
+         sword and quill, by make-turquill-emblem.cjs), breathing, its serpent ring turning all the way round once every
+         36 s under the still sword and quill, as
          in the game (TitleEmblem.js emblemTurn; the game's emblems join this turn where the page's clock has it). The
          script after this style block tints it for the player's theme (--bf) as the game does. In Light it keeps a dark disc. */
       #qb-boot .seal { position: relative; width: 150px; height: 150px; margin: 0 auto; }

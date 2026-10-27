@@ -1,7 +1,7 @@
-// Draws the Questbound app icons (home screen, manifest, browser tab, Android adaptive layers): the emblem (the host's
+// Draws the Turquill app icons (home screen, manifest, browser tab, Android adaptive layers): the emblem (the host's
 // painting, assets/title/turquill-emblem.webp from make-turquill-emblem.cjs) on the game's dark launch glow. The artwork is the
 // page assets/title/icon.html; this photographs it at each size with a headless Chrome or Edge (a throwaway profile).
-// Run: node make-icons.cjs        (after node make-emblem.cjs when the painting changes; no internet needed)
+// Run: node make-icons.cjs        (after node make-turquill-emblem.cjs when the emblem changes; no internet needed)
 //      node make-icons.cjs --next (the gold icon stored for the next big update, assets/branding/next-icon/icon.html,
 //                                   into that folder only; nothing live changes: see its README.md)
 // After changing the icon, raise the version in the icon links (public/manifest.json, public/index.html,
@@ -13,7 +13,7 @@ const next=process.argv.includes('--next');
 const page='file:///'+path.join(__dirname,...(next?['assets','branding','next-icon']:['assets','title']),'icon.html').replace(/\\/g,'/');
 const profile=fs.mkdtempSync(path.join(os.tmpdir(),'questbound-icons-'));
 // [pixels, file, query]. Maskable and adaptive icons keep the emblem inside the safe middle; small ones are cut close to
-// the serpent ring (simple) so the Q stays readable.
+// the serpent ring (simple) so the sword and quill stay readable.
 const icons=[
  [1024,'assets/questbound-icon.png','inset=.09'],
  [512,'public/icons/icon-512.png','inset=.09'],
