@@ -12,7 +12,7 @@ import {View,Image,Platform,StyleSheet} from 'react-native';
 // a screen change never sends the ring back to where it began.
 // `size` is the size of the old ring; the emblem's square (the serpent, its head and the star points) is 1.42 times it.
 const web=Platform.OS==='web';
-const whole=web?null:require('./assets/title/questbound-emblem.webp');
+const whole=web?null:require('./assets/title/turquill-emblem.webp');
 // Where the four-point stars shine, as shares of the square (from the painting): west, east and south on the ring
 // (they turn with it), north on the Q.
 const ringStars=[[12.7,49.7,'west'],[87.9,49.6,'east'],[50.2,86.3,'south']],northStar=[50.2,25.8,'north'];

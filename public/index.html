@@ -34,7 +34,7 @@
       #root { display: flex; height: 100%; flex: 1; position: relative; z-index: 1; }
       #qb-boot { position: fixed; inset: 0; display: grid; place-items: center; z-index: 0;
         background: radial-gradient(ellipse 60% 45% at 50% 42%, var(--b1, rgba(200,40,70,.18)), transparent 70%), radial-gradient(ellipse 120% 80% at 50% 110%, var(--b2, rgba(110,60,200,.16)), transparent 70%), var(--b0, #08060a); }
-      /* The emblem (public/emblem/seal-ring-v1.webp and seal-core-v1.webp, made by make-emblem.cjs from the host's
+      /* The emblem (public/emblem/seal-ring-v1.webp and seal-core-v2.webp, made by make-emblem.cjs from the host's
          painting), breathing, its serpent ring turning all the way round once every 36 s under the still Q and blade, as
          in the game (TitleEmblem.js emblemTurn; the game's emblems join this turn where the page's clock has it). The
          script after this style block tints it for the player's theme (--bf) as the game does. In Light it keeps a dark disc. */
@@ -43,7 +43,7 @@
         animation: qb-breathe 2.6s ease-in-out infinite; }
       #qb-boot .emblem i { position: absolute; inset: 0; background: center/contain no-repeat; }
       #qb-boot .emblem .ring { background-image: url(/emblem/seal-ring-v1.webp); animation: qb-turn 36s linear infinite; }
-      #qb-boot .emblem .core { background-image: url(/emblem/seal-core-v1.webp); }
+      #qb-boot .emblem .core { background-image: url(/emblem/seal-core-v2.webp); }
       html[data-appearance=light] #qb-boot .seal::before { content: ""; position: absolute; inset: 0; border-radius: 50%;
         background: radial-gradient(circle closest-side, rgb(20,1,15) 0, rgb(20,1,15) 86%, rgba(20,1,15,0) 100%); }
       #qb-boot .words { margin-top: 22px; text-align: center; font: 700 22px/1.2 Georgia, 'Times New Roman', serif; letter-spacing: 7px; text-transform: uppercase;

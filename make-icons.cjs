@@ -1,5 +1,5 @@
 // Draws the Questbound app icons (home screen, manifest, browser tab, Android adaptive layers): the emblem (the host's
-// painting, assets/title/questbound-emblem.webp from make-emblem.cjs) on the game's dark launch glow. The artwork is the
+// painting, assets/title/turquill-emblem.webp from make-turquill-emblem.cjs) on the game's dark launch glow. The artwork is the
 // page assets/title/icon.html; this photographs it at each size with a headless Chrome or Edge (a throwaway profile).
 // Run: node make-icons.cjs        (after node make-emblem.cjs when the painting changes; no internet needed)
 //      node make-icons.cjs --next (the gold icon stored for the next big update, assets/branding/next-icon/icon.html,
