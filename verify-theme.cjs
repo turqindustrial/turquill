@@ -47,7 +47,7 @@ for(const id of themeIds){
  assert.ok(contrast(themedRgb(221,214,219,id),panel)>=7,id+' text on panel');
  assert.ok(contrast(themedRgb(255,238,240,id),themedRgb(165,26,51,id))>=4.5,id+' button lettering '+contrast(themedRgb(255,238,240,id),themedRgb(165,26,51,id)).toFixed(2));
 }
-// The emblem (a painting) is tinted by a filter: Red leaves it as painted, every other theme turns its crimson onto the
+// The emblem's stones (drawn as rubies; since 2026-10-30 nothing else of it) are tinted by a filter: Red leaves them ruby, every other theme turns their crimson onto the
 // theme's own hue (the filter's sums are the browser's: hue-rotate, saturate, brightness), each to a different colour.
 // Gold is metal: the painting's light and shade toned (grayscale, sepia, saturate, a small hue turn, brightness and
 // contrast), so every crimson, light or dark, lands on one gold ramp.
@@ -87,7 +87,7 @@ for(const file of fs.readdirSync('.').filter(f=>/\.js$/.test(f)&&!/^(verify|qa-)
 });
 assert.deepEqual(stray,[],'colours written outside tint(): '+stray.slice(0,12).join('; '));assert.ok(wrapped>400);
 const web=fs.readFileSync('webTheme.js','utf8');
-assert.ok(web.includes('const css=tint(`')&&web.includes('themedText(flourishMarkup(turn),theme,mode)')&&web.includes("'--qb-emblem-filter':emblemFilter(theme)")&&web.includes('[data-qb=emblem]{position:relative;filter:var(--qb-emblem-filter);}'),'webTheme.js wraps its style sheet and writes its pictures and the emblem filter per theme');
+assert.ok(web.includes('const css=tint(`')&&web.includes('themedText(flourishMarkup(turn),theme,mode)')&&web.includes("'--qb-emblem-filter':emblemFilter(theme)")&&web.includes('[data-qb=emblem-gems]{background-image:url(/emblem/gems-v1.webp);filter:var(--qb-emblem-filter);}'),'webTheme.js wraps its style sheet and writes its pictures and the emblem filter per theme');
 const themeSource=fs.readFileSync('theme.js','utf8');
 assert.ok(themeSource.includes("const KEY='turquill.theme.v1'")&&themeSource.includes('export function setTheme')&&themeSource.includes("coin:tint('#e8c77b')"));
 // The Theme section is in Settings.
@@ -144,13 +144,13 @@ const pagePath='public/index.html',page=fs.readFileSync(pagePath,'utf8');
 const card=[...page.matchAll(/var\(--b(\d+), ([^()]*(?:\([^()]*\))?[^()]*)\)/g)].reduce((list,m)=>{list[+m[1]]=m[2].trim();return list;},[]);
 assert.ok(card.length>=9&&card.every(Boolean),'the loading card names its colours --b0, --b1, ... with none missing');
 const table=Object.fromEntries(themeIds.flatMap(id=>['dark','light'].map(mode=>[id+':'+mode,card.map(colour=>themedText(colour,id,mode))])));
-// The card's emblem takes the same filter as the game's (--bf).
+// The card's emblem stones take the same filter as the game's (--bf).
 const filters=Object.fromEntries(themeIds.filter(id=>emblemFilter(id)!=='none').map(id=>[id,emblemFilter(id)]));
 const script="<script>(function(){try{var p=JSON.parse(localStorage.getItem('turquill.theme.v1')||localStorage.getItem('questbound.theme.v1')||'{}'),t=p.theme||'red',m=p.mode==='light'?'light':'dark',c="+JSON.stringify(table)+"[t+':'+m],f="+JSON.stringify(filters)+"[t],s=document.documentElement.style;document.documentElement.setAttribute('data-appearance',m);if(c){for(var i=0;i<c.length;i++)s.setProperty('--b'+i,c[i]);}if(f)s.setProperty('--bf',f);}catch(e){}})();</script>";
 const block=/(<!-- qb-theme-colours:start[^>]*-->\s*)([\s\S]*?)(\s*<!-- qb-theme-colours:end -->)/,found=page.match(block);
 assert.ok(found,'public/index.html has the qb-theme-colours block');
-// The loading card shows the emblem picture, tinted like the game's.
-assert.ok(page.includes('#qb-boot .emblem { position: absolute; inset: 0; filter: var(--bf, none);')&&page.includes('url(/emblem/seal-ring-v1.webp)')&&page.includes('<div class="seal"><div class="emblem"><i class="ring"></i><i class="core"></i></div></div>')&&!page.includes('qb-serpent'),'the loading card shows the emblem');
+// The loading card shows the emblem picture, its stones tinted like the game's.
+assert.ok(page.includes('#qb-boot .emblem .gems { background-image: url(/emblem/seal-gems-v1.webp); filter: var(--bf, none); }')&&page.includes('url(/emblem/seal-ring-v2.webp)')&&page.includes('<div class="seal"><div class="emblem"><i class="ring"></i><i class="core"></i><i class="gems"></i></div></div>')&&!page.includes('qb-serpent'),'the loading card shows the emblem, its stones in the theme');
 if(process.argv.includes('--write')){fs.writeFileSync(pagePath,page.replace(block,(whole,start,old,end)=>start+script+end));console.log('Wrote the loading card colours and emblem filters for '+Object.keys(table).join(', ')+'.');}
 else assert.equal(found[2],script,'the loading card colours are out of date: run node verify-theme.cjs --write');
 console.log('Themes: '+themeIds.join(', ')+'; '+wrapped+' screen colours follow the theme; loading card in step.');

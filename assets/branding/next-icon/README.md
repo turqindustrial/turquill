@@ -2,7 +2,10 @@
 
 The host asked on 2026-10-10 to "design the new phone icon but keep it stored until the next big update". This folder
 holds it. Nothing here is served or referenced by the game: the live icons are still the red emblem made by
-`node make-icons.cjs` from `assets/title/icon.html`, at `?v=5` (the sword and quill since 2026-10-26).
+`node make-icons.cjs` from `assets/title/icon.html`, at `?v=6` (the final emblem since 2026-10-30: the silver serpent, the gold stars and the open book).
+
+Note (2026-10-30): this gold icon was drawn from the crimson emblem of 2026-10-26. The live emblem is now silver and gold
+with stones in the theme's colour, so ask the host before switching this in; it may want redrawing from the new emblem.
 
 The design: the Turquill emblem (the serpent of the host's painting round the sword and quill,
 `assets/title/turquill-emblem.webp` from `make-turquill-emblem.cjs`)
@@ -31,16 +34,16 @@ nothing else).
 ## Switching it in (at the next big update)
 
 1. Copy each file above to the path in the last column (the names already match the live ones).
-2. Raise the icon version from `?v=5` to `?v=6` everywhere the icons are linked, so installed copies and browser tabs
+2. Raise the icon version from `?v=6` to `?v=7` everywhere the icons are linked, so installed copies and browser tabs
    fetch the new ones:
    - `public/manifest.json` (the three `icons` entries),
-   - `public/index.html` (`<link rel="icon" ...icon-192.png?v=6>` and `<link rel="apple-touch-icon" ...?v=6>`),
+   - `public/index.html` (`<link rel="icon" ...icon-192.png?v=7>` and `<link rel="apple-touch-icon" ...?v=7>`),
    - `fullscreen.js` (the `apple-touch-icon` link it adds),
    - `phone-server.cjs` (the pairing page's icon links); the share gateway must then be restarted.
 3. Make it the page `make-icons.cjs` draws by default: copy `icon.html` over `assets/title/icon.html` (change its
    picture path from `../../title/turquill-emblem.webp` to `turquill-emblem.webp`) and give `make-icons.cjs`'s
    main list the insets used for `nextIcons` (the small icons all cut close to the ring), then run `node make-icons.cjs`
    to check it draws the same files.
-4. Update `verify-presentation.cjs` (it checks `?v=5` and the live icon list), `assets/title/ART-NOTES.md` and the title
+4. Update `verify-presentation.cjs` (it checks `?v=6` and the live icon list), `assets/title/ART-NOTES.md` and the title
    page bullet in `AGENTS.md`, rebuild `dist-phone` (`npm.cmd run build:web`) and run the checks.
 5. An iPhone keeps the icon it was added with: players remove the home-screen icon and add it again.

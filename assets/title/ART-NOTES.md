@@ -40,3 +40,12 @@ The app icons are the page `icon.html` in this folder: the emblem (`turquill-emb
 ### The next icon (stored)
 
 On 2026-10-10 the host asked to "design the new phone icon but keep it stored until the next big update". It is in `assets/branding/next-icon/`: the emblem in gold (the Gold theme's treatment, a little more contrast at small sizes) on a deep dark ground with a faint warm glow, every size cut close to the serpent ring, the maskable one with the ring in Android's safe circle. `icon.html` there is its page and `node make-icons.cjs --next` draws the whole set into that folder only. It was redrawn with the sword and quill on 2026-10-26. Its README.md lists each file, where it goes and the `?v=6` bump. It is not in use: the live icons stay the red emblem at `?v=5` until the host says to switch.
+
+## The final emblem (2026-10-30)
+
+The host chose the final emblem over a day of options (ten, then five and four takes on the third): the serpent of the
+host's painting in blackened silver round a gold inner circle, an open crimson book with a steel sword (bronze hilt) and an
+owl's quill crossed over it, the nib wet with ink, and five gold stars set with stones, the fourth new at the top. The
+serpent alone turns, swallowing each ring star as its jaws pass, and the stars grow back as it goes round; the stones take
+the player's theme colour. `node make-turquill-final.cjs` makes every layer (see the title page bullet in AGENTS.md); the
+app icons are drawn from its `turquill-emblem.webp` by `node make-icons.cjs`, at `?v=6`.

@@ -9,19 +9,35 @@ const turns={tl:'',tr:'translate(34 0) scale(-1 1)',bl:'translate(0 34) scale(1 
 const corners={tl:'var(--qb-corner-tl)',tr:'var(--qb-corner-tr)',bl:'var(--qb-corner-bl)',br:'var(--qb-corner-br)'};
 // Film grain: fractal noise baked into a small tile once; it only moves on the compositor.
 const grain=svg(`<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`);
-// A four-point star's glint for the emblem's twinkles (pink and white: the emblem's theme filter tints it with the rest).
+// A four-point star's glint for the emblem's twinkles (pink and white: the theme's filter tints it with the stones).
 const sparkle=svg("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><radialGradient id='g'><stop offset='0' stop-color='#fff' stop-opacity='.95'/><stop offset='.35' stop-color='#ffd6e2' stop-opacity='.45'/><stop offset='1' stop-color='#ffd6e2' stop-opacity='0'/></radialGradient></defs><circle cx='50' cy='50' r='34' fill='url(#g)'/><path d='M50 2C52 38 62 48 98 50C62 52 52 62 50 98C48 62 38 52 2 50C38 48 48 38 50 2Z' fill='#fff' fill-opacity='.95'/></svg>");
+// The stars the serpent swallows (TitleEmblem.js ringStar). The dragon's jaws (make-turquill-final.cjs) sit 4.6 degrees
+// past north as the turn begins, so they reach the east star 23.8% of the way round, south 48.7%, west 73.8% and north
+// 98.7%. A star shrinks and slips a little along the serpent's way into the jaws, fading as it goes; stays gone a moment,
+// then grows back over about seven seconds. Each star is cut to its own corner of the square (its box, with room for its
+// shadow and twinkle) and scales about its own middle. Transform and opacity only.
+const swallowStars={north:{at:98.7,box:'0 40.9% 77.2% 41.5%',mid:'50.3% 12.8%',way:'1.6%,0'},east:{at:23.8,box:'37.8% 1.4% 38.4% 77.1%',mid:'87.9% 49.7%',way:'0,1.6%'},
+ south:{at:48.7,box:'76.3% 40.9% 0 41.5%',mid:'50.3% 86.2%',way:'-1.6%,0'},west:{at:73.8,box:'37.5% 76.6% 38.7% 2%',mid:'12.7% 49.4%',way:'0,-1.6%'}};
+const swallowFrames=({at,way})=>{const half=way.split(',').map(v=>(parseFloat(v)/2)+'%').join(','),p=n=>+(((n%100)+100)%100).toFixed(2);
+ const whole='opacity:1;transform:none;',gone='opacity:0;transform:scale(.6);';
+ const frames=[[at-1.6,whole+'animation-timing-function:ease-in;'],[at-0.4,'opacity:.75;transform:translate('+half+') scale(.55) rotate(25deg);'],[at+0.4,'opacity:0;transform:translate('+way+') scale(.12) rotate(60deg);'],[at+5,gone+'animation-timing-function:ease-out;'],[at+26,whole]];
+ const list=frames.map(([t,css])=>[p(t),css]);
+ // At 0% and 100% the star is whole, or, for the north star (swallowed just before the turn comes round), still gone.
+ const sorted=[...list].sort((a,b)=>a[0]-b[0]),edge=at+0.4<100&&at+5>100?gone:whole;
+ return [[0,edge],...sorted,[100,edge]].map(([t,css])=>t+'%{'+css+'}').join('');};
+const swallow=Object.entries(swallowStars).map(([star,o])=>'[data-qb=emblem-star][data-star='+star+']{clip-path:inset('+o.box+');transform-origin:'+o.mid+';animation:qb-emblem-swallow-'+star+' 36s linear infinite;will-change:transform,opacity;}@keyframes qb-emblem-swallow-'+star+'{'+swallowFrames(o)+'}').join('\n')+
+ '\n[data-qb=emblem-star-gold]{background-image:url(/emblem/stars-v1.webp);}\n[data-qb=emblem-star-stone]{background-image:url(/emblem/star-stones-v1.webp);filter:var(--qb-emblem-filter);}';
 // A picture written as text cannot read a style variable, so these are written out afresh for each theme.
 // Each theme's set is worked out once: theme.js repaints every extra whenever a colour is first used.
 const pictures={};
 // The Light tones (themeRules.js lightPalette) as "r g b", so the light style sheet below can write rgb(var(--ql-main) / .3).
 const lightTones=theme=>Object.fromEntries(Object.entries(lightPalette(theme)).filter(([,v])=>Array.isArray(v)).map(([name,rgb])=>['--ql-'+name,rgb.join(' ')]));
 themeVariables((theme,mode)=>pictures[theme+':'+mode]??={...Object.fromEntries(Object.entries(turns).map(([corner,turn])=>['--qb-corner-'+corner,svg(themedText(flourishMarkup(turn),theme,mode))])),
- // The emblem is a painting: the theme reaches it as a filter (themeRules.js), and in Light it sits on a dark medallion
- // of its own, the painting's background with a thin crimson rim and a soft shadow on the paper (written in the
- // painting's crimson, since the theme's filter turns the whole emblem, the rim with it).
+ // The emblem's stones (drawn as rubies) take the theme's colour through a filter (themeRules.js); the rest of it is
+ // silver, gold and steel in every theme. In Light it sits on a dark medallion of its own, the painting's background
+ // with a thin gold rim (the inner circle's gold) and a soft shadow on the paper.
  '--qb-emblem-filter':emblemFilter(theme),'--qb-emblem-shine':'rgba(255,240,246,.55)',
- '--qb-emblem-back':mode==='light'?'radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 84%,rgb(22,3,16) 87.2%,rgb(150,40,72) 87.6%,rgb(196,74,104) 88.6%,rgb(120,28,56) 89.6%,rgba(60,30,30,.22) 90.2%,rgba(60,30,30,.08) 94%,rgba(60,30,30,0) 99%)':'none',
+ '--qb-emblem-back':mode==='light'?'radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 84%,rgb(22,3,16) 87.2%,rgb(122,88,30) 87.6%,rgb(200,160,80) 88.6%,rgb(110,78,24) 89.6%,rgba(60,30,30,.22) 90.2%,rgba(60,30,30,.08) 94%,rgba(60,30,30,0) 99%)':'none',
  ...(mode==='light'?lightTones(theme):{})});
 const css=tint(`
 
@@ -297,32 +313,36 @@ input::placeholder,textarea::placeholder{font-style:italic;}
 /* Launch sequence. */
 [data-qb=launch-glow]{background:radial-gradient(ellipse 60% 45% at 50% 42%,rgba(140,82,255,.22),transparent 70%),radial-gradient(ellipse 120% 80% at 50% 110%,rgba(72,35,115,.18),transparent 70%),#0a070b !important;animation:qb-candle 5s ease-in-out infinite;}
 @keyframes qb-candle{0%,100%{opacity:.85;}45%{opacity:1;}70%{opacity:.9;}}
-/* The emblem (TitleEmblem.js; its layers are made by make-emblem.cjs in public/emblem). The serpent ring and its stars
-   turn all the way round once every 36 seconds (TitleEmblem.js emblemTurn), steadily, the way the dragon's head faces
-   (clockwise), chasing its tail: qb-emblem-turn runs from exactly 0 to 360 degrees, so the wrap cannot be seen, and each
-   emblem joins the page's one clock (a negative delay) so a screen change never turns it back. The sword and quill
-   (make-turquill-core.cjs) stay still on top. A blurred copy breathes, a light sweeps across them now and then (inside
-   the still layer's own shape) and the stars twinkle. Only transform and opacity move. */
-[data-qb=emblem]{position:relative;filter:var(--qb-emblem-filter);}
+/* The emblem (TitleEmblem.js; its layers are made by make-turquill-final.cjs in public/emblem). The serpent alone turns
+   all the way round once every 36 seconds (TitleEmblem.js emblemTurn), steadily, the way the dragon's head faces
+   (clockwise), chasing its tail under the still gold stars: qb-emblem-turn runs from exactly 0 to 360 degrees, so the
+   wrap cannot be seen, and each emblem joins the page's one clock (a negative delay) so a screen change never turns it
+   back. Only the stones and the twinkles take the theme's filter. */
+[data-qb=emblem]{position:relative;}
 [data-qb^=emblem-]{background-position:center;background-size:100% 100%;background-repeat:no-repeat;}
 [data-qb=emblem-back]{background-image:var(--qb-emblem-back);}
 [data-qb=emblem-turn]{animation:qb-emblem-turn 36s linear infinite;will-change:transform;}
+${swallow}
 @keyframes qb-emblem-turn{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-[data-qb=emblem-ring]{background-image:url(/emblem/ring-v2.webp);}
-[data-qb=emblem-core]{background-image:url(/emblem/core-v3.webp);}
+[data-qb=emblem-ring]{background-image:url(/emblem/ring-v3.webp);}
+[data-qb=emblem-core]{background-image:url(/emblem/core-v4.webp);}
+[data-qb=emblem-gems]{background-image:url(/emblem/gems-v1.webp);filter:var(--qb-emblem-filter);}
 [data-qb=emblem-glow]{opacity:.55;animation:qb-emblem-glow 7s ease-in-out infinite;}
-[data-qb=emblem-glow][data-part=ring]{background-image:url(/emblem/ring-glow-v2.webp);}
-[data-qb=emblem-glow][data-part=core]{background-image:url(/emblem/core-glow-v3.webp);animation-delay:-3.5s;}
+[data-qb=emblem-glow][data-part=ring]{background-image:url(/emblem/ring-glow-v3.webp);}
+[data-qb=emblem-glow][data-part=core]{background-image:url(/emblem/core-glow-v4.webp);animation-delay:-3.5s;}
 @keyframes qb-emblem-glow{0%,100%{opacity:.3;}50%{opacity:.9;}}
-[data-qb=emblem-sheen]{overflow:hidden;-webkit-mask:url(/emblem/core-v3.webp) center/100% 100% no-repeat;mask:url(/emblem/core-v3.webp) center/100% 100% no-repeat;}
+[data-qb=emblem-sheen]{overflow:hidden;-webkit-mask:url(/emblem/core-v4.webp) center/100% 100% no-repeat;mask:url(/emblem/core-v4.webp) center/100% 100% no-repeat;}
 [data-qb=emblem-shine]{background:linear-gradient(105deg,transparent 22%,var(--qb-emblem-shine) 50%,transparent 78%);opacity:0;transform:translateX(-120%);animation:qb-emblem-sheen 12s ease-in-out 2s infinite;}
 @keyframes qb-emblem-sheen{0%{opacity:0;transform:translateX(-120%);}6%{opacity:1;}28%{opacity:1;transform:translateX(240%);}29%,100%{opacity:0;transform:translateX(240%);}}
-[data-qb=emblem-twinkle]{background-image:${sparkle};background-size:contain;opacity:0;animation:qb-emblem-twinkle 6.4s ease-in-out infinite;}
-[data-qb=emblem-twinkle][data-star=east]{animation-delay:1.6s;}
+[data-qb=emblem-twinkle]{background-image:${sparkle};background-size:contain;filter:var(--qb-emblem-filter);opacity:0;animation:qb-emblem-twinkle 6.4s ease-in-out infinite;}
+[data-qb=emblem-twinkle][data-star=north]{animation-delay:.8s;}
+[data-qb=emblem-twinkle][data-star=east]{animation-delay:2s;}
 [data-qb=emblem-twinkle][data-star=south]{animation-delay:3.2s;}
-[data-qb=emblem-twinkle][data-star=centre]{animation-delay:4.8s;}
+[data-qb=emblem-twinkle][data-star=west]{animation-delay:4.4s;}
+[data-qb=emblem-twinkle][data-star=centre]{animation-delay:5.6s;}
 @keyframes qb-emblem-twinkle{0%,60%,100%{opacity:0;transform:scale(.3) rotate(0deg);}72%{opacity:1;transform:scale(1) rotate(30deg);}86%{opacity:0;transform:scale(.5) rotate(60deg);}}
-[data-qb=emblem-mark]{background:url(/emblem/seal-v2.webp) center/contain no-repeat;filter:var(--qb-emblem-filter);}
+[data-qb=emblem-mark]{position:relative;background:url(/emblem/seal-v3.webp) center/contain no-repeat;}
+[data-qb=emblem-mark-gems]{background:url(/emblem/seal-gems-v1.webp) center/contain no-repeat;filter:var(--qb-emblem-filter);}
 [data-qb=launch-prompt]{animation:qb-pulse 2.2s ease-in-out infinite;}
 @keyframes qb-pulse{0%,100%{opacity:.45;}50%{opacity:1;}}
 /* Game HUD and phone tab bar: dark glass, always on top of the scene. They are almost opaque, so they carry no blur
@@ -433,7 +453,7 @@ ${L}[data-qb=gold],${L}[data-qb=logo]{filter:none !important;text-shadow:none !i
 ${L}[data-qb=crest]{background:radial-gradient(circle at 50% 35%,rgb(var(--ql-raised)) 0%,rgb(var(--ql-panel)) 60%,rgb(var(--ql-well)) 100%) !important;box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .12),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-main) / .55),inset 0 1px 2px rgb(255 255 255 / .8),inset 0 -4px 8px rgb(var(--ql-shadow) / .06),0 4px 12px rgb(var(--ql-shadow) / .12);}
 ${L}[data-qb=crest] svg{filter:none;}
 /* The small emblem in the top bar sits on the same dark medallion as the large one. */
-${L}[data-qb=emblem-mark]{background:url(/emblem/seal-v2.webp) center/contain no-repeat,radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 90%,rgb(170,50,84) 92%,rgb(120,28,56) 95%,rgba(60,30,30,0) 98%);}
+${L}[data-qb=emblem-mark]{background:url(/emblem/seal-v3.webp) center/contain no-repeat,radial-gradient(circle closest-side,rgb(22,3,16) 0,rgb(30,6,22) 90%,rgb(200,160,80) 92%,rgb(110,78,24) 95%,rgba(60,30,30,0) 98%);}
 ${L}[data-qb=badge]{background:linear-gradient(180deg,rgb(var(--ql-fillTop)),rgb(var(--ql-fillEdge))) !important;box-shadow:0 0 0 1.5px rgb(var(--ql-raised)),0 1px 3px rgb(var(--ql-shadow) / .25);}
 ${L}[data-qb=portrait]{box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .14),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-main) / .45),0 8px 22px rgb(var(--ql-shadow) / .14);}
 ${L}[data-qb=portrait-hot]{box-shadow:0 0 0 1px rgb(var(--ql-shadow) / .14),0 0 0 3px rgb(var(--ql-raised)),0 0 0 4px rgb(var(--ql-blood) / .55),0 8px 22px rgb(var(--ql-blood) / .14);}

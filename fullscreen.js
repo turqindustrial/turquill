@@ -42,7 +42,7 @@ export function initializeFullscreen(){
  // public/index.html carries these already; a page without them (an older template) gets them here.
  for(const [name,content] of [['apple-mobile-web-app-capable','yes'],['mobile-web-app-capable','yes'],['apple-mobile-web-app-status-bar-style','black-translucent'],['apple-mobile-web-app-title','Turquill']])
   if(!d.querySelector('meta[name="'+name+'"]'))add('meta',{name,content});
- if(!d.querySelector('link[rel="apple-touch-icon"]'))add('link',{rel:'apple-touch-icon',href:'/icons/apple-touch-icon.png?v=5'});
+ if(!d.querySelector('link[rel="apple-touch-icon"]'))add('link',{rel:'apple-touch-icon',href:'/icons/apple-touch-icon.png?v=6'});
  ['fullscreenchange','webkitfullscreenchange'].forEach(e=>d.addEventListener(e,notify));
  // Optional: enter full screen on the first tap of each visit.
  const auto=event=>{if(!prefs.autoFullscreen||isFullscreen()||isInstalled()||!fullscreenSupported())return;if(event.type==='keydown'&&['Escape','f','F'].includes(event.key))return;enterFullscreen();};
