@@ -185,10 +185,27 @@ function Test-TunnelToken([Security.SecureString]$secure) {
 if ($SetupTunnel) {
   Say '  Permanent link for -Share. In your Cloudflare dashboard (Networking > Tunnels) create a tunnel,' 'Cyan'
   Say '  add a public hostname for it that points to http://127.0.0.1:8087, then copy the tunnel token' 'Cyan'
-  Say '  (open the tunnel, Add a replica, and copy only the long eyJ... part of the command).' 'Cyan'
+  Say '  (open the tunnel, Add a replica, and copy the install command it shows: the whole command is fine).' 'Cyan'
   $hostName = ((Read-Host '  Public hostname (for example play.example.com)').Trim().ToLower() -replace '^https?://', '') -replace '/.*$', ''
   if ($hostName -notmatch '^[a-z0-9-]+(\.[a-z0-9-]+)+$') { Say '  That does not look like a hostname. Nothing was saved.' 'Red'; return }
-  $tokenSecure = Read-Host '  Tunnel token (typing is hidden; right-click pastes)' -AsSecureString
+  # The token is read from the clipboard (the command or the token alone), so it is never pasted at a prompt: on
+  # 2026-10-30 a paste into the hidden prompt kept only 34 characters, and another landed at the PowerShell prompt.
+  # The clipboard is cleared once it is saved. Typing it at the hidden prompt still works when the clipboard has none.
+  $null = Read-Host '  Copy the tunnel token (or the whole install command) now, then press Enter here'
+  $tokenSecure = $null
+  try {
+    $clip = (Get-Clipboard -Raw -ErrorAction Stop)
+    $found = [regex]::Match([string]$clip, 'eyJ[A-Za-z0-9+/=_-]{40,}')
+    $clip = $null
+    if ($found.Success) { $tokenSecure = ConvertTo-SecureString $found.Value -AsPlainText -Force; $found = $null }
+  } catch {}
+  if (-not $tokenSecure) {
+    Say '  No tunnel token on the clipboard.' 'Yellow'
+    $tokenSecure = Read-Host '  Tunnel token (typing is hidden; right-click pastes)' -AsSecureString
+  } else {
+    try { Set-Clipboard -Value ' ' -ErrorAction Stop } catch {}
+    Say '  Took the tunnel token from the clipboard (and cleared it).' 'DarkGray'
+  }
   if (-not (Test-TunnelToken $tokenSecure)) { Say '  That is not a whole tunnel token (it may have been cut short). Copy the entire eyJ... string and try again. Nothing was saved.' 'Red'; return }
   $tokenSecure | ConvertFrom-SecureString | Set-Content $tunnelTokenFile -Encoding ASCII
   Set-Content $tunnelHostFile $hostName -Encoding ASCII
