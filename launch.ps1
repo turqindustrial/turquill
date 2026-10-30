@@ -166,15 +166,30 @@ if ($AnnounceLink) {
 }
 if ($TrustNetwork) { Say 'Use Turquill-Share.cmd for encrypted phone play.' 'Yellow'; return }
 if ($ForgetTunnel) { Remove-Item $tunnelTokenFile, $tunnelHostFile -ErrorAction SilentlyContinue; Say 'The permanent link was forgotten. -Share uses a temporary link again.' 'Green'; return }
-# A permanent link: in the Cloudflare dashboard (Zero Trust > Networks > Tunnels) create a tunnel, give it a public
+# A permanent link: in the Cloudflare dashboard (Networking > Tunnels) create a tunnel, give it a public
 # hostname that points to http://127.0.0.1:8087, and paste its token here. The token never touches disk in plain text.
+# A tunnel token is base64 JSON holding the account (a), the tunnel (t) and its secret (s); one cut short on copying
+# (on 2026-10-30 a 34-character piece was saved and cloudflared refused it) is refused here instead of saved.
+function Test-TunnelToken([Security.SecureString]$secure) {
+  $b = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+  try {
+    $t = ([Runtime.InteropServices.Marshal]::PtrToStringBSTR($b)).Trim()
+    if ($t -notmatch '^eyJ[A-Za-z0-9+/=_-]+$') { return $false }
+    $s = $t.Replace('-', '+').Replace('_', '/')
+    while ($s.Length % 4) { $s += '=' }
+    $j = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($s)) | ConvertFrom-Json
+    return [bool]($j.a -and $j.t -and $j.s)
+  } catch { return $false }
+  finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($b) }
+}
 if ($SetupTunnel) {
-  Say '  Permanent link for -Share. In your Cloudflare dashboard (Zero Trust > Networks > Tunnels) create a tunnel,' 'Cyan'
-  Say '  add a public hostname for it that points to http://127.0.0.1:8087, then copy the tunnel token.' 'Cyan'
+  Say '  Permanent link for -Share. In your Cloudflare dashboard (Networking > Tunnels) create a tunnel,' 'Cyan'
+  Say '  add a public hostname for it that points to http://127.0.0.1:8087, then copy the tunnel token' 'Cyan'
+  Say '  (open the tunnel, Add a replica, and copy only the long eyJ... part of the command).' 'Cyan'
   $hostName = ((Read-Host '  Public hostname (for example play.example.com)').Trim().ToLower() -replace '^https?://', '') -replace '/.*$', ''
   if ($hostName -notmatch '^[a-z0-9-]+(\.[a-z0-9-]+)+$') { Say '  That does not look like a hostname. Nothing was saved.' 'Red'; return }
-  $tokenSecure = Read-Host '  Tunnel token (typing is hidden)' -AsSecureString
-  if ($tokenSecure.Length -lt 20) { Say '  That token looks too short. Nothing was saved.' 'Red'; return }
+  $tokenSecure = Read-Host '  Tunnel token (typing is hidden; right-click pastes)' -AsSecureString
+  if (-not (Test-TunnelToken $tokenSecure)) { Say '  That is not a whole tunnel token (it may have been cut short). Copy the entire eyJ... string and try again. Nothing was saved.' 'Red'; return }
   $tokenSecure | ConvertFrom-SecureString | Set-Content $tunnelTokenFile -Encoding ASCII
   Set-Content $tunnelHostFile $hostName -Encoding ASCII
   Say "  Saved. Turquill.cmd -Share now uses https://$hostName/ (if sharing is running, stop it first with Turquill.cmd -Stop)." 'Green'
