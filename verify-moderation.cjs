@@ -11,7 +11,7 @@
 //     unban, and the game-wide ban (node accounts.cjs ban) refusing the Dungeon Master, tables, guests and feedback.
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto'),http=require('node:http');
 const {createModeration,verdictFor,moderationLine,pauseLine,ENDPOINT,MODEL}=require('./moderation.cjs');
-const {generate,typedByPlayer}=require('./dm-server.cjs');
+const {generate,typedByPlayer,keptTale,taleWords}=require('./dm-server.cjs');
 const {moderationLabel}=require('./bans.cjs');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'qb-moderation-'));
 const scores=(over={})=>({categories:Object.fromEntries(Object.keys(over).map(k=>[k,over[k]>=0.5])),category_scores:{'sexual':0.001,'sexual/minors':0.0001,'hate':0.001,'hate/threatening':0.0001,'harassment':0.002,'harassment/threatening':0.001,'self-harm':0.0001,'self-harm/intent':0.0001,'self-harm/instructions':0.0001,'violence':0.01,'violence/graphic':0.001,'illicit':0.001,'illicit/violent':0.001,...over}});
@@ -218,9 +218,30 @@ function mutes(){
  setMuted(ben,false);assert.equal(mutedMembers().length,0);
  assert.ok(store.has('turquill.profile.guest.turquill.mutes.v1'),'kept on this device, in the player\'s profile');
 }
+// 4. A tale the story writer wrote for a player is checked before it joins the shared compendium (2026-11-02): one the
+//    check holds back, or could not check, stays the player's alone; a clean one is shared; without a check (runs with
+//    a stand-in provider) it is shared as before. The writer's words never count against the player.
+async function sharing(){
+ const tale=extra=>({story:{title:'The Salt Road',opening:'Gulls wheel over the drowned quay.'+extra,npcs:{keeper:{name:'Oona Vell',id:'keeper'}},chapters:[{title:'Low tide',goal:'Find the bell.'}]},pitch:{hook:'A bell rings under the sea.',blurb:'x'.repeat(9000)}});
+ const shelf=()=>{const added=[];return {added,add:story=>{added.push(story);return {ok:true,entry:{id:'e'+added.length}};},start:id=>({title:'copy '+id})};};
+ const asked=[],checker=verdictOf=>({check:async(text,o)=>{asked.push(o);return verdictOf(text);}}),clean=()=>({action:'allow',categories:[]});
+ const parts=taleWords(tale('')),all=parts.join(' | ');
+ assert.ok(parts.length>=3&&parts.every(p=>p.length<=3800),'long words are checked in parts within the check\'s limit');
+ assert.ok(all.includes('Oona Vell')&&all.includes('A bell rings')&&!parts.some(p=>p.split(/\n/).includes('keeper')),'every word of the tale and its pitch, not its ids');
+ let sh=shelf(),out=await keptTale(tale(''),{},sh,{check:checker(clean),apiKey:'k'});
+ assert.equal(out.added,true,'a clean tale is shared');assert.equal(sh.added.length,1);
+ assert.ok(asked.length===parts.length&&asked.every(o=>o.guest===null&&o.purpose==='tale'),'checked as the writer\'s words, never counted against the player');
+ sh=shelf();out=await keptTale(tale(' slur '),{},sh,{check:checker(t=>t.includes('slur')?{action:'refuse',categories:['hate']}:clean()),apiKey:'k'});
+ assert.equal(sh.added.length,0,'a tale held back is not shared');assert.equal(out.story.title,'The Salt Road','but stays the player\'s');assert.equal(out.added,undefined);
+ sh=shelf();out=await keptTale(tale(''),{},sh,{check:checker(()=>({action:'allow',categories:[],unchecked:true})),apiKey:'k'});
+ assert.equal(sh.added.length,0,'a tale the check could not reach is not shared');assert.equal(out.story.title,'The Salt Road');
+ sh=shelf();out=await keptTale(tale(''),{},sh,{check:{check:async()=>{throw Error('down');}},apiKey:'k'});
+ assert.equal(sh.added.length,0,'an error in the check shares nothing');
+ sh=shelf();out=await keptTale(tale(''),{},sh,null);assert.equal(out.added,true,'without a check it is shared as before');
+}
 // AbortSignal.timeout's timer does not keep the process alive by itself; this does, until the checks finish.
 const alive=setInterval(()=>{},1000);
 (async()=>{
- await unit();await dm();await service();mutes();
- console.log('Verified moderation: OpenAI\'s moderation check (fake provider) holds back hate, harassment, threats against people, sexual content and self-harm instructions by score, never violence, always minors; offers help for self-harm; checks table names more strictly; caches, fails open and pauses repeat offenders; logs only categories and labels; generate checks typed words before the story model; table reports reach the host\'s notes and feedback-report.cjs; the host\'s remove-and-ban, calm removal, refused invites and unban; the game-wide ban refusing the Dungeon Master, tables, new guests and feedback; per-device mutes.');
+ await unit();await dm();await service();mutes();await sharing();
+ console.log('Verified moderation: OpenAI\'s moderation check (fake provider) holds back hate, harassment, threats against people, sexual content and self-harm instructions by score, never violence, always minors; offers help for self-harm; checks table names more strictly; caches, fails open and pauses repeat offenders; logs only categories and labels; generate checks typed words before the story model; a tale written for a player joins the shared compendium only once its own words pass the check (never while the check is down); table reports reach the host\'s notes and feedback-report.cjs; the host\'s remove-and-ban, calm removal, refused invites and unban; the game-wide ban refusing the Dungeon Master, tables, new guests and feedback; per-device mutes.');
 })().catch(e=>{console.error(e);process.exitCode=1;}).finally(()=>{clearInterval(alive);fs.rmSync(root,{recursive:true,force:true});});

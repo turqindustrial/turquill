@@ -609,9 +609,27 @@ function sharedTale(body,land,shelf){
 // the answer is then the player's own copy of it, as a journey start (its art id shared with every later player). A
 // tale the compendium refuses (the rules, or a title or land it already has) is still the player's: a failed add never
 // fails the tale.
-function keptTale(result,brief,shelf){
+// Before it is shared, the tale's own words (the story and its pitch) go through the same content check as what players
+// type (2026-11-02, the security review: a player's idea was checked, but what the story writer made of it reached other
+// players unchecked). Sharing fails closed: a tale the check holds back, or one it could not check (the check down),
+// stays the player's alone. The player is never counted against for the writer's words (no guest label).
+function taleWords(result){
+ const out=[];const walk=v=>{if(typeof v==='string'){const t=v.trim();if(t&&!/^[a-z0-9_:-]{1,40}$/.test(t))out.push(t);}else if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')Object.values(v).forEach(walk);};
+ walk(result?.story);walk(result?.pitch);
+ const parts=[];let part='';
+ for(const t of out)for(let i=0;i<t.length;i+=3800){const bit=t.slice(i,i+3800);if(part&&part.length+bit.length+1>3800){parts.push(part);part='';}part+=(part?'\n':'')+bit;}
+ if(part)parts.push(part);
+ return parts;
+}
+async function taleClean(result,{check,apiKey}){
+ try{const parts=taleWords(result);if(!parts.length||parts.length>24)return false;
+  const verdicts=await Promise.all(parts.map(p=>check.check(p,{apiKey,guest:null,purpose:'tale'})));
+  return verdicts.every(v=>v&&v.action==='allow'&&!v.unchecked);}catch{return false;}
+}
+async function keptTale(result,brief,shelf,screen=null){
  if(!result||typeof result!=='object'||!result.story)return result;
  const {pitch,...rest}=result;if(!shelf?.add)return rest;
+ if(screen&&!(await taleClean(result,screen)))return rest;
  try{const added=shelf.add(result.story,{pitch,brief,source:'player',accept:journeyCheck});if(added?.ok){const copy=shelf.start(added.entry.id);if(copy)return {story:copy,ahead:true,journey:true,added:true};}}catch{}
  return rest;
 }
@@ -840,7 +858,7 @@ async function generate(body,{apiKey,model,storyModel=model,reasoning='none',sto
     const castLib=people??(live?loadPeople():null);
     const shared=sharedTale(body,land,shelf);
     const write=(reasoning,timeout)=>{const go=cast=>require('./adventure-generator.cjs').generateAdventure(shared.body,{apiKey,model:storyModel,reasoning,timeout,fetchImpl,safety,cast,onUsage:u=>recordUsage('adventure',storyModel,u,live,guest)});return castLib?castFor(castLib).then(go):go(null);};
-    const kept=result=>keptTale(result,shared.brief,shelf);
+    const kept=result=>keptTale(result,shared.brief,shelf,check&&apiKey?{check,apiKey}:null);
     // A written tale the player chose (or, for a game from before the shelf, a Short one by chance) starts at once:
     // their own copy, from the shelf, before any journey of the story writer's.
     if(writtenStart){const j=body.context.journey,copy=j!==undefined?tales.start(String(j)):tales.any('short');if(copy)return {story:copy,ahead:true,journey:true,written:true};}
@@ -1365,4 +1383,4 @@ function createServer({apiKey=process.env.OPENAI_API_KEY,model=process.env.OPENA
   });
 }
 if(require.main===module){const port=Number(process.env.TURQUILL_DM_PORT??8083);createServer().listen(port,'127.0.0.1',()=>console.log('Turquill DM server ready on localhost:'+port+'. Live AI '+(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL?'configured: '+process.env.OPENAI_MODEL+(process.env.OPENAI_STORY_MODEL&&process.env.OPENAI_STORY_MODEL!==process.env.OPENAI_MODEL?' for play, '+process.env.OPENAI_STORY_MODEL+' for stories and heroes.':'.'):'not configured.')));}
-module.exports={loadWritten,taleLand,taleMatch,sharedTale,keptTale,standingPrompt,heroPrompt,replySchemaFor,asFields,flatReply,cacheKeyFor,promptLayout,sceneParts,sceneMessages,turnRequest,requestParts,requestScene,phaseFields,hostJobOf,recordCreatureMiss,castFor,peopleToMeetFor,portraitsTaken,pooledIntroduce,introduceSchema,loadPeople,recordWriteFailure,cleanRemember,memoryInstructions,typedByPlayer,startLibrary,topUpLibrary,libraryPaused,journeyCheck,unusable,transient,tellingCut,castableSpell,castWords,distinctDialogue,echoes,turnEffort,storyEffort,questInstructions,liveModels,chosenModel,createServer,generate,validRequest,validRuling,checkedHp,partialNarration,streamedText,sceneFor,repairedDiscovery,repairedCreature,repairedIntroduce,repairedJson,replyShape,contractInstructions};
+module.exports={loadWritten,taleLand,taleMatch,sharedTale,keptTale,taleWords,taleClean,standingPrompt,heroPrompt,replySchemaFor,asFields,flatReply,cacheKeyFor,promptLayout,sceneParts,sceneMessages,turnRequest,requestParts,requestScene,phaseFields,hostJobOf,recordCreatureMiss,castFor,peopleToMeetFor,portraitsTaken,pooledIntroduce,introduceSchema,loadPeople,recordWriteFailure,cleanRemember,memoryInstructions,typedByPlayer,startLibrary,topUpLibrary,libraryPaused,journeyCheck,unusable,transient,tellingCut,castableSpell,castWords,distinctDialogue,echoes,turnEffort,storyEffort,questInstructions,liveModels,chosenModel,createServer,generate,validRequest,validRuling,checkedHp,partialNarration,streamedText,sceneFor,repairedDiscovery,repairedCreature,repairedIntroduce,repairedJson,replyShape,contractInstructions};
